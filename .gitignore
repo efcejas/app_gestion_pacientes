@@ -1,23 +1,24 @@
 # Ignorar el archivo .env
 .env
 
-# Ignorar archivos de base de datos
+# Base de datos local (si usas SQLite)
 *.sqlite3
 
-# Ignorar archivos de migración de Django
+# Archivos de migraciones
 **/migrations/
 
-# Ignorar archivos compilados de Python
+# Archivos de compilación de Python
 *.pyc
 __pycache__/
 
-# Ignorar archivos de configuración de IDE
+# Configuración de IDEs
 .vscode/
 .idea/
 
-# Ignorar archivos de sistema
+# Archivos de sistema (Mac/Windows)
 .DS_Store
 Thumbs.db
 
 # Ignorar el entorno virtual
 venv_gestion_pacientes/
+venv/
