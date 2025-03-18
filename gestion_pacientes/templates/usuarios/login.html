@@ -3,10 +3,10 @@
 {% block title %}Iniciar Sesión{% endblock %}
 
 {% block content %}
-  <h2>Iniciar Sesión</h2>
-  <form method="post" class="mt-3">
+<h2>Iniciar Sesión</h2>
+<form method="post" class="mt-3">
     {% csrf_token %}
     {{ form.as_p }}
     <button type="submit" class="btn btn-primary">Ingresar</button>
-  </form>
+</form>
 {% endblock %}

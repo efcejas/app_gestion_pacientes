@@ -107,6 +107,7 @@ AUTH_USER_MODEL = "usuarios.Usuario"
 
 LOGIN_REDIRECT_URL = "home"  # Redirigir después del login
 LOGOUT_REDIRECT_URL = "login"  # Redirigir al login tras el logout
+LOGIN_URL = "/usuarios/login/"  # Especifica la URL correcta para el login
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.1/topics/i18n/

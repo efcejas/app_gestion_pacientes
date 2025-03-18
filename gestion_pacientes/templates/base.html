@@ -1,6 +1,6 @@
 {% load static %}
 <!DOCTYPE html>
-<html lang="es" data-bs-theme="light"> <!-- Permite cambiar entre modo claro y oscuro -->
+<html lang="es" data-bs-theme="light">
 
 <head>
     <meta charset="UTF-8">
@@ -24,31 +24,37 @@
 
 <body>
     <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
-        <div class="container">
-            <a class="navbar-brand fw-bold" href="{% url 'home' %}">
-                <i class="bi bi-hospital"></i> Gestión de Pacientes
-            </a>
+    <nav class="navbar navbar-expand-md navbar-dark bg-primary shadow-sm">
+        <div class="container-fluid">
+            <!-- Logo de la Navbar -->
+            <span class="navbar-brand fw-bold">
+                <a class="navbar-brand fw-bold" href="{% url 'home' %}">
+                    <i class="bi bi-hospital"></i> Gestión de Pacientes
+                </a>
+            </span>
 
-            <!-- Botón hamburguesa para móviles -->
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
-                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <!-- Botón de Hamburguesa -->
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                data-bs-target="#navbarTogglerDemo02">
                 <span class="navbar-toggler-icon"></span>
             </button>
 
-            <!-- Menú de navegación -->
-            <div class="collapse navbar-collapse" id="navbarNav">
+            <!-- Menú -->
+            <div class="collapse navbar-collapse text-end" id="navbarTogglerDemo02">
                 <ul class="navbar-nav ms-auto">
                     {% if user.is_authenticated %}
                     <li class="nav-item">
-                        <i class="bi bi-person"></i> {{ user.username }}
+                        <span class="nav-link">
+                            <i class="bi bi-person"></i> {{ user.username }}
+                        </span>
                     </li>
                     <li class="nav-item">
-                        <form action="{% url 'logout' %}" method="post" class="d-inline">
+                        <a class="nav-link" href="#" onclick="document.getElementById('logout-form').submit();">
+                            <i class="bi bi-box-arrow-right"></i> Cerrar sesión
+                        </a>
+                        <form id="logout-form" action="{% url 'logout' %}" method="post"
+                            style="display: none;">
                             {% csrf_token %}
-                            <button type="submit" class="btn btn-outline-light btn-sm border-0">
-                                <i class="bi bi-box-arrow-right"></i>
-                            </button>
                         </form>
                     </li>
                     {% else %}
@@ -63,52 +69,27 @@
                         </a>
                     </li>
                     {% endif %}
-                </ul>
 
-                <!-- Botón para cambiar modo oscuro/claro -->
-                <button id="themeToggle" class="btn btn-outline-light btn-sm border-0 ms-3">
-                    <i id="themeIcon" class="bi bi-moon"></i>
-                </button>
+                    <!-- Botón de cambio de tema dentro del menú -->
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" id="themeToggle">
+                            <i id="themeIcon" class="bi bi-moon"></i> Tema
+                        </a>
+                    </li>
+                </ul>
             </div>
         </div>
     </nav>
 
     <!-- Contenido de la Página -->
-    <div class="container mt-4">
+    <div class="container-fluid mt-4">
         {% block content %}{% endblock %}
     </div>
 
-    <!-- Bootstrap JS -->
+    <!-- Scripts de Bootstrap -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-vtQNsfD7FqXYsBR6Hq7VN6ihx5+9g7jlJj0UiwpQGfFQ/2HojBEdfcyk/tjpphza" crossorigin="anonymous">
+        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous">
         </script>
-
-    <!-- Script para arreglar el navbar colapsable -->
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            const navToggler = document.querySelector(".navbar-toggler");
-            const navCollapse = document.querySelector("#navbarNav");
-
-            // Cierra el menú al hacer clic en un enlace del navbar
-            document.querySelectorAll(".nav-link").forEach(item => {
-                item.addEventListener("click", () => {
-                    if (navCollapse.classList.contains("show")) {
-                        navToggler.click();
-                    }
-                });
-            });
-
-            // Solución alternativa: Inicializar manualmente el colapsable de Bootstrap
-            if (navToggler) {
-                navToggler.addEventListener("click", function () {
-                    const bsCollapse = new bootstrap.Collapse(navCollapse, {
-                        toggle: false
-                    });
-                    bsCollapse.toggle();
-                });
-            }
-        });
-    </script>
 
     <!-- Script para cambiar entre modo oscuro y claro -->
     <script>
@@ -137,7 +118,6 @@
             });
         });
     </script>
-
 </body>
 
 </html>
