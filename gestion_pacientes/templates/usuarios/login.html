@@ -3,7 +3,7 @@
 {% block title %}Iniciar Sesión{% endblock %}
 
 {% block content %}
-<div class="d-flex justify-content-center align-items-center" style="min-height: 80vh;">
+<div class="d-flex justify-content-center align-items-center" style="min-height: 65vh;">
     <div class="card shadow" style="width: 100%; max-width: 420px;">
         <div class="card-header bg-primary text-white text-center">
             <h5 class="mb-0">Inicio de sesión</h5>
@@ -54,6 +54,13 @@
                 </div>
             </form>
         </div>
+        <div class="card-footer bg-light text-center">
+            <p class="mb-0">
+                <a href="{% url 'password_reset' %}" class="text-decoration-none text-primary">
+                    <i class="bi bi-question-circle"></i> ¿Olvidaste tu contraseña?
+                </a>
+            </p>
+        </div>        
     </div>
 </div>
 {% endblock %}
