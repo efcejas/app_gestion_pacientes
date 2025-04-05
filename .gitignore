@@ -4,8 +4,10 @@
 # Base de datos local (si usas SQLite)
 *.sqlite3
 
-# Archivos de migraciones
-# **/migrations/
+# Ignorar todo dentro de migrations excepto los archivos .py
+**/migrations/__pycache__/
+**/migrations/*.pyc
+!*/migrations/*.py
 
 # Archivos de compilación de Python
 *.pyc
