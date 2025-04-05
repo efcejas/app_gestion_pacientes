@@ -5,7 +5,7 @@
 *.sqlite3
 
 # Archivos de migraciones
-**/migrations/
+# **/migrations/
 
 # Archivos de compilación de Python
 *.pyc
