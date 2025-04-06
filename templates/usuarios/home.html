@@ -1,50 +1,54 @@
 {% extends "base.html" %}
-
-{% block title %}Inicio{% endblock %}
+{% load static %}
 
 {% block content %}
-<div class="container mt-3">
-    <div class="row">
-        <div class="col-md-12 text-center">
-            <h2 class="display-4">Bienvenido, {{ user.username }}!</h2>
-            <p class="lead">Esta es la página donde se podrán gestionar los pacientes.</p>
-            <hr class="my-4">
-            <p>Explora las funcionalidades disponibles y gestiona tus pacientes de manera eficiente.</p>
-            <a class="btn btn-primary btn-lg" href="#" role="button">Ver Pacientes</a>
-            <a class="btn btn-secondary btn-lg" href="#" role="button">Añadir Paciente</a>
-        </div>
+<div class="container mt-5">
+    <div class="text-center mb-5">
+        <h1 class="display-4">¡Bienvenido, {{ user.first_name }}!</h1>
+        <p class="lead">Seleccioná una acción para comenzar</p>
     </div>
-    <!-- <div class="row mt-5">
-        <div class="col-md-6">
-            <div class="card">
-                <div class="card-header bg-info text-white">
-                    <h3 class="card-title">Últimos Pacientes Añadidos</h3>
+
+    <div class="row justify-content-center">
+        <!-- Registrar Paciente -->
+        <div class="col-md-4 mb-4">
+            <div class="card shadow rounded-4 h-100 border-0">
+                <div class="card-body text-center">
+                    <i class="bi bi-person-plus display-4 icon-primario mb-3"></i>
+                    <h5 class="card-title">Registrar Paciente</h5>
+                    <p class="card-text">Agregá un nuevo paciente al sistema.</p>
+                    <a href="#" class="btn-personal btn-primario w-100">Registrar</a>
                 </div>
-                <ul class="list-group list-group-flush">
-                    {% for paciente in ultimos_pacientes %}
-                        <li class="list-group-item d-flex justify-content-between align-items-center">
-                            <span>{{ paciente.nombre }}</span>
-                            <span class="badge badge-primary badge-pill">{{ paciente.fecha_registro }}</span>
-                        </li>
-                    {% endfor %}
-                </ul>
             </div>
         </div>
-        <div class="col-md-6">
-            <div class="card">
-                <div class="card-header bg-success text-white">
-                    <h3 class="card-title">Próximas Citas</h3>
+
+        <!-- Ver Turnos -->
+        <div class="col-md-4 mb-4">
+            <div class="card shadow rounded-4 h-100 border-0">
+                <div class="card-body text-center">
+                    <i class="bi bi-calendar-event display-4 icon-secundario mb-3"></i>
+                    <h5 class="card-title">Ver Turnos</h5>
+                    <p class="card-text">Consultá los turnos programados.</p>
+                    <a href="#" class="btn-personal btn-secundario w-100">Ver Turnos</a>
                 </div>
-                <ul class="list-group list-group-flush">
-                    {% for cita in proximas_citas %}
-                        <li class="list-group-item d-flex justify-content-between align-items-center">
-                            <span>{{ cita.fecha }}</span>
-                            <span class="badge badge-success badge-pill">{{ cita.paciente_nombre }}</span>
-                        </li>
-                    {% endfor %}
-                </ul>
             </div>
         </div>
-    </div> -->
+
+        <!-- Cerrar sesión -->
+        <!-- <div class="col-md-4 mb-4">
+            <div class="card shadow rounded-4 h-100 border-0">
+                <div class="card-body text-center">
+                    <i class="bi bi-box-arrow-right display-4 icon-peligro mb-3"></i>
+                    <h5 class="card-title">Cerrar Sesión</h5>
+                    <p class="card-text">Salí del sistema de forma segura.</p>
+                    <form id="logout-form" action="{% url 'logout' %}" method="post" style="display: none;">
+                        {% csrf_token %}
+                    </form>
+                    <a href="#" class="btn-personal btn-peligro w-100"
+                        onclick="document.getElementById('logout-form').submit();">Cerrar
+                        Sesión</a>
+                </div>
+            </div>
+        </div> -->
+    </div>
 </div>
 {% endblock %}

@@ -20,16 +20,19 @@
 
     <!-- Estilos personalizados -->
     <link rel="stylesheet" href="{% static 'styles/styles.css' %}">
+
+    <!-- Estilos de Typekit -->
+    <link rel="stylesheet" href="https://use.typekit.net/ztu8iib.css">
 </head>
 
 <body>
     <!-- Navbar -->
-    <nav class="navbar navbar-expand-md navbar-dark bg-primary shadow-sm">
+    <nav class="navbar navbar-expand-md navbar-personal shadow-sm">
         <div class="container-fluid">
             <!-- Logo de la Navbar -->
             <span class="navbar-brand fw-bold">
                 <a class="navbar-brand fw-bold" href="{% url 'home' %}">
-                    <i class="bi bi-hospital"></i> Gestión de Pacientes
+                    <i class="bi bi-hospital"></i> Gestión de pacientes
                 </a>
             </span>
 
@@ -81,11 +84,11 @@
                     {% endif %}
 
                     <!-- Botón de cambio de tema dentro del menú -->
-                    <li class="nav-item">
+                    <!-- <li class="nav-item">
                         <a class="nav-link" href="#" id="themeToggle">
                             <i id="themeIcon" class="bi bi-moon"></i> Tema
                         </a>
-                    </li>
+                    </li> -->
                 </ul>
             </div>
         </div>

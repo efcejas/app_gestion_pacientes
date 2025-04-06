@@ -4,8 +4,8 @@
 
 {% block content %}
 <div class="d-flex justify-content-center align-items-center" style="min-height: 65vh;">
-    <div class="card shadow-sm" style="width: 100%; max-width: 420px;">
-        <div class="card-header bg-primary text-white text-center">
+    <div class="card shadow rounded-4 border-0" style="width: 100%; max-width: 420px;">
+        <div class="card-header text-white text-center" style="background-color: var(--color-primario); border-top-left-radius: 1rem; border-top-right-radius: 1rem;">
             <h5 class="mb-0">Inicio de sesión</h5>
         </div>
         <div class="card-body">
@@ -48,15 +48,15 @@
 
                 <!-- Botón -->
                 <div class="d-grid mt-4">
-                    <button type="submit" class="btn btn-primary">
+                    <button type="submit" class="btn-personal btn-primario">
                         <i class="bi bi-box-arrow-in-right"></i> Ingresar
                     </button>
                 </div>
             </form>
         </div>
-        <div class="card-footer bg-light text-center">
+        <div class="card-footer bg-light text-center rounded-bottom-4">
             <p class="mb-0">
-                <a href="{% url 'password_reset' %}" class="text-decoration-none text-primary">
+                <a href="{% url 'password_reset' %}" class="text-decoration-none" style="color: var(--color-primario);">
                     <i class="bi bi-question-circle"></i> ¿Olvidaste tu contraseña?
                 </a>
             </p>

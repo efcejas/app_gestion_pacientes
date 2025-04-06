@@ -2,7 +2,6 @@ from django.urls import path
 from .views import RegistroUsuarioView, HomeView
 from django.contrib.auth import views as auth_views
 from .forms import LoginForm, CambioContrasenaForm, RestablecerContrasenaForm, RestablecerPasswordNuevaForm
-from django.contrib.auth.forms import SetPasswordForm
 
 urlpatterns = [
     # Página principal
