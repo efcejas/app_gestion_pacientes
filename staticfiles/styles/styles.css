@@ -1,0 +1,230 @@
+/* Importación de tipografía */
+@import url("https://use.typekit.net/ztu8iib.css");
+
+/* ========================= */
+/* VARIABLES GLOBALES        */
+/* ========================= */
+:root {
+    /* Paleta de colores */
+    --color-primario: #0077B6;         /* Azul médico */
+    --color-secundario: #48C9B0;       /* Verde salud */
+    --color-fondo: #F9F9F9;            /* Fondo general */
+    --color-texto: #333333;            /* Texto principal */
+    --color-acento: #FF6B6B;           /* Alertas / Énfasis */
+    --color-bordes: #E0E0E0;           /* Bordes y detalles */
+    --color-informativo: #17A2B8;      /* Azul celeste / informativo */
+    --color-aviso: #FFC107;            /* Amarillo aviso */
+    --color-exito: #28a745;            /* Verde éxito */
+}
+
+/* ========================= */
+/* ESTILOS GLOBALES          */
+/* ========================= */
+body {
+    font-family: "inter-tight-variable", sans-serif;
+    font-variation-settings: "wght" 400;
+    background-color: var(--color-fondo);
+    color: var(--color-texto);
+    line-height: 1.6;
+    margin: 0;
+    padding: 0;
+}
+
+h1, h2, h3, h4, h5 {
+    font-variation-settings: "wght" 600;
+}
+
+.card-title {
+    font-variation-settings: "wght" 550;
+}
+
+/* ========================= */
+/* NAVBAR PERSONALIZADA      */
+/* ========================= */
+.navbar-personal {
+    background-color: var(--color-primario);
+}
+
+.navbar-personal .navbar-brand,
+.navbar-personal .nav-link,
+.navbar-personal .dropdown-item {
+    color: white;
+}
+
+.navbar-personal .nav-link:hover,
+.navbar-personal .dropdown-item:hover {
+    color: #e0e0e0;
+}
+
+/* ========================= */
+/* MENÚS DESPLEGABLES        */
+/* ========================= */
+.dropdown-menu {
+    background-color: white;
+    border: 1px solid var(--color-bordes);
+    border-radius: 0.75rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    padding: 0.5rem 0;
+    font-weight: 500;
+}
+
+.dropdown-menu .dropdown-item {
+    color: var(--color-texto);
+    padding: 0.5rem 1.2rem;
+    transition: background-color 0.2s ease;
+}
+
+.dropdown-menu .dropdown-item:hover {
+    background-color: var(--color-bordes);
+    color: var(--color-texto);
+}
+
+.navbar .nav-link.dropdown-toggle.show {
+    color: var(--color-fondo);
+    font-weight: 600;
+}
+
+/* ========================= */
+/* ESTILOS DE TARJETAS       */
+/* ========================= */
+.card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    border-radius: 1.25rem;
+    border: none;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.1);
+}
+
+.bg-personal-success {
+    background-color: var(--color-secundario);
+    color: white;
+}
+
+/* ========================= */
+/* BOTONES PERSONALIZADOS    */
+/* ========================= */
+.btn-personal {
+    font-weight: 500;
+    border-radius: 1.25rem;
+    color: white;
+    padding: 0.75rem 1.25rem;
+    text-decoration: none;
+    display: inline-block;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+/* Botones según tipo */
+.btn-primario {
+    background-color: var(--color-primario);
+    border: none;
+}
+
+.btn-primario:hover {
+    background-color: #005f8d;
+    transform: scale(1.03);
+}
+
+.btn-secundario {
+    background-color: var(--color-secundario);
+    border: none;
+}
+
+.btn-secundario:hover {
+    background-color: #36af99;
+    transform: scale(1.03);
+}
+
+.btn-peligro {
+    background-color: var(--color-acento);
+    border: none;
+}
+
+.btn-peligro:hover {
+    background-color: #cc5c5c;
+    transform: scale(1.03);
+}
+
+.btn-cancelar {
+    background-color: transparent;
+    border: 2px solid var(--color-bordes);
+    color: var(--color-texto);
+    border-radius: 1.25rem;
+    font-weight: 500;
+    padding: 0.75rem 1.25rem;
+    transition: all 0.2s ease-in-out;
+}
+
+.btn-cancelar:hover {
+    background-color: var(--color-bordes);
+    color: white;
+}
+
+/* Botones informativos */
+.btn-informativo {
+    background-color: var(--color-informativo);
+    border-color: var(--color-informativo);
+    color: white;
+    transition: background-color 0.2s ease;
+}
+
+.btn-informativo:hover {
+    background-color: #1a94b3;
+    border-color: #1a94b3;
+}
+
+.btn-aviso {
+    background-color: var(--color-aviso);
+    border-color: var(--color-aviso);
+    color: #212529;
+    transition: background-color 0.2s ease;
+}
+
+.btn-aviso:hover {
+    background-color: #e6ac05;
+    border-color: #e6ac05;
+}
+
+.btn-exito {
+    background-color: var(--color-exito);
+    border-color: var(--color-exito);
+    color: white;
+    transition: background-color 0.2s ease;
+}
+
+.btn-exito:hover {
+    background-color: #218838;
+    border-color: #218838;
+}
+
+/* ========================= */
+/* COLORES PERSONALIZADOS    */
+/* ========================= */
+.icon-primario {
+    color: var(--color-primario);
+}
+
+.icon-secundario {
+    color: var(--color-secundario);
+}
+
+.icon-peligro {
+    color: var(--color-acento);
+}
+
+.bg-personal-info {
+    background-color: var(--color-informativo);
+    color: white;
+}
+
+.bg-personal-warning {
+    background-color: var(--color-aviso);
+    color: #212529;
+}
+
+.bg-personal-exito {
+    background-color: var(--color-exito);
+}
