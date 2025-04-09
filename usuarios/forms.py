@@ -18,6 +18,25 @@ class RegistroUsuarioForm(UserCreationForm):
             'autocomplete': 'username'
         })
     )
+    
+    first_name = forms.CharField(
+        label="Nombre",
+        max_length=30,
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Ingrese su nombre',
+        })
+    )
+    
+    last_name = forms.CharField(
+        label="Apellido",
+        max_length=30,
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Ingrese su apellido',
+        })
+    )
+    
     email = forms.EmailField(
         label="Correo electrónico",
         widget=forms.EmailInput(attrs={
@@ -50,7 +69,7 @@ class RegistroUsuarioForm(UserCreationForm):
 
     class Meta:
         model = Usuario
-        fields = ["username", "email", "rol", "password1", "password2"]
+        fields = ["username", "first_name", "last_name", "email", "rol", "password1", "password2"]
         
 # Formulario para la autenticación de usuarios
 

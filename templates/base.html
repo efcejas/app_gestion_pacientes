@@ -35,19 +35,19 @@
                     <i class="bi bi-hospital"></i> Gestión de pacientes
                 </a>
             </span>
-
+    
+            {% if user.is_authenticated %}
             <!-- Botón de Hamburguesa -->
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
-                data-bs-target="#navbarTogglerDemo02">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarTogglerDemo02">
                 <span class="navbar-toggler-icon"></span>
             </button>
-
+    
             <!-- Menú -->
             <div class="collapse navbar-collapse text-end" id="navbarTogglerDemo02">
                 <ul class="navbar-nav ms-auto">
-                    {% if user.is_authenticated %}
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
+                            aria-expanded="false">
                             <i class="bi bi-person"></i> {{ user.username }}
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end">
@@ -56,41 +56,27 @@
                                     <i class="bi bi-key"></i> Cambiar contraseña
                                 </a>
                             </li>
-                            <!-- <li>
-                                <hr class="dropdown-divider">
-                            </li> -->
                         </ul>
-                    </li>                    
+                    </li>
                     <li class="nav-item">
                         <a class="nav-link" href="#" onclick="document.getElementById('logout-form').submit();">
                             <i class="bi bi-box-arrow-right"></i> Cerrar sesión
                         </a>
-                        <form id="logout-form" action="{% url 'logout' %}" method="post"
-                            style="display: none;">
+                        <form id="logout-form" action="{% url 'logout' %}" method="post" style="display: none;">
                             {% csrf_token %}
                         </form>
                     </li>
-                    {% else %}
-                    <!-- <li class="nav-item"> -->
-                    <!--     <a class="nav-link" href="{% url 'login' %}"> -->
-                    <!--         <i class="bi bi-box-arrow-in-right"></i> Iniciar sesión -->
-                    <!--     </a> -->
-                    <!-- </li> -->
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'registro' %}">
-                            <i class="bi bi-person-plus"></i> Registrarse
-                        </a>
-                    </li>
-                    {% endif %}
-
-                    <!-- Botón de cambio de tema dentro del menú -->
-                    <!-- <li class="nav-item">
-                        <a class="nav-link" href="#" id="themeToggle">
-                            <i id="themeIcon" class="bi bi-moon"></i> Tema
-                        </a>
-                    </li> -->
                 </ul>
             </div>
+            {% else %}
+            <!-- <ul class="navbar-nav ms-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'registro' %}">
+                        <i class="bi bi-person-plus"></i> Registrarse
+                    </a>
+                </li>
+            </ul> -->
+            {% endif %}
         </div>
     </nav>
 
