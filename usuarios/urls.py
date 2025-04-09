@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import RegistroUsuarioView, HomeView
+from .views import RegistroConfirmacionView, RegistroUsuarioView, HomeView
 from django.contrib.auth import views as auth_views
 from .forms import LoginForm, CambioContrasenaForm, RestablecerContrasenaForm, RestablecerPasswordNuevaForm
 
@@ -9,6 +9,7 @@ urlpatterns = [
     
     # Rutas relacionadas con el registro de usuarios
     path("registro/", RegistroUsuarioView.as_view(), name="registro"),
+    path("registro/confirmacion/", RegistroConfirmacionView.as_view(), name="registro_confirmacion"),
     
     # Rutas relacionadas con la autenticación de usuarios
     path(

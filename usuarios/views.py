@@ -9,13 +9,15 @@ class RegistroUsuarioView(CreateView):
     model = Usuario
     form_class = RegistroUsuarioForm
     template_name = "usuarios/registro.html"
-    success_url = reverse_lazy("home")  # Redirige a la página principal después del registro
+    success_url = reverse_lazy("registro_confirmacion")  # Redirige a la página de confirmación
 
     def form_valid(self, form):
         usuario = form.save()
         login(self.request, usuario)  # Autentica al usuario tras registrarse
         return super().form_valid(form)
-
+    
+class RegistroConfirmacionView(TemplateView):
+    template_name = "usuarios/registro_confirmacion.html"
 
 class HomeView(LoginRequiredMixin, TemplateView):
     template_name = "usuarios/home.html"
