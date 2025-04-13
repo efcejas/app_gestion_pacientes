@@ -9,8 +9,20 @@
     </div>
 
     <div class="row justify-content-center">
-        <!-- Registrar Paciente -->
+        <!-- Registrar Orden Médica -->
         <div class="col-md-4 mb-4">
+            <div class="card shadow rounded-4 h-100 border-0 text-center p-3">
+                <i class="bi bi-clipboard-plus display-4 icon-primario mb-3"></i>
+                <h5 class="card-title">Registrar Orden</h5>
+                <p class="card-text">Ingresá una nueva orden médica codificada.</p>
+                <button type="button" class="btn-personal btn-primario w-100" data-bs-toggle="modal"
+                        data-bs-target="#modalOrden">
+                    Registrar Orden
+                </button>
+            </div>
+        </div>
+        <!-- Registrar Paciente -->
+        <!-- <div class="col-md-4 mb-4">
             <div class="card shadow rounded-4 h-100 border-0">
                 <div class="card-body text-center">
                     <i class="bi bi-person-plus display-4 icon-primario mb-3"></i>
@@ -19,10 +31,10 @@
                     <a href="#" class="btn-personal btn-primario w-100">Registrar</a>
                 </div>
             </div>
-        </div>
+        </div> -->
 
         <!-- Ver Turnos -->
-        <div class="col-md-4 mb-4">
+        <!-- <div class="col-md-4 mb-4">
             <div class="card shadow rounded-4 h-100 border-0">
                 <div class="card-body text-center">
                     <i class="bi bi-calendar-event display-4 icon-secundario mb-3"></i>
@@ -31,24 +43,71 @@
                     <a href="#" class="btn-personal btn-secundario w-100">Ver Turnos</a>
                 </div>
             </div>
-        </div>
+        </div> -->
 
         <!-- Cerrar sesión -->
-        <!-- <div class="col-md-4 mb-4">
-            <div class="card shadow rounded-4 h-100 border-0">
-                <div class="card-body text-center">
-                    <i class="bi bi-box-arrow-right display-4 icon-peligro mb-3"></i>
-                    <h5 class="card-title">Cerrar Sesión</h5>
-                    <p class="card-text">Salí del sistema de forma segura.</p>
-                    <form id="logout-form" action="{% url 'logout' %}" method="post" style="display: none;">
-                        {% csrf_token %}
-                    </form>
-                    <a href="#" class="btn-personal btn-peligro w-100"
-                        onclick="document.getElementById('logout-form').submit();">Cerrar
-                        Sesión</a>
-                </div>
+        <div class="col-md-4 mb-4">
+            <div class="card shadow rounded-4 h-100 border-0 text-center p-3">
+                <i class="bi bi-box-arrow-right display-4 icon-peligro mb-3"></i>
+                <h5 class="card-title">Cerrar Sesión</h5>
+                <p class="card-text">Salí del sistema de forma segura.</p>
+                <form id="logout-form" action="{% url 'logout' %}" method="post" style="display: none;">
+                    {% csrf_token %}
+                </form>
+                <a href="#" class="btn-personal btn-peligro w-100"
+                   onclick="document.getElementById('logout-form').submit();">Cerrar Sesión</a>
             </div>
-        </div> -->
+        </div>
     </div>
 </div>
+<!-- Modal para registrar orden -->
+<div class="modal fade" id="modalOrden" tabindex="-1" aria-labelledby="modalOrdenLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content rounded-4">
+            <div class="modal-header bg-personal-warning text-dark">
+                <h5 class="modal-title" id="modalOrdenLabel"><i class="bi bi-clipboard-plus"></i> Nueva Orden Médica</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <form method="POST" action="{% url 'control_ordenes:crear_orden' %}">
+                {% csrf_token %}
+                <div class="modal-body">
+                    {{ form.as_p }}
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-personal btn-peligro" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn-personal btn-secundario">Guardar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Toast para mostrar mensajes de éxito -->
+{% if messages %}
+<div class="toast-container position-fixed bottom-0 end-0 p-3">
+    {% for message in messages %}
+    <div class="toast align-items-center text-bg-{{ message.tags }} border-0" role="alert" aria-live="assertive"
+         aria-atomic="true" data-bs-delay="3000">
+        <div class="d-flex">
+            <div class="toast-body">
+                {{ message }}
+            </div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"
+                    aria-label="Cerrar"></button>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var toastElList = [].slice.call(document.querySelectorAll('.toast'));
+        toastElList.forEach(function (toastEl) {
+            var toast = new bootstrap.Toast(toastEl);
+            toast.show();
+        });
+    });
+</script>
 {% endblock %}
+

@@ -22,4 +22,5 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path("usuarios/", include("usuarios.urls")),  # Incluir rutas de la app usuarios
     path("", RedirectView.as_view(pattern_name="home", permanent=False)),  # Página principal
+    path("control_ordenes/", include("control_ordenes.urls")),  # Incluir rutas de la app control_ordenes
 ]

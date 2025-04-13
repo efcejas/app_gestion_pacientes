@@ -2,6 +2,8 @@ from django.urls import reverse_lazy
 from django.views.generic import CreateView, TemplateView
 from django.contrib.auth import login
 from django.contrib.auth.mixins import LoginRequiredMixin
+
+from control_ordenes.forms import OrdenMedicaForm
 from .models import Usuario
 from .forms import RegistroUsuarioForm
 
@@ -22,3 +24,7 @@ class RegistroConfirmacionView(TemplateView):
 class HomeView(LoginRequiredMixin, TemplateView):
     template_name = "usuarios/home.html"
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["form"] = OrdenMedicaForm()
+        return context
