@@ -5,7 +5,7 @@ from django.utils import timezone
 from django.utils.crypto import get_random_string
 
 # Import additional utilities
-from datetime import timedelta
+from datetime import date, timedelta
 
 class OrdenMedica(models.Model):
     medico = models.ForeignKey(
@@ -27,6 +27,10 @@ class OrdenMedica(models.Model):
 
     def fecha_vencimiento(self):
         return self.fecha_emision + timedelta(days=self.dias_validez)
+    
+    @property
+    def dias_restantes(self):
+        return (self.fecha_vencimiento() - date.today()).days
     
     class Meta:
         verbose_name = "Orden Médica"

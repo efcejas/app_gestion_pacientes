@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block title %}Mis Órdenes Médicas{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="mb-4 text-center">Órdenes Médicas Registradas</h2>
+
+    {% if ordenes %}
+    <div class="table-responsive">
+        <table class="table table-striped align-middle shadow-sm rounded-3 overflow-hidden">
+            <thead class="table-dark">
+                <tr>
+                    <th class="ps-3">Identificador</th>
+                    <th>Fecha de emisión</th>
+                    <th>Vence en</th>
+                </tr>
+            </thead>            
+            <tbody>
+                {% for orden in ordenes %}
+                <tr>
+                    <td class="ps-3">{{ orden.identificador_paciente }}</td>
+                    <td>{{ orden.fecha_emision|date:"d/m/Y" }}</td>
+                    <td class="text-nowrap">
+                        {% if orden.dias_restantes < 0 %}
+                            <span class="badge bg-danger"><i class="bi bi-x-circle"></i> Vencida</span>
+                        {% elif orden.dias_restantes <= 10 %}
+                            <span class="badge bg-warning text-dark"><i class="bi bi-exclamation-triangle"></i> {{ orden.dias_restantes }} días</span>
+                        {% else %}
+                            <span class="badge bg-success"><i class="bi bi-check-circle"></i> {{ orden.dias_restantes }} días</span>
+                        {% endif %}
+                        <small class="text-muted">
+                            {% if orden.dias_restantes < 0 %}
+                                Venció: {{ orden.fecha_vencimiento|date:"d/m/Y" }}
+                            {% else %}
+                                Vence: {{ orden.fecha_vencimiento|date:"d/m/Y" }}
+                            {% endif %}
+                        </small>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="alert alert-info text-center" role="alert">
+        Aún no registraste ninguna orden médica.
+    </div>
+    {% endif %}
+
+    <div class="text-center mt-4">
+        <a href="{% url 'home' %}" class="btn-personal btn-primario">
+            <i class="bi bi-house-door"></i> Volver al inicio
+        </a>
+    </div>
+</div>
+{% endblock %}
