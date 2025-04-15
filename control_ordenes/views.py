@@ -26,13 +26,18 @@ class OrdenesDelMedicoListView(LoginRequiredMixin, UserPassesTestMixin, ListView
     model = OrdenMedica
     template_name = 'control_ordenes/lista_ordenes.html'
     context_object_name = 'ordenes'
-    ordering = ['fecha_emision']
 
     def get_queryset(self):
-        return sorted(
-            OrdenMedica.objects.filter(medico=self.request.user),
-            key=lambda orden: orden.dias_restantes
-        )
+        queryset = OrdenMedica.objects.filter(medico=self.request.user)
+
+        sort = self.request.GET.get('sort', 'fecha_vencimiento')
+        direction = self.request.GET.get('dir', 'asc')
+        reverse = direction == 'desc'
+
+        if sort == 'fecha_emision':
+            return sorted(queryset, key=lambda o: o.fecha_emision, reverse=reverse)
+        else:  # default a fecha_vencimiento
+            return sorted(queryset, key=lambda o: o.fecha_vencimiento(), reverse=reverse)
 
     def test_func(self):
         return self.request.user.rol == 'medico'

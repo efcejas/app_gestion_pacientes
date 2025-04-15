@@ -11,10 +11,40 @@
             <thead class="table-dark">
                 <tr>
                     <th class="ps-3">Identificador</th>
-                    <th>Fecha de emisión</th>
-                    <th>Vence en</th>
+                    <th>
+                        <a href="?sort=fecha_emision&dir={% if request.GET.sort == 'fecha_emision' and request.GET.dir == 'asc' %}desc{% else %}asc{% endif %}"
+                           class="text-white text-decoration-none d-flex align-items-center gap-1 sort-link"
+                           title="Ordenar por fecha de emisión">
+                            Fecha de emisión
+                            {% if request.GET.sort == 'fecha_emision' %}
+                                {% if request.GET.dir == 'asc' %}
+                                    <i class="bi bi-caret-up-fill"></i>
+                                {% else %}
+                                    <i class="bi bi-caret-down-fill"></i>
+                                {% endif %}
+                            {% else %}
+                                <i class="bi bi-arrow-down-up text-light opacity-75"></i>
+                            {% endif %}
+                        </a>
+                    </th>
+                    <th>
+                        <a href="?sort=fecha_vencimiento&dir={% if request.GET.sort == 'fecha_vencimiento' and request.GET.dir == 'asc' %}desc{% else %}asc{% endif %}"
+                           class="text-white text-decoration-none d-flex align-items-center gap-1 sort-link"
+                           title="Ordenar por fecha de vencimiento">
+                            Vence en
+                            {% if request.GET.sort == 'fecha_vencimiento' %}
+                                {% if request.GET.dir == 'asc' %}
+                                    <i class="bi bi-caret-up-fill"></i>
+                                {% else %}
+                                    <i class="bi bi-caret-down-fill"></i>
+                                {% endif %}
+                            {% else %}
+                                <i class="bi bi-arrow-down-up text-light opacity-75"></i>
+                            {% endif %}
+                        </a>
+                    </th>
                 </tr>
-            </thead>            
+            </thead>
             <tbody>
                 {% for orden in ordenes %}
                 <tr>

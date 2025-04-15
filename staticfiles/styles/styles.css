@@ -85,6 +85,18 @@ h1, h2, h3, h4, h5 {
     box-shadow: 0 8px 18px rgba(0, 0, 0, 0.08);
 }
 
+/* ===== Flchas de orden ===== */
+
+.sort-link {
+    transition: color 0.2s ease;
+    cursor: pointer;
+}
+
+.sort-link:hover {
+    color: var(--color-aviso); /* o cualquier otro color que quieras usar en hover */
+    text-decoration: underline;
+}
+
 /* ===== BOTONES BASE ===== */
 .btn-personal {
     font-weight: 500;
