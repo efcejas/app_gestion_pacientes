@@ -5,10 +5,14 @@
 <div class="container mt-5">
     <div class="text-center mb-5">
         <h1 class="display-4">¡Bienvenido, {{ user.first_name }}!</h1>
+        {% if user.is_authenticated and user.rol == "medico" %}
         <p class="lead">Seleccioná una acción para comenzar</p>
+        {% else %}
+        {% endif %}
     </div>
 
     <div class="row justify-content-center">
+        {% if user.is_authenticated and user.rol == "medico" %}
         <!-- Registrar Orden Médica -->
         <div class="col-md-4 mb-4">
             <div class="card shadow rounded-4 h-100 border-0 text-center p-3">
@@ -16,7 +20,7 @@
                 <h5 class="card-title">Registrar Orden</h5>
                 <p class="card-text">Ingresá una nueva orden médica codificada.</p>
                 <button type="button" class="btn-personal btn-primario w-100" data-bs-toggle="modal"
-                        data-bs-target="#modalOrden">
+                    data-bs-target="#modalOrden">
                     Registrar Orden
                 </button>
             </div>
@@ -30,6 +34,16 @@
                 <a href="{% url 'control_ordenes:lista_ordenes' %}" class="btn-personal btn-informativo w-100">Ver Órdenes</a>
             </div>
         </div>
+        {% else %}
+        <!-- Vista para usuarios no médicos -->
+        <div class="col-md-6">
+            <div class="alert alert-warning text-center shadow rounded-4 p-4" role="alert">
+                <i class="bi bi-cone-striped display-4 text-warning d-block mb-3"></i>
+                <h5 class="mb-2">¡Estamos trabajando en nuevas funciones para vos!</h5>
+                <p>Muy pronto tendrás acceso a nuevas herramientas desde este panel.</p>
+            </div>
+        </div>
+        {% endif %}
         <!-- Registrar Paciente -->
         <!-- <div class="col-md-4 mb-4">
             <div class="card shadow rounded-4 h-100 border-0">
@@ -55,7 +69,7 @@
         </div> -->
 
         <!-- Cerrar sesión -->
-        <div class="col-md-4 mb-4">
+        <!-- <div class="col-md-4 mb-4">
             <div class="card shadow rounded-4 h-100 border-0 text-center p-3">
                 <i class="bi bi-box-arrow-right display-4 icon-peligro mb-3"></i>
                 <h5 class="card-title">Cerrar Sesión</h5>
@@ -66,7 +80,7 @@
                 <a href="#" class="btn-personal btn-peligro w-100"
                    onclick="document.getElementById('logout-form').submit();">Cerrar Sesión</a>
             </div>
-        </div>
+        </div> -->
     </div>
 </div>
 <!-- Modal para registrar orden -->
