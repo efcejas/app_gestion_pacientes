@@ -26,7 +26,7 @@ class OrdenesDelMedicoListView(LoginRequiredMixin, UserPassesTestMixin, ListView
     model = OrdenMedica
     template_name = 'control_ordenes/lista_ordenes.html'
     context_object_name = 'ordenes'
-    ordering = ['-fecha_emision']
+    ordering = ['fecha_emision']
 
     def get_queryset(self):
         return OrdenMedica.objects.filter(medico=self.request.user)

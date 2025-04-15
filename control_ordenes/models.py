@@ -20,8 +20,8 @@ class OrdenMedica(models.Model):
     )
     fecha_emision = models.DateField(default=timezone.now)
     dias_validez = models.IntegerField(
-        choices=[(30, '30 días'), (60, '60 días')],
-        default=30,
+        choices=[(30, '30 días'), (60, '60 días'), (90, '90 días')],
+        default=90,
         verbose_name="Válido por"
     )
 
