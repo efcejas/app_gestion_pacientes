@@ -29,7 +29,10 @@ class OrdenesDelMedicoListView(LoginRequiredMixin, UserPassesTestMixin, ListView
     ordering = ['fecha_emision']
 
     def get_queryset(self):
-        return OrdenMedica.objects.filter(medico=self.request.user)
+        return sorted(
+            OrdenMedica.objects.filter(medico=self.request.user),
+            key=lambda orden: orden.dias_restantes
+        )
 
     def test_func(self):
         return self.request.user.rol == 'medico'
