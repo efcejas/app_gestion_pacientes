@@ -150,9 +150,11 @@
 
 <script>
     let ordenIdSeleccionada = null; // Variable para almacenar el ID de la orden seleccionada
+    let checkboxSeleccionado = null; // Variable para almacenar el checkbox seleccionado
 
     function abrirModalConfirmacion(ordenId) {
         ordenIdSeleccionada = ordenId; // Guardar el ID de la orden seleccionada
+        checkboxSeleccionado = document.getElementById(`renovada-${ordenId}`); // Guardar el checkbox seleccionado
         const modal = new bootstrap.Modal(document.getElementById('modalConfirmarRenovacion'));
         modal.show();
     }
@@ -161,6 +163,14 @@
         if (ordenIdSeleccionada !== null) {
             marcarRenovada(ordenIdSeleccionada, true); // Llamar a la función para marcar como renovada
             ordenIdSeleccionada = null; // Reiniciar la variable
+        }
+    });
+
+    // Evento para cancelar y destildar el checkbox
+    document.querySelector('.btn-cancelar').addEventListener('click', function () {
+        if (checkboxSeleccionado) {
+            checkboxSeleccionado.checked = false; // Destildar el checkbox
+            checkboxSeleccionado = null; // Reiniciar la variable
         }
     });
 
