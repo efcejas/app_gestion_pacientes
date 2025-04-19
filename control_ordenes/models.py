@@ -24,6 +24,7 @@ class OrdenMedica(models.Model):
         default=90,
         verbose_name="Válido por"
     )
+    renovada = models.BooleanField(default=False, verbose_name="¿Renovada?")
 
     def fecha_vencimiento(self):
         return self.fecha_emision + timedelta(days=self.dias_validez)

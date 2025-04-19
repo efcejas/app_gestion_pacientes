@@ -5,8 +5,10 @@
 <div class="container mt-5">
     <h2 class="mb-4 text-center">Órdenes Médicas Registradas</h2>
 
+    {# Sección de órdenes vigentes no renovadas #}
     {% if ordenes %}
-    <div class="table-responsive">
+    <h5 class="mb-3 text-success">Activas / Pendientes de Renovación</h5>
+    <div class="table-responsive" style="max-height: 500px; overflow-y: auto; border-radius: 1rem;">
         <table class="table table-striped align-middle shadow-sm rounded-3 overflow-hidden">
             <thead class="table-dark">
                 <tr>
@@ -43,6 +45,7 @@
                             {% endif %}
                         </a>
                     </th>
+                    <th>Renovada</th>
                 </tr>
             </thead>
             <tbody>
@@ -66,14 +69,56 @@
                             {% endif %}
                         </small>
                     </td>
+                    <td>
+                        <small class="form-label mb-0 me-2 text-muted">Seleccionar si se renovó</small>
+                        <input type="checkbox"
+                               id="renovada-{{ orden.id }}"
+                               class="form-check-input"
+                               {% if orden.renovada %}checked disabled{% endif %}
+                               onchange="abrirModalConfirmacion({{ orden.id }})">
+                    </td>
                 </tr>
                 {% endfor %}
             </tbody>
         </table>
     </div>
     {% else %}
-    <div class="alert alert-info text-center" role="alert">
-        Aún no registraste ninguna orden médica.
+    <div class="alert alert-info text-center mt-3" role="alert">
+        <strong>No hay registros actuales de órdenes médicas.</strong><br>
+        Puedes crear una nueva orden médica desde el menú principal.
+    </div>
+    {% endif %}
+
+    {# Sección de historial: órdenes marcadas como renovadas #}
+    {% if ordenes_renovadas %}
+    <h5 class="mb-3 text-muted">Historial de Órdenes Renovadas</h5>
+    <div class="table-responsive mt-2" style="max-height: 400px; overflow-y: auto; border-radius: 1rem;">
+        <table class="table table-striped align-middle shadow-sm rounded-3 overflow-hidden">
+            <thead class="table-dark">
+                <tr>
+                    <th class="ps-3">Identificador</th>
+                    <th>Fecha de emisión</th>
+                    <th>Fecha de vencimiento</th>
+                    <th>Estado al renovar</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for orden in ordenes_renovadas %}
+                <tr>
+                    <td class="ps-3">{{ orden.identificador_paciente }}</td>
+                    <td>{{ orden.fecha_emision|date:"d/m/Y" }}</td>
+                    <td>{{ orden.fecha_vencimiento|date:"d/m/Y" }}</td>
+                    <td>
+                        {% if orden.dias_restantes < 0 %}
+                            <span class="badge bg-danger"><i class="bi bi-clock-history"></i> Renovada vencida</span>
+                        {% else %}
+                            <span class="badge bg-success"><i class="bi bi-check-circle"></i> Renovada a tiempo</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
     </div>
     {% endif %}
 
@@ -83,4 +128,64 @@
         </a>
     </div>
 </div>
+
+<!-- Modal de confirmación -->
+<div class="modal fade" id="modalConfirmarRenovacion" tabindex="-1" aria-labelledby="modalConfirmarLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content rounded-4">
+            <div class="modal-header bg-warning-subtle">
+                <h5 class="modal-title" id="modalConfirmarLabel"><i class="bi bi-question-circle"></i> Confirmar acción</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-body">
+                ¿Estás seguro de que querés marcar esta orden como <strong>renovada</strong>?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-personal btn-cancelar" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn-personal btn-secundario" id="btnConfirmarRenovacion">Confirmar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    let ordenIdSeleccionada = null; // Variable para almacenar el ID de la orden seleccionada
+
+    function abrirModalConfirmacion(ordenId) {
+        ordenIdSeleccionada = ordenId; // Guardar el ID de la orden seleccionada
+        const modal = new bootstrap.Modal(document.getElementById('modalConfirmarRenovacion'));
+        modal.show();
+    }
+
+    document.getElementById('btnConfirmarRenovacion').addEventListener('click', function () {
+        if (ordenIdSeleccionada !== null) {
+            marcarRenovada(ordenIdSeleccionada, true); // Llamar a la función para marcar como renovada
+            ordenIdSeleccionada = null; // Reiniciar la variable
+        }
+    });
+
+    function marcarRenovada(ordenId, estado) {
+        fetch(`/control_ordenes/marcar_renovada/${ordenId}/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}',
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ renovada: estado })
+        })
+        .then(response => {
+            if (!response.ok) throw new Error("Error actualizando");
+            return response.json();
+        })
+        .then(data => {
+            if (data.success) {
+                location.reload(); // Recargar la página para reflejar los cambios
+            }
+        })
+        .catch(err => {
+            alert("Ocurrió un error al actualizar.");
+            console.error(err);
+        });
+    }
+</script>
 {% endblock %}
