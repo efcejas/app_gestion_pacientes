@@ -30,11 +30,10 @@
     <nav class="navbar navbar-expand-md navbar-personal shadow-sm">
         <div class="container-fluid">
             <!-- Logo de la Navbar -->
-            <span class="navbar-brand fw-bold">
-                <a class="navbar-brand fw-bold" href="{% url 'home' %}">
-                    <i class="bi bi-hospital"></i> Gestión de pacientes
-                </a>
-            </span>
+            <a class="navbar-brand fw-bold me-0" href="{% url 'home' %}">
+                <img src="{% static 'styles/img/CMIlogo.png' %}" alt="Logo" style="height: 2.5em;">
+            </a>
+            <div class="h4 mb-0 text-white">CMI - Centro Médico Integral</div>
     
             {% if user.is_authenticated %}
             <!-- Botón de Hamburguesa -->
