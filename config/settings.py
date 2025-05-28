@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'usuarios',
     'control_ordenes',
+    'portal_pacientes'
 ]
 
 MIDDLEWARE = [
