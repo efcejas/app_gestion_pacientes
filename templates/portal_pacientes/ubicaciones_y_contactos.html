@@ -1,0 +1,43 @@
+{% extends "base_pacientes.html" %}
+{% load static %}
+{% block title %}Ubicación y Contacto{% endblock %}
+
+{% block content %}
+<div class="container text-f2">
+    <!-- Encabezado -->
+    <div class="row justify-content-center align-items-center pt-4 mb-1">
+        <div class="col-12 col-md-auto text-center mb-2 mb-md-0">
+            <img src="{% static 'img/CMIlogo.png' %}" alt="Logo CMI" style="max-width: 120px;">
+        </div>
+        <div class="col text-center text-md-start">
+            <h2 class="mb-0 text-f2">Ubicación y Contacto</h2>
+        </div>
+    </div>
+
+    <!-- Card principal -->
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card bg-transparent border-light rounded-4 p-0 mb-4">
+                <div class="card-body text-center text-f2">
+                    <div class="rounded overflow-hidden mb-3">
+                        <iframe
+                            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3282.690325742985!2d-58.44445682425893!3d-34.63626305995643!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x95bccb74787f15b7%3A0x6aa8b9f389ba7349!2sHospital%20Durand!5e0!3m2!1ses-419!2sar!4v1717106901234"
+                            width="100%" height="200" style="border:0;" allowfullscreen="" loading="lazy"
+                            referrerpolicy="no-referrer-when-downgrade"></iframe>
+                    </div>
+                    <p class="card-text mb-2"><strong>Dirección:</strong> Av. Cabildo 1234, Belgrano, CABA</p>
+                    <p class="card-text mb-2"><strong>Teléfono:</strong> (011) 4789-0001</p>
+                    <p class="card-text mb-1"><strong>Email:</strong> contacto@cmibelgrano.com.ar</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Botón de volver -->
+    <div class="text-center mb-4">
+        <a href="{% url 'home_pacientes' %}" class="btn btn-pacientes w-auto py-3">
+            Volver al inicio
+        </a>
+    </div>
+</div>
+{% endblock %}
