@@ -1,0 +1,60 @@
+body {
+    position: relative;
+    min-height: 100vh;
+    margin: 0;
+}
+
+body::before {
+    content: "";
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    z-index: -1;
+    background-image: 
+        linear-gradient(rgba(70, 114, 163, 0.6), rgba(70, 114, 163, 0.6)),
+        url("/static/img/CMIdos.jpeg");
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+    filter: blur(6px) brightness(0.9);
+    opacity: 0.9;
+    transform: scale(1.05);
+    background-blend-mode: multiply;
+}
+
+.text-f2 {
+    color: #ffffff !important;
+}
+
+/* ...existing code... */
+
+.btn-pacientes {
+    background-color: #6E8FB5;
+    color: #F2F2F2;
+    border: none;
+    border-radius: 1.8rem;
+    padding: 0.75rem 2rem;
+    font-weight: 600;
+    font-size: 1.1rem;
+    box-shadow: 0 2px 8px rgba(70, 114, 163, 0.08);
+    transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+}
+
+.btn-pacientes:hover,
+.btn-pacientes:focus {
+    background-color: #3BB9FF; /* Azul logo al pasar el mouse */
+    color: #fff;
+    box-shadow: 0 4px 16px rgba(62, 137, 255, 0.15);
+    outline: none;
+}
+
+.btn-pacientes:active {
+    background-color: #3CC99C; /* Verde logo al hacer click */
+    color: #fff;
+}
+
+.btn-pacientes:disabled {
+    background-color: #bfc9d9;
+    color: #eaeaea;
+    cursor: not-allowed;
+    opacity: 0.7;
+}

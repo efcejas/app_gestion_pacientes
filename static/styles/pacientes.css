@@ -23,6 +23,7 @@ body::before {
 
 .text-f2 {
     color: #ffffff !important;
+    font-weight: 600;
 }
 
 /* ...existing code... */
