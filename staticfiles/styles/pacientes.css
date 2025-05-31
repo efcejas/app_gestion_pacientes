@@ -23,12 +23,11 @@ body::before {
 
 .text-f2 {
     color: #ffffff !important;
+    font-weight: 600;
 }
 
-/* ...existing code... */
-
 .btn-pacientes {
-    background-color: #6E8FB5;
+    background-color: #11B4D9; /* Azul logo */
     color: #F2F2F2;
     border: none;
     border-radius: 1.8rem;
@@ -41,7 +40,7 @@ body::before {
 
 .btn-pacientes:hover,
 .btn-pacientes:focus {
-    background-color: #3BB9FF; /* Azul logo al pasar el mouse */
+    background-color: #12A697; /* Verde logo al pasar el mouse */
     color: #fff;
     box-shadow: 0 4px 16px rgba(62, 137, 255, 0.15);
     outline: none;
