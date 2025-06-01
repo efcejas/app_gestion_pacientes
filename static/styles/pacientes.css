@@ -1,31 +1,52 @@
+/*============================
+    Estilos de base
+    =========================== */
+
+/*Restablecer y estilos del cuerpo base */
 body {
-    position: relative;
-    min-height: 100vh;
-    margin: 0;
+     position: relative;
+     min-height: 100vh;
+     margin: 0;
+     font-family: source-sans-3, sans-serif;
+     font-weight: 400;
+     font-style: normal; 
 }
 
+/*Estilos de encabezado */
+h1, h2, h3, h4, h5 {
+     font-family: source-sans-3, sans-serif;
+     font-weight: 900;
+     font-style: normal;
+     color: #E9F0F2;
+}
+
+/* ============================
+    Estilos de fondo
+    =========================== */
+
+/* Imagen de fondo borrosa con superposición */
 body::before {
-    content: "";
-    position: fixed;
-    top: 0; left: 0; right: 0; bottom: 0;
-    z-index: -1;
-    background-image: 
-        linear-gradient(rgba(70, 114, 163, 0.6), rgba(70, 114, 163, 0.6)),
-        url("/static/img/CMIdos.jpeg");
-    background-size: cover;
-    background-repeat: no-repeat;
-    background-position: center;
-    filter: blur(6px) brightness(0.9);
-    opacity: 0.9;
-    transform: scale(1.05);
-    background-blend-mode: multiply;
+     content: "";
+     position: fixed;
+     top: 0; left: 0; right: 0; bottom: 0;
+     z-index: -1;
+     background-image: 
+          linear-gradient(rgba(70, 114, 163, 0.6), rgba(70, 114, 163, 0.6)),
+          url("/static/img/CMIdos.jpeg");
+     background-size: cover;
+     background-repeat: no-repeat;
+     background-position: center;
+     filter: blur(6px) brightness(0.9);
+     opacity: 0.9;
+     transform: scale(1.05);
+     background-blend-mode: multiply;
 }
 
-.text-f2 {
-    color: #ffffff !important;
-    font-weight: 600;
-}
+/*============================
+    Estilos de botones
+    =========================== */
 
+/*Botón Pacientes primarios */
 .btn-pacientes {
     background-color: #11B4D9; /* Azul logo */
     color: #F2F2F2;
@@ -38,6 +59,7 @@ body::before {
     transition: background 0.2s, color 0.2s, box-shadow 0.2s;
 }
 
+/*Button Hover y Focus State */
 .btn-pacientes:hover,
 .btn-pacientes:focus {
     background-color: #12A697; /* Verde logo al pasar el mouse */
@@ -46,6 +68,7 @@ body::before {
     outline: none;
 }
 
+/*Estado activo del botón */
 .btn-pacientes:active {
     background-color: #3CC99C; /* Verde logo al hacer click */
     color: #fff;
@@ -56,4 +79,102 @@ body::before {
     color: #eaeaea;
     cursor: not-allowed;
     opacity: 0.7;
+}
+
+/* Botón variante secundaria: azul oscuro */
+.btn-pacientes-secundario {
+    background-color: #1B80BF; /* Azul oscuro */
+    color: #E9F0F2;
+    border: none;
+    border-radius: 1.8rem;
+    padding: 0.75rem 2rem;
+    font-weight: 600;
+    font-size: 1.1rem;
+    box-shadow: 0 2px 8px rgba(27, 128, 191, 0.08);
+    transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+}
+
+.btn-pacientes-secundario:hover,
+.btn-pacientes-secundario:focus {
+    background-color: #11B4D9; /* Azul logo */
+    color: #fff;
+    box-shadow: 0 4px 16px rgba(27, 128, 191, 0.15);
+    outline: none;
+}
+
+.btn-pacientes-secundario:active {
+    background-color: #12A697; /* Verde logo */
+    color: #fff;
+}
+
+.btn-pacientes-secundario:disabled {
+    background-color: #bfc9d9;
+    color: #eaeaea;
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+/* Botón variante terciaria: fondo claro, texto oscuro */
+.btn-pacientes-terciario {
+    background-color: #E9F0F2; /* Fondo claro */
+    color: #0D0D0D; /* Texto oscuro */
+    border: none;
+    border-radius: 1.8rem;
+    padding: 0.75rem 2rem;
+    font-weight: 600;
+    font-size: 1.1rem;
+    box-shadow: 0 2px 8px rgba(27, 128, 191, 0.08);
+    transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+}
+
+.btn-pacientes-terciario:hover,
+.btn-pacientes-terciario:focus {
+    background-color: #0D0D0D; /* Fondo oscuro */
+    color: #E9F0F2; /* Texto claro */
+    box-shadow: 0 4px 16px rgba(27, 128, 191, 0.15);
+    outline: none;
+}
+
+.btn-pacientes-terciario:active {
+    background-color: #1B80BF; /* Azul oscuro */
+    color: #E9F0F2; /* Texto claro */
+}
+
+.btn-pacientes-terciario:disabled {
+    background-color: #bfc9d9;
+    color: #eaeaea;
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+/*============================
+    Estilos de tarjetas
+    =========================== */
+
+/*Tarjeta de fondo blanca */
+.card.bg-white {
+     border-radius: 1.5rem;
+     box-shadow: 0 4px 24px rgba(27, 128, 191, 0.10);
+     transition: transform 0.3s, box-shadow 0.3s;
+}
+
+/*Efecto de la tarjeta de la tarjeta */
+.card.bg-white:hover {
+     transform: translateY(-8px) scale(1.03);
+     box-shadow: 0 8px 32px rgba(27, 128, 191, 0.18);
+}
+
+/*============================
+    Animaciones
+    =========================== */
+
+/*Fade en animación up */
+@keyframes fadeInUp {
+     from { opacity: 0; transform: translateY(30px);}
+     to { opacity: 1; transform: translateY(0);}
+}
+
+/*Clase de utilidad de animación */
+.animate-fadein {
+     animation: fadeInUp 0.8s ease;
 }

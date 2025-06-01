@@ -3,46 +3,126 @@
 {% block title %}Portal de Pacientes{% endblock %}
 
 {% block content %}
-<div class="container">
-    <div class="row justify-content-center pt-4">
-        <div class="col-auto text-center">
-            <img src="{% static 'img/CMIlogo.png' %}" alt="Logo CMI" class="mb-0" style="max-width: 180px;">
-        </div>
-    </div>
-    <h2 class="text-center text-f2 mb-5">CENTRO MÉDICO INTEGRAL BELGRANO</h2>
-    <div class="row justify-content-center mb-4 g-2">
-        <div class="col-12 col-md-auto mb-2">
-            <a href="{% url 'quienes_somos' %}" class="btn btn-pacientes px-4 py-3 w-100 w-md-auto">
+<!-- Sección Portada -->
+<section class="container py-5 vh-100 d-flex flex-column justify-content-center align-items-center text-center">
+    <img src="{% static 'img/CMIlogo.png' %}" alt="Logo CMI" style="max-width: 160px;" class="mb-3 animate-fadein">
+    <h1 class="fw-bold text-f2 mb-5 animate-fadein">Centro Médico Integral Belgrano</h1>
+    <div class="row justify-content-center g-3 animate-fadein">
+        <div class="col-12 col-md-auto">
+            <a href="#quienes-somos" class="btn btn-pacientes px-4 py-3 w-100 w-md-auto">
                 <i class="bi bi-people-fill me-2"></i>Quiénes Somos
             </a>
         </div>
-        <div class="col-12 col-md-auto mb-2">
-            <a href="{% url 'ubicaciones_y_contactos' %}" class="btn btn-pacientes px-4 py-3 w-100 w-md-auto">
-                <i class="bi bi-geo-alt-fill me-2"></i>Ubicación y Contactos
+        <div class="col-12 col-md-auto">
+            <a href="#ubicacion-y-contacto" class="btn btn-pacientes px-4 py-3 w-100 w-md-auto">
+                <i class="bi bi-geo-alt-fill me-2"></i>Ubicación y Contacto
             </a>
         </div>
     </div>
-    <div class="container my-4">
-        <div class="row justify-content-center">
-            <div class="col-lg-8">
-                <div class="ratio ratio-16x9">
-                    <iframe 
-                        src="https://www.youtube.com/embed/FAF5-nb1PNY?start=3"
-                        title="Video institucional CMI"
-                        frameborder="0"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        referrerpolicy="strict-origin-when-cross-origin"
-                        allowfullscreen
-                        style="border-radius: 12px;">
-                    </iframe>
+</section>
+
+<!-- Sección Quiénes Somos -->
+<section class="container-fluid py-5" id="quienes-somos" style="background-color: #11B4D9;">
+    <div class="container text-center">
+        <h2 class="text-white mb-5 animate-fadein">Quiénes Somos</h2>
+        <div class="row g-4">
+            <div class="col-md-4 d-flex justify-content-center">
+                <div class="card bg-white border-0 shadow-sm h-100 animate-fadein">
+                    <img src="{% static 'img/GrupoMédico.jpeg' %}" alt="Equipo médico" class="card-img-top"
+                         style="max-height: 160px; object-fit: cover;">
+                    <div class="card-body text-f2 text-center">
+                        <p class="card-text">En el Centro Médico Integral Belgrano, nos dedicamos a brindar atención
+                            médica de calidad, con un equipo de profesionales comprometidos con la salud y el bienestar
+                            de nuestros pacientes.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 d-flex justify-content-center">
+                <div class="card bg-white border-0 shadow-sm h-100 animate-fadein">
+                    <img src="{% static 'img/CentroTecnología.jpeg' %}" alt="Instalaciones modernas" class="card-img-top"
+                         style="max-height: 160px; object-fit: cover;">
+                    <div class="card-body text-f2 text-center">
+                        <p class="card-text">Ofrecemos atención médica integral en modernas instalaciones, con un equipo
+                            multidisciplinario comprometido con la calidad y el bienestar de nuestros pacientes.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 d-flex justify-content-center">
+                <div class="card bg-white border-0 shadow-sm h-100 animate-fadein">
+                    <img src="{% static 'img/PacienteAtención.jpeg' %}" alt="Atención personalizada" class="card-img-top"
+                         style="max-height: 160px; object-fit: cover;">
+                    <div class="card-body text-f2 text-center">
+                        <p class="card-text">En CMI Belgrano, valoramos la confianza de nuestros pacientes y ofrecemos
+                            atención médica de excelencia en un ambiente profesional y acogedor.</p>
+                    </div>
                 </div>
             </div>
         </div>
-        <div class="row justify-content-center mt-3">
-            <div class="col-lg-8 text-center">
-                <p class="text-f2 mb-0">Conozca más sobre nuestro centro médico en este video institucional.</p>
-            </div>
+        <div class="text-center mt-4">
+            <a href="{% url 'home_pacientes' %}" class="btn btn-pacientes-terciario w-auto py-3">
+                Volver al inicio
+            </a>
         </div>
     </div>
-</div>
+</section>
+
+<!-- Sección Ubicación y Contacto -->
+<section class="container-fluid py-5" id="ubicacion-y-contacto" style="background-color: #12A697;">
+    <div class="container px-4">
+        <h2 class="text-center text-white mb-5 animate-fadein">Ubicación y Contacto</h2>
+        <div class="row g-4 justify-content-center">
+            <!-- Mapa y Datos -->
+            <div class="col-12 col-lg-6 animate-fadein">
+                <div class="card border-0 shadow rounded-4 h-100">
+                    <div class="ratio ratio-4x3 rounded-top-4 overflow-hidden">
+                        <iframe
+                            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3285.453380568691!2d-58.45478777439494!3d-34.56739297296733!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x95bcb5d0056d2e23%3A0x9af6da69964d7822!2sVirrey%20Olaguer%20y%20Feli%C3%BA%202462%2C%20C1426EBB%20Cdad.%20Aut%C3%B3noma%20de%20Buenos%20Aires!5e0!3m2!1ses!2sar!4v1748647837835!5m2!1ses!2sar"
+                            width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy"
+                            referrerpolicy="no-referrer-when-downgrade"></iframe>
+                    </div>
+                    <div class="card-body text-center text-dark">
+                        <p class="mb-2"><strong>Dirección:</strong> Virrey Olaguer 2462 8a, Belgrano, CABA</p>
+                        <p class="mb-2"><strong>Teléfono:</strong> (011) 4789-0001</p>
+                        <p class="mb-0"><strong>Email:</strong> contacto@cmi.com.ar</p>
+                    </div>
+                </div>
+            </div>
+            <!-- Formulario -->
+            <div class="col-12 col-lg-6 animate-fadein">
+                <div class="card border-0 shadow rounded-4 h-100">
+                    <div class="card-body">
+                        <h5 class="text-center mb-4" style="color: #1B80BF;">Formulario de Contacto</h5>
+                        <form>
+                            <div class="mb-3">
+                                <label for="nombre" class="form-label">Nombre</label>
+                                <input type="text" class="form-control form-control-sm rounded-pill" id="nombre"
+                                       placeholder="Ingrese su nombre">
+                            </div>
+                            <div class="mb-3">
+                                <label for="email" class="form-label">Correo electrónico</label>
+                                <input type="email" class="form-control form-control-sm rounded-pill" id="email"
+                                       placeholder="nombre@ejemplo.com">
+                            </div>
+                            <div class="mb-3">
+                                <label for="mensaje" class="form-label">Mensaje</label>
+                                <textarea class="form-control form-control-sm rounded-3" id="mensaje" rows="4"
+                                          placeholder="Escriba su mensaje"></textarea>
+                            </div>
+                            <div class="d-grid">
+                                <button type="submit" class="btn btn-pacientes">Enviar</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Botón volver -->
+        <div class="text-center mt-5">
+            <a href="{% url 'home_pacientes' %}" class="btn btn-pacientes-secundario w-auto py-3">
+                Volver al inicio
+            </a>
+        </div>
+    </div>
+</section>
 {% endblock %}
+
