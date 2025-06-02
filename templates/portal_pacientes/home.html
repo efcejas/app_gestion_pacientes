@@ -4,7 +4,7 @@
 
 {% block content %}
 <!-- Sección Portada -->
-<section class="container py-5 vh-100 d-flex flex-column justify-content-center align-items-center text-center">
+<section class="container min-vh-100 d-flex flex-column justify-content-center align-items-center text-center" style="padding-top: 3rem; padding-bottom: 3rem;">
     <img src="{% static 'img/CMIlogo.png' %}" alt="Logo CMI" style="max-width: 160px;" class="mb-3 animate-fadein">
     <h1 class="fw-bold text-f2 mb-5 animate-fadein">Centro Médico Integral Belgrano</h1>
     <div class="row justify-content-center g-3 animate-fadein">
@@ -24,10 +24,10 @@
 <!-- Sección Quiénes Somos -->
 <section class="container-fluid py-5" id="quienes-somos" style="background-color: #11B4D9;">
     <div class="container text-center">
-        <h2 class="text-white mb-5 animate-fadein">Quiénes Somos</h2>
+        <h2 class="text-white mb-5">Quiénes Somos</h2>
         <div class="row g-4">
             <div class="col-md-4 d-flex justify-content-center">
-                <div class="card bg-white border-0 shadow-sm h-100 animate-fadein">
+                <div class="card bg-white border-0 shadow-sm h-100">
                     <img src="{% static 'img/GrupoMédico.jpeg' %}" alt="Equipo médico" class="card-img-top"
                          style="max-height: 160px; object-fit: cover;">
                     <div class="card-body text-f2 text-center">
@@ -38,7 +38,7 @@
                 </div>
             </div>
             <div class="col-md-4 d-flex justify-content-center">
-                <div class="card bg-white border-0 shadow-sm h-100 animate-fadein">
+                <div class="card bg-white border-0 shadow-sm h-100">
                     <img src="{% static 'img/CentroTecnología.jpeg' %}" alt="Instalaciones modernas" class="card-img-top"
                          style="max-height: 160px; object-fit: cover;">
                     <div class="card-body text-f2 text-center">
@@ -48,7 +48,7 @@
                 </div>
             </div>
             <div class="col-md-4 d-flex justify-content-center">
-                <div class="card bg-white border-0 shadow-sm h-100 animate-fadein">
+                <div class="card bg-white border-0 shadow-sm h-100">
                     <img src="{% static 'img/PacienteAtención.jpeg' %}" alt="Atención personalizada" class="card-img-top"
                          style="max-height: 160px; object-fit: cover;">
                     <div class="card-body text-f2 text-center">
@@ -69,10 +69,10 @@
 <!-- Sección Ubicación y Contacto -->
 <section class="container-fluid py-5" id="ubicacion-y-contacto" style="background-color: #12A697;">
     <div class="container px-4">
-        <h2 class="text-center text-white mb-5 animate-fadein">Ubicación y Contacto</h2>
+        <h2 class="text-center text-white mb-5">Ubicación y Contacto</h2>
         <div class="row g-4 justify-content-center">
             <!-- Mapa y Datos -->
-            <div class="col-12 col-lg-6 animate-fadein">
+            <div class="col-12 col-lg-6">
                 <div class="card border-0 shadow rounded-4 h-100">
                     <div class="ratio ratio-4x3 rounded-top-4 overflow-hidden">
                         <iframe
@@ -88,7 +88,7 @@
                 </div>
             </div>
             <!-- Formulario -->
-            <div class="col-12 col-lg-6 animate-fadein">
+            <div class="col-12 col-lg-6">
                 <div class="card border-0 shadow rounded-4 h-100">
                     <div class="card-body">
                         <h5 class="text-center mb-4" style="color: #1B80BF;">Formulario de Contacto</h5>
@@ -125,4 +125,3 @@
     </div>
 </section>
 {% endblock %}
-

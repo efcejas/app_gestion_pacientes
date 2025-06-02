@@ -3,6 +3,10 @@
     =========================== */
 
 /*Restablecer y estilos del cuerpo base */
+html {
+    scroll-behavior: smooth;
+}
+
 body {
      position: relative;
      min-height: 100vh;
