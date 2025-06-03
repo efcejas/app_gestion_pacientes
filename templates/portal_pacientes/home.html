@@ -4,7 +4,7 @@
 
 {% block content %}
 <!-- Sección Portada -->
-<section class="container min-vh-100 d-flex flex-column justify-content-center align-items-center text-center" style="padding-top: 3rem; padding-bottom: 3rem;">
+<section class="container min-vh-100 d-flex flex-column justify-content-center align-items-center text-center" style="padding-top: 3rem; padding-bottom: 3rem;" id="portada-portal-pacientes">
     <img src="{% static 'img/CMIlogo.png' %}" alt="Logo CMI" style="max-width: 160px;" class="mb-3 animate-fadein">
     <h1 class="fw-bold text-f2 mb-5 animate-fadein">Centro Médico Integral Belgrano</h1>
     <div class="row justify-content-center g-3 animate-fadein">
@@ -59,7 +59,7 @@
             </div>
         </div>
         <div class="text-center mt-4">
-            <a href="{% url 'home_pacientes' %}" class="btn btn-pacientes-terciario w-auto py-3">
+            <a href="#portada-portal-pacientes" class="btn btn-pacientes-terciario w-auto py-3">
                 Volver al inicio
             </a>
         </div>
@@ -118,7 +118,7 @@
         </div>
         <!-- Botón volver -->
         <div class="text-center mt-5">
-            <a href="{% url 'home_pacientes' %}" class="btn btn-pacientes-secundario w-auto py-3">
+            <a href="#portada-portal-pacientes" class="btn btn-pacientes-secundario w-auto py-3">
                 Volver al inicio
             </a>
         </div>
