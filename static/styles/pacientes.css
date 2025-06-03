@@ -35,7 +35,7 @@ body::before {
      top: 0; left: 0; right: 0; bottom: 0;
      z-index: -1;
      background-image: 
-          linear-gradient(rgba(70, 114, 163, 0.6), rgba(70, 114, 163, 0.6)),
+          linear-gradient(rgba(0, 14, 34, 0.6), rgba(70, 114, 163, 0.6)),
           url("https://res.cloudinary.com/hrhwdlau3/image/upload/v1748978501/CMIdos_n3kwxl.jpg");
      background-size: cover;
      background-repeat: no-repeat;
