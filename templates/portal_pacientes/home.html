@@ -22,9 +22,9 @@
 </section>
 
 <!-- Sección Quiénes Somos -->
-<section class="container-fluid py-5" id="quienes-somos" style="background-color: #E9F0F2;">
-    <div class="container text-center">
-        <h2 class="mb-5" style="color: #012E6B">Quiénes Somos</h2>
+<section class="container-fluid py-5 min-vh-100" id="quienes-somos" style="background-color: #E9F0F2;">
+    <div class="container text-star">
+        <h1 class="mb-3" style="color: #012E6B">Quiénes Somos</h1>
         <div class="row g-4">
             <div class="col-md-4 d-flex justify-content-center">
                 <div class="card bg-white border-0 shadow-sm h-100">
@@ -67,48 +67,51 @@
 </section>
 
 <!-- Sección Ubicación y Contacto -->
-<section class="container-fluid py-5" id="ubicacion-y-contacto" style="background-color: #12A697;">
-    <div class="container px-4">
-        <h2 class="text-center text-white mb-5">Ubicación y Contacto</h2>
-        <div class="row g-4 justify-content-center">
-            <!-- Mapa y Datos -->
-            <div class="col-12 col-lg-6">
-                <div class="card border-0 shadow rounded-4 h-100">
-                    <div class="ratio ratio-4x3 rounded-top-4 overflow-hidden">
+<section class="container-fluid min-vh-100 py-5" id="ubicacion-y-contacto" style="background-color: #12A697;">
+    <div class="container">
+        <h2 class="mb-3">Ubicación y Contacto</h2>
+        <div class="row g-4">
+            <div class="col-12 col-md-6">
+                <div class="card border-0 shadow h-100">
+                    <div class="card-header ratio ratio-21x9 overflow-hidden">
                         <iframe
                             src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3285.453380568691!2d-58.45478777439494!3d-34.56739297296733!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x95bcb5d0056d2e23%3A0x9af6da69964d7822!2sVirrey%20Olaguer%20y%20Feli%C3%BA%202462%2C%20C1426EBB%20Cdad.%20Aut%C3%B3noma%20de%20Buenos%20Aires!5e0!3m2!1ses!2sar!4v1748647837835!5m2!1ses!2sar"
                             width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy"
                             referrerpolicy="no-referrer-when-downgrade"></iframe>
                     </div>
-                    <div class="card-body text-center text-dark">
+                    <div class="card-body" style="color: #012E6B">
+                        <h4 class="card-title mb-3">Donde encontrarnos</h4>
                         <p class="mb-2"><strong>Dirección:</strong> Virrey Olaguer 2462 8a, Belgrano, CABA</p>
                         <p class="mb-2"><strong>Teléfono:</strong> (011) 4789-0001</p>
                         <p class="mb-0"><strong>Email:</strong> contacto@cmi.com.ar</p>
                     </div>
                 </div>
             </div>
-            <!-- Formulario -->
-            <div class="col-12 col-lg-6">
-                <div class="card border-0 shadow rounded-4 h-100">
-                    <div class="card-body">
-                        <h5 class="text-center mb-4" style="color: #1B80BF;">Formulario de Contacto</h5>
+            <div class="col-12 col-md-6">
+                <div class="card border-0 shadow">
+                    <div class="card-body" style="color: #012E6B">
+                        <h4 class="card-title mb-3">Deja tu mensaje</h4>
+                        <p class="card-text">Si tienes alguna consulta o necesitas más información, no dudes en
+                            contactarnos. Estamos aquí para ayudarte.</p>
                         <form>
-                            <div class="mb-3">
-                                <label for="nombre" class="form-label">Nombre</label>
-                                <input type="text" class="form-control form-control-sm rounded-pill" id="nombre"
-                                       placeholder="Ingrese su nombre">
-                            </div>
-                            <div class="mb-3">
-                                <label for="email" class="form-label">Correo electrónico</label>
-                                <input type="email" class="form-control form-control-sm rounded-pill" id="email"
-                                       placeholder="nombre@ejemplo.com">
+                            <div class="d-flex flex-column flex-md-row gap-3 mb-2">
+                                <div class="mb-3">
+                                    <label for="nombre" class="form-label">Nombre</label>
+                                    <input type="text" class="form-control form-control-sm" id="nombre"
+                                           placeholder="Ingrese su nombre">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="email" class="form-label">Correo electrónico</label>
+                                    <input type="email" class="form-control form-control-sm" id="email"
+                                           placeholder="nombre@ejemplo.com">
+                                </div>
                             </div>
                             <div class="mb-3">
                                 <label for="mensaje" class="form-label">Mensaje</label>
-                                <textarea class="form-control form-control-sm rounded-3" id="mensaje" rows="4"
+                                <textarea class="form-control form-control-sm" id="mensaje" rows="4"
                                           placeholder="Escriba su mensaje"></textarea>
                             </div>
-                            <div class="d-grid">
+                            <div class="text-end">
                                 <button type="submit" class="btn btn-pacientes">Enviar</button>
                             </div>
                         </form>
@@ -116,12 +119,11 @@
                 </div>
             </div>
         </div>
-        <!-- Botón volver -->
-        <div class="text-center mt-5">
-            <a href="#portada-portal-pacientes" class="btn btn-pacientes-secundario w-auto py-3">
-                Volver al inicio
-            </a>
-        </div>
+    </div>
+    <div class="text-center mt-4">
+        <a href="#portada-portal-pacientes" class="btn btn-pacientes-secundario w-auto py-3">
+            Volver al inicio
+        </a>
     </div>
 </section>
 {% endblock %}
