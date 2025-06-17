@@ -1,52 +1,8 @@
-{% extends "base_pacientes.html" %}
-{% load static %}
+{% extends "base_pacientes_dos.html" %}
 
 {% block title %}Quiénes Somos{% endblock %}
 
 {% block content %}
-<div class="container text-f2">
-    <div class="row justify-content-center align-items-center pt-4 mb-1">
-        <div class="col-12 col-md-auto text-center mb-2 mb-md-0">
-            <img src="{% static 'img/CMIlogo.png' %}" alt="Logo CMI" style="max-width: 120px;">
-        </div>
-        <div class="col text-center text-md-start">
-            <h2 class="mb-4 mb-md-0 text-f2">Quiénes Somos</h2>
-        </div>
-    </div>
-    <div class="row">
-        <!-- Columna 1 -->
-        <div class="col-md-4 mb-4 d-flex justify-content-center">
-            <div class="card bg-transparent border-light h-100">
-                <img src="{% static 'img/GrupoMédico.jpeg' %}" alt="Equipo médico" class="card-img-top" style="max-height: 160px; object-fit: cover;">
-                <div class="card-body text-center text-f2">
-                    <p class="card-text">En el Centro Médico Integral Belgrano, nos dedicamos a brindar atención médica de calidad, con un equipo de profesionales comprometidos con la salud y el bienestar de nuestros pacientes.</p>
-                </div>
-            </div>
-        </div>
-        <!-- Columna 2 -->
-        <div class="col-md-4 mb-4 d-flex justify-content-center">
-            <div class="card bg-transparent border-light h-100">
-            <img src="{% static 'img/CentroTecnología.jpeg' %}" alt="Instalaciones modernas" class="card-img-top" style="max-height: 160px; object-fit: cover;">
-            <div class="card-body text-center text-f2">
-                <p class="card-text">Ofrecemos atención médica integral en modernas instalaciones, con un equipo multidisciplinario comprometido con la calidad y el bienestar de nuestros pacientes.</p>
-            </div>
-            </div>
-        </div>
-        <!-- Columna 3 -->
-        <div class="col-md-4 mb-4 d-flex justify-content-center">
-            <div class="card bg-transparent border-light h-100">
-            <img src="{% static 'img/PacienteAtención.jpeg' %}" alt="Atención personalizada" class="card-img-top" style="max-height: 160px; object-fit: cover;">
-            <div class="card-body text-center text-f2">
-                <p class="card-text">En CMI Belgrano, valoramos la confianza de nuestros pacientes y ofrecemos atención médica de excelencia en un ambiente profesional y acogedor.</p>
-            </div>
-            </div>
-        </div>
-    </div>
-</div>
-<div class="text-center mb-4">
-    <a href="{% url 'home_pacientes' %}" class="btn btn-pacientes w-auto py-3">
-        Volver al inicio
-    </a>
-</div>
+Debo ver como desarrollar el contenido de esta sección, por ahora dejo un placeholder.
 {% endblock %}
   
