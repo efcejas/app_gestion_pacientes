@@ -1,4 +1,5 @@
 import json
+from datetime import datetime
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -56,17 +57,19 @@ class OrdenesDelMedicoListView(LoginRequiredMixin, UserPassesTestMixin, ListView
     def test_func(self):
         return self.request.user.rol == 'medico'
 
-
-@login_required
+@csrf_exempt
 @require_POST
-@csrf_exempt  # Solo si no estás usando el CSRF token correctamente en el JS, pero mejor evitarlo si se puede
-def marcar_orden_renovada(request, pk):
+def renovar_orden(request, orden_id):
     try:
-        orden = OrdenMedica.objects.get(pk=pk, medico=request.user)
         data = json.loads(request.body)
-        if data.get("renovada") is True:
-            orden.renovada = True
-            orden.save()
-        return JsonResponse({"success": True})
-    except OrdenMedica.DoesNotExist:
-        return JsonResponse({"success": False, "error": "No autorizado"}, status=403)
+        nueva_fecha_emision = data.get('nueva_fecha_emision')
+        nueva_validez = int(data.get('nueva_validez'))
+
+        orden = OrdenMedica.objects.get(id=orden_id)
+        orden.fecha_emision = datetime.strptime(nueva_fecha_emision, "%Y-%m-%d").date()
+        orden.dias_validez = nueva_validez
+        orden.save()
+
+        return JsonResponse({'success': True})
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': str(e)}, status=400)
