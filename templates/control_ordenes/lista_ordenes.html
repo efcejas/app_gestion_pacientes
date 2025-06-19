@@ -23,8 +23,9 @@
                     <label class="form-label">{{ filtro_form.fecha_vencimiento.label }}</label>
                     {{ filtro_form.fecha_vencimiento }}
                 </div>
-                <div class="col-md-3">
+                <div class="col-md-3 d-flex gap-2">
                     <button type="submit" class="btn btn-primary w-100">Filtrar</button>
+                    <a href="{% url 'control_ordenes:lista_ordenes' %}" class="btn btn-secondary w-100">Limpiar</a>
                 </div>
             </form>
         </div>
