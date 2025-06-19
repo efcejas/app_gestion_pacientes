@@ -14,6 +14,7 @@ from django.views.generic.list import ListView
 from .models import OrdenMedica
 from control_ordenes.forms import OrdenMedicaForm
 
+
 class OrdenMedicaAnonimaCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
     model = OrdenMedica
     form_class = OrdenMedicaForm
@@ -29,13 +30,15 @@ class OrdenMedicaAnonimaCreateView(LoginRequiredMixin, UserPassesTestMixin, Crea
     def test_func(self):
         return self.request.user.rol == 'medico'
 
+
 class OrdenesDelMedicoListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
     model = OrdenMedica
     template_name = 'control_ordenes/lista_ordenes.html'
     context_object_name = 'ordenes'
 
     def get_queryset(self):
-        queryset = OrdenMedica.objects.filter(medico=self.request.user, renovada=False)
+        queryset = OrdenMedica.objects.filter(
+            renovada=False)  # Quita el filtro por médico
 
         sort = self.request.GET.get('sort', 'fecha_vencimiento')
         direction = self.request.GET.get('dir', 'asc')
@@ -48,14 +51,15 @@ class OrdenesDelMedicoListView(LoginRequiredMixin, UserPassesTestMixin, ListView
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        # Agregamos las órdenes renovadas al contexto
+        # Todas las órdenes renovadas, sin filtrar por médico
         context['ordenes_renovadas'] = OrdenMedica.objects.filter(
-            medico=self.request.user, renovada=True
+            renovada=True
         ).order_by('-fecha_emision')
         return context
 
     def test_func(self):
         return self.request.user.rol == 'medico'
+
 
 @csrf_exempt
 @require_POST
@@ -66,7 +70,8 @@ def renovar_orden(request, orden_id):
         nueva_validez = int(data.get('nueva_validez'))
 
         orden = OrdenMedica.objects.get(id=orden_id)
-        orden.fecha_emision = datetime.strptime(nueva_fecha_emision, "%Y-%m-%d").date()
+        orden.fecha_emision = datetime.strptime(
+            nueva_fecha_emision, "%Y-%m-%d").date()
         orden.dias_validez = nueva_validez
         orden.save()
 
