@@ -4,8 +4,31 @@
 {% block content %}
 <div class="container mt-2">
     <h2 class="mb-2 text-center">Órdenes Médicas Registradas</h2>
+
     {% if ordenes %}
     <h5 class="mb-3 text-success">Activas / Pendientes de Renovación</h5>
+    <!-- Formulario de filtro en una tarjeta Bootstrap -->
+    <div class="card mb-4 shadow-sm">
+        <div class="card-body">
+            <form method="get" class="row g-2 align-items-end">
+                <div class="col-md-3">
+                    <label class="form-label">{{ filtro_form.identificador.label }}</label>
+                    {{ filtro_form.identificador }}
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">{{ filtro_form.fecha_emision.label }}</label>
+                    {{ filtro_form.fecha_emision }}
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">{{ filtro_form.fecha_vencimiento.label }}</label>
+                    {{ filtro_form.fecha_vencimiento }}
+                </div>
+                <div class="col-md-3">
+                    <button type="submit" class="btn btn-primary w-100">Filtrar</button>
+                </div>
+            </form>
+        </div>
+    </div>
     <div class="table-responsive" style="max-height: 500px; overflow-y: auto; border-radius: 1rem;">
         <table class="table table-striped align-middle shadow-sm rounded-3 overflow-hidden">
             <thead class="table-dark">

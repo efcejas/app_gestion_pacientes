@@ -94,10 +94,10 @@ h1, h2, h3, h4, h5 {
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
 
-.card:hover {
+/* .card:hover {
     transform: translateY(-4px);
     box-shadow: 0 8px 18px rgba(0, 0, 0, 0.1);
-}
+} */
 
 .bg-personal-success {
     background-color: var(--color-secundario);

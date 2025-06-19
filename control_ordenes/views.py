@@ -12,6 +12,7 @@ from django.views.generic.edit import CreateView
 from django.views.generic.list import ListView
 
 from .models import OrdenMedica
+from .forms import OrdenMedicaFiltroForm
 from control_ordenes.forms import OrdenMedicaForm
 
 
@@ -37,9 +38,26 @@ class OrdenesDelMedicoListView(LoginRequiredMixin, UserPassesTestMixin, ListView
     context_object_name = 'ordenes'
 
     def get_queryset(self):
-        queryset = OrdenMedica.objects.filter(
-            renovada=False)  # Quita el filtro por médico
+        queryset = OrdenMedica.objects.filter(renovada=False)
+        form = OrdenMedicaFiltroForm(self.request.GET)
 
+        if form.is_valid():
+            identificador = form.cleaned_data.get('identificador')
+            fecha_emision = form.cleaned_data.get('fecha_emision')
+            fecha_vencimiento = form.cleaned_data.get('fecha_vencimiento')
+
+            if identificador:
+                queryset = queryset.filter(
+                    identificador_paciente__icontains=identificador)
+            if fecha_emision:
+                queryset = queryset.filter(fecha_emision=fecha_emision)
+            if fecha_vencimiento:
+                # Suponiendo que tienes un método fecha_vencimiento()
+                # Si es un campo, usa queryset.filter(fecha_vencimiento=fecha_vencimiento)
+                queryset = [
+                    o for o in queryset if o.fecha_vencimiento() == fecha_vencimiento]
+
+        # Ordenamiento
         sort = self.request.GET.get('sort', 'fecha_vencimiento')
         direction = self.request.GET.get('dir', 'asc')
         reverse = direction == 'desc'
@@ -51,7 +69,7 @@ class OrdenesDelMedicoListView(LoginRequiredMixin, UserPassesTestMixin, ListView
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        # Todas las órdenes renovadas, sin filtrar por médico
+        context['filtro_form'] = OrdenMedicaFiltroForm(self.request.GET)
         context['ordenes_renovadas'] = OrdenMedica.objects.filter(
             renovada=True
         ).order_by('-fecha_emision')
@@ -59,7 +77,6 @@ class OrdenesDelMedicoListView(LoginRequiredMixin, UserPassesTestMixin, ListView
 
     def test_func(self):
         return self.request.user.rol == 'medico'
-
 
 @csrf_exempt
 @require_POST
