@@ -67,7 +67,8 @@
                             {% endif %}
                         </a>
                     </th>
-                    <th>Renovada</th>
+                    <th class="text-center">Renovación</th>
+                    <th class="text-center">Acciones</th>
                 </tr>
             </thead>
             <tbody>
@@ -91,7 +92,7 @@
                             {% endif %}
                         </small>
                     </td>
-                    <td>
+                    <td class="text-center">
                         {% if orden.renovada %}
                         <span class="badge bg-secondary">Renovada</span>
                         {% else %}
@@ -100,6 +101,18 @@
                             Renovar
                         </button>
                         {% endif %}
+                    </td>
+                    <td class="text-center">
+                        <button 
+                            class="btn btn-sm btn-warning btn-editar-orden"
+                            data-bs-toggle="modal"
+                            data-bs-target="#modalEditarOrden"
+                            data-id="{{ orden.id }}"
+                            data-identificador="{{ orden.identificador_paciente }}"
+                            data-fecha-emision="{{ orden.fecha_emision|date:'Y-m-d' }}"
+                            data-dias-validez="{{ orden.dias_validez }}">
+                            <i class="bi bi-pencil"></i> Editar
+                        </button>
                     </td>
                 </tr>
                 {% endfor %}
@@ -147,6 +160,43 @@
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
           <button type="submit" class="btn btn-primary">Renovar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Modal de Edición de Orden -->
+<div class="modal fade" id="modalEditarOrden" tabindex="-1" aria-labelledby="modalEditarOrdenLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form id="formEditarOrden">
+        <div class="modal-header">
+          <h5 class="modal-title" id="modalEditarOrdenLabel">Editar Orden Médica</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body">
+          <input type="hidden" id="editarOrdenId" name="orden_id">
+          <div class="mb-3">
+            <label for="editarIdentificador" class="form-label">Identificador</label>
+            <input type="text" class="form-control" id="editarIdentificador" name="identificador_paciente" required>
+          </div>
+          <div class="mb-3">
+            <label for="editarFechaEmision" class="form-label">Fecha de emisión</label>
+            <input type="date" class="form-control" id="editarFechaEmision" name="fecha_emision" required>
+          </div>
+          <div class="mb-3">
+            <label for="editarDiasValidez" class="form-label">Días de validez</label>
+            <select class="form-select" id="editarDiasValidez" name="dias_validez" required>
+              <option value="30">30 días</option>
+              <option value="60">60 días</option>
+              <option value="90">90 días</option>
+            </select>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+          <button type="submit" class="btn btn-primary">Guardar cambios</button>
         </div>
       </form>
     </div>
@@ -228,6 +278,56 @@
                     alert("Ocurrió un error al renovar.");
                     console.error(err);
                 });
+        });
+
+        // Al hacer clic en "Editar", cargar los datos en el modal
+        document.querySelectorAll('.btn-editar-orden').forEach(function(btn) {
+            btn.addEventListener('click', function() {
+                document.getElementById('editarOrdenId').value = this.dataset.id;
+                document.getElementById('editarIdentificador').value = this.dataset.identificador;
+                document.getElementById('editarFechaEmision').value = this.dataset.fechaEmision;
+                document.getElementById('editarDiasValidez').value = this.dataset.diasValidez;
+            });
+        });
+
+        // Enviar el formulario por AJAX
+        document.getElementById('formEditarOrden').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const ordenId = document.getElementById('editarOrdenId').value;
+            const data = {
+                identificador_paciente: document.getElementById('editarIdentificador').value,
+                fecha_emision: document.getElementById('editarFechaEmision').value,
+                dias_validez: document.getElementById('editarDiasValidez').value
+            };
+
+            fetch(`/control_ordenes/orden/${ordenId}/editar-modal/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}',
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => {
+                if (!response.ok) throw new Error("Error al editar la orden");
+                return response.json();
+            })
+            .then(data => {
+                if (data.success) {
+                    // Cerrar el modal y recargar la página
+                    const modal = bootstrap.Modal.getInstance(document.getElementById('modalEditarOrden'));
+                    modal.hide();
+                    modal._element.addEventListener('hidden.bs.modal', function () {
+                        location.reload();
+                    }, { once: true });
+                } else {
+                    alert("No se pudo editar la orden.");
+                }
+            })
+            .catch(err => {
+                alert("Ocurrió un error al editar.");
+                console.error(err);
+            });
         });
     });
 </script>

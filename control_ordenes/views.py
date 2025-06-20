@@ -95,3 +95,18 @@ def renovar_orden(request, orden_id):
         return JsonResponse({'success': True})
     except Exception as e:
         return JsonResponse({'success': False, 'error': str(e)}, status=400)
+
+@csrf_exempt  # Puedes quitar esto si usas correctamente el CSRF token
+@require_POST
+@login_required
+def editar_orden_modal(request, pk):
+    try:
+        data = json.loads(request.body)
+        orden = OrdenMedica.objects.get(pk=pk)
+        orden.identificador_paciente = data['identificador_paciente']
+        orden.fecha_emision = data['fecha_emision']
+        orden.dias_validez = data['dias_validez']
+        orden.save()
+        return JsonResponse({'success': True})
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': str(e)}, status=400)
