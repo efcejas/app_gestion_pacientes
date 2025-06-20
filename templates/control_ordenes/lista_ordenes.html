@@ -113,6 +113,13 @@
                             data-dias-validez="{{ orden.dias_validez }}">
                             <i class="bi bi-pencil"></i> Editar
                         </button>
+                        <button 
+                            class="btn btn-sm btn-danger btn-eliminar-orden"
+                            data-bs-toggle="modal"
+                            data-bs-target="#modalEliminarOrden"
+                            data-id="{{ orden.id }}">
+                            <i class="bi bi-trash"></i> Eliminar
+                        </button>
                     </td>
                 </tr>
                 {% endfor %}
@@ -203,6 +210,28 @@
   </div>
 </div>
 
+<!-- Modal de Confirmación de Eliminación -->
+<div class="modal fade" id="modalEliminarOrden" tabindex="-1" aria-labelledby="modalEliminarOrdenLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form id="formEliminarOrden">
+        <div class="modal-header">
+          <h5 class="modal-title" id="modalEliminarOrdenLabel">Eliminar Orden Médica</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body">
+          <input type="hidden" id="eliminarOrdenId" name="orden_id">
+          <p>¿Estás seguro de que deseas eliminar esta orden?</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+          <button type="submit" class="btn btn-danger">Eliminar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
 <!-- Toast de confirmación de renovación -->
 <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 1055">
   <div id="toastRenovacion" class="toast align-items-center text-bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
@@ -221,6 +250,18 @@
     <div class="d-flex">
       <div class="toast-body">
         ¡La orden fue editada exitosamente!
+      </div>
+      <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Cerrar"></button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast de confirmación de eliminación -->
+<div class="position-fixed bottom-0 end-0 p-3" style="z-index: 1055">
+  <div id="toastEliminacion" class="toast align-items-center text-bg-danger border-0" role="alert" aria-live="assertive" aria-atomic="true">
+    <div class="d-flex">
+      <div class="toast-body">
+        ¡La orden fue eliminada exitosamente!
       </div>
       <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Cerrar"></button>
     </div>
@@ -344,6 +385,49 @@
             });
         });
 
+        // Al hacer clic en "Eliminar", pasar el ID al modal
+        document.querySelectorAll('.btn-eliminar-orden').forEach(function(btn) {
+            btn.addEventListener('click', function() {
+                document.getElementById('eliminarOrdenId').value = this.dataset.id;
+            });
+        });
+
+        // Enviar el formulario de eliminación por AJAX
+        document.getElementById('formEliminarOrden').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const ordenId = document.getElementById('eliminarOrdenId').value;
+
+            fetch(`/control_ordenes/orden/${ordenId}/eliminar-modal/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}',
+                    'Content-Type': 'application/json',
+                }
+            })
+            .then(response => {
+                if (!response.ok) throw new Error("Error al eliminar la orden");
+                return response.json();
+            })
+            .then(data => {
+                if (data.success) {
+                    // Guardar un flag en localStorage
+                    localStorage.setItem('ordenEliminada', '1');
+                    // Cerrar el modal y recargar la página
+                    const modal = bootstrap.Modal.getInstance(document.getElementById('modalEliminarOrden'));
+                    modal.hide();
+                    modal._element.addEventListener('hidden.bs.modal', function () {
+                        location.reload();
+                    }, { once: true });
+                } else {
+                    alert("No se pudo eliminar la orden.");
+                }
+            })
+            .catch(err => {
+                alert("Ocurrió un error al eliminar.");
+                console.error(err);
+            });
+        });
+
         // Mostrar toast de edición si corresponde
         if (localStorage.getItem('ordenEditada')) {
             const toastEl = document.getElementById('toastEdicion');
@@ -352,6 +436,16 @@
                 toast.show();
             }
             localStorage.removeItem('ordenEditada');
+        }
+
+        // Mostrar toast de eliminación si corresponde
+        if (localStorage.getItem('ordenEliminada')) {
+            const toastEl = document.getElementById('toastEliminacion');
+            if (toastEl) {
+                const toast = new bootstrap.Toast(toastEl);
+                toast.show();
+            }
+            localStorage.removeItem('ordenEliminada');
         }
     });
 </script>

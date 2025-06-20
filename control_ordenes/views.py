@@ -110,3 +110,13 @@ def editar_orden_modal(request, pk):
         return JsonResponse({'success': True})
     except Exception as e:
         return JsonResponse({'success': False, 'error': str(e)}, status=400)
+
+@require_POST
+@login_required
+def eliminar_orden_modal(request, pk):
+    try:
+        orden = OrdenMedica.objects.get(pk=pk)
+        orden.delete()
+        return JsonResponse({'success': True})
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': str(e)}, status=400)
