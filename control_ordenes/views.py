@@ -70,9 +70,7 @@ class OrdenesDelMedicoListView(LoginRequiredMixin, UserPassesTestMixin, ListView
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['filtro_form'] = OrdenMedicaFiltroForm(self.request.GET)
-        context['ordenes_renovadas'] = OrdenMedica.objects.filter(
-            renovada=True
-        ).order_by('-fecha_emision')
+        context['total_ordenes'] = OrdenMedica.objects.count()
         return context
 
     def test_func(self):
