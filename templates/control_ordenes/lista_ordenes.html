@@ -215,6 +215,18 @@
   </div>
 </div>
 
+<!-- Toast de confirmación de edición -->
+<div class="position-fixed bottom-0 end-0 p-3" style="z-index: 1055">
+  <div id="toastEdicion" class="toast align-items-center text-bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
+    <div class="d-flex">
+      <div class="toast-body">
+        ¡La orden fue editada exitosamente!
+      </div>
+      <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Cerrar"></button>
+    </div>
+  </div>
+</div>
+
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         // 1. Al abrir el modal, poner el ID y la fecha de hoy
@@ -314,6 +326,8 @@
             })
             .then(data => {
                 if (data.success) {
+                    // Guardar un flag en localStorage
+                    localStorage.setItem('ordenEditada', '1');
                     // Cerrar el modal y recargar la página
                     const modal = bootstrap.Modal.getInstance(document.getElementById('modalEditarOrden'));
                     modal.hide();
@@ -329,6 +343,16 @@
                 console.error(err);
             });
         });
+
+        // Mostrar toast de edición si corresponde
+        if (localStorage.getItem('ordenEditada')) {
+            const toastEl = document.getElementById('toastEdicion');
+            if (toastEl) {
+                const toast = new bootstrap.Toast(toastEl);
+                toast.show();
+            }
+            localStorage.removeItem('ordenEditada');
+        }
     });
 </script>
 {% endblock %}
