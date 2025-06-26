@@ -29,7 +29,11 @@ class OrdenMedicaAnonimaCreateView(LoginRequiredMixin, UserPassesTestMixin, Crea
         return super().form_valid(form)
 
     def test_func(self):
-        return self.request.user.rol == 'medico'
+        user = self.request.user
+        return (
+            getattr(user, 'rol', None) == 'medico'
+            or user.groups.filter(name="Administrativos con permisos médicos").exists()
+        )
 
 
 class OrdenesDelMedicoListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
@@ -74,7 +78,11 @@ class OrdenesDelMedicoListView(LoginRequiredMixin, UserPassesTestMixin, ListView
         return context
 
     def test_func(self):
-        return self.request.user.rol == 'medico'
+        user = self.request.user
+        return (
+            getattr(user, 'rol', None) == 'medico'
+            or user.groups.filter(name="Administrativos con permisos médicos").exists()
+        )
 
 @csrf_exempt
 @require_POST

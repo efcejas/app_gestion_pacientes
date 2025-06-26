@@ -26,5 +26,8 @@ class HomeView(LoginRequiredMixin, TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        user = self.request.user
         context["form"] = OrdenMedicaForm()
+        context["es_medico"] = user.is_authenticated and getattr(user, "rol", None) == "medico"
+        context["es_admin_medico"] = user.is_authenticated and user.groups.filter(name="Administrativos con permisos médicos").exists()
         return context
