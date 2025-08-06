@@ -1,0 +1,201 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es" class="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <title>{% block title %}Gestión de Pacientes{% endblock %}</title>
+    
+    <!-- Tailwind CSS -->
+    <link rel="stylesheet" href="{% static 'styles/tailwind.css' %}">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
+    <!-- Estilos de Typekit -->
+    <link rel="stylesheet" href="https://use.typekit.net/ztu8iib.css">
+    
+    <!-- Flowbite CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/flowbite@2.5.2/dist/flowbite.min.css" rel="stylesheet" />
+    
+    <!-- AlpineJS para interactividad -->
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    
+    <style>
+        /* Estilo personalizado para el gradiente de la navbar */
+        .navbar-gradient {
+            background: linear-gradient(135deg, #1e40af 0%, #3b82f6 50%, #06b6d4 100%);
+        }
+        
+        /* Transiciones suaves */
+        .transition-all {
+            transition-property: all;
+            transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+            transition-duration: 300ms;
+        }
+    </style>
+</head>
+
+<body class="bg-blue-50 dark:bg-blue-900 min-h-screen" x-data="{ darkMode: localStorage.getItem('theme') === 'dark' }" 
+      x-init="$watch('darkMode', val => {
+          localStorage.setItem('theme', val ? 'dark' : 'light');
+          document.documentElement.classList.toggle('dark', val);
+      }); document.documentElement.classList.toggle('dark', darkMode);">
+
+    <!-- Navbar -->
+    <nav class="navbar-gradient shadow-lg sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16" x-data="{ mobileMenuOpen: false, dropdownOpen: false }">
+                
+                <!-- Logo y título -->
+                <div class="flex items-center space-x-4">
+                    <a href="{% url 'home' %}" class="flex items-center space-x-3 hover:opacity-80 transition-opacity">
+                        <img src="https://res.cloudinary.com/hrhwdlau3/image/upload/v1748979718/CMIlogo_jwbog5.png" 
+                             alt="Logo" class="h-10 w-auto">
+                        <span class="text-white font-bold text-lg hidden md:block">CMI - Centro Médico Integral</span>
+                    </a>
+                </div>
+
+                {% if user.is_authenticated %}
+                <!-- Menú desktop -->
+                <div class="hidden md:flex items-center space-x-4">
+                    
+                    <!-- Toggle de tema -->
+                    <button @click="darkMode = !darkMode" 
+                            class="text-white hover:text-gray-200 p-2 rounded-lg hover:bg-white/10 transition-all">
+                        <i x-show="!darkMode" class="fas fa-moon"></i>
+                        <i x-show="darkMode" class="fas fa-sun"></i>
+                    </button>
+                    
+                    <!-- Dropdown del usuario -->
+                    <div class="relative" x-data="{ open: false }">
+                        <button @click="open = !open" 
+                                class="flex items-center space-x-2 text-white hover:text-gray-200 p-2 rounded-lg hover:bg-white/10 transition-all">
+                            <i class="fas fa-user"></i>
+                            <span>{{ user.username }}</span>
+                            <i class="fas fa-chevron-down text-xs" x-bind:class="{ 'rotate-180': open }"></i>
+                        </button>
+                        
+                        <!-- Dropdown menu -->
+                        <div x-show="open" 
+                             x-transition:enter="transition ease-out duration-200"
+                             x-transition:enter-start="opacity-0 scale-95"
+                             x-transition:enter-end="opacity-100 scale-100"
+                             x-transition:leave="transition ease-in duration-75"
+                             x-transition:leave-start="opacity-100 scale-100"
+                             x-transition:leave-end="opacity-0 scale-95"
+                             @click.away="open = false"
+                             class="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg py-2 z-50">
+                            
+                            <a href="{% url 'password_change' %}" 
+                               class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                                <i class="fas fa-key mr-2"></i>Cambiar contraseña
+                            </a>
+                            
+                            <hr class="my-1 border-gray-200 dark:border-gray-600">
+                            
+                            <button onclick="document.getElementById('logout-form').submit();" 
+                                    class="w-full text-left px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors">
+                                <i class="fas fa-sign-out-alt mr-2"></i>Cerrar sesión
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Botón menú móvil -->
+                <div class="md:hidden">
+                    <button @click="mobileMenuOpen = !mobileMenuOpen" 
+                            class="text-white hover:text-gray-200 p-2 rounded-lg hover:bg-white/10 transition-all">
+                        <i x-show="!mobileMenuOpen" class="fas fa-bars"></i>
+                        <i x-show="mobileMenuOpen" class="fas fa-times"></i>
+                    </button>
+                </div>
+
+                <!-- Menú móvil -->
+                <div x-show="mobileMenuOpen" 
+                     x-transition:enter="transition ease-out duration-200"
+                     x-transition:enter-start="opacity-0 -translate-y-1"
+                     x-transition:enter-end="opacity-100 translate-y-0"
+                     x-transition:leave="transition ease-in duration-150"
+                     x-transition:leave-start="opacity-100 translate-y-0"
+                     x-transition:leave-end="opacity-0 -translate-y-1"
+                     class="absolute top-16 left-0 right-0 bg-blue-700 md:hidden shadow-lg">
+                    
+                    <div class="px-4 py-2 space-y-2">
+                        <div class="text-white font-semibold py-2 border-b border-blue-600">
+                            <i class="fas fa-user mr-2"></i>{{ user.username }}
+                        </div>
+                        
+                        <a href="{% url 'password_change' %}" 
+                           class="block text-white hover:text-gray-200 py-2 hover:bg-blue-600 rounded px-2 transition-colors">
+                            <i class="fas fa-key mr-2"></i>Cambiar contraseña
+                        </a>
+                        
+                        <button @click="darkMode = !darkMode" 
+                                class="block w-full text-left text-white hover:text-gray-200 py-2 hover:bg-blue-600 rounded px-2 transition-colors">
+                            <i x-show="!darkMode" class="fas fa-moon mr-2"></i>
+                            <i x-show="darkMode" class="fas fa-sun mr-2"></i>
+                            <span x-text="darkMode ? 'Modo claro' : 'Modo oscuro'"></span>
+                        </button>
+                        
+                        <button onclick="document.getElementById('logout-form').submit();" 
+                                class="block w-full text-left text-red-300 hover:text-red-100 py-2 hover:bg-red-600/50 rounded px-2 transition-colors">
+                            <i class="fas fa-sign-out-alt mr-2"></i>Cerrar sesión
+                        </button>
+                    </div>
+                </div>
+
+                {% else %}
+                <!-- Menú para usuarios no autenticados -->
+                <div class="flex items-center space-x-4">
+                    <!-- Toggle de tema -->
+                    <button @click="darkMode = !darkMode" 
+                            class="text-white hover:text-gray-200 p-2 rounded-lg hover:bg-white/10 transition-all">
+                        <i x-show="!darkMode" class="fas fa-moon"></i>
+                        <i x-show="darkMode" class="fas fa-sun"></i>
+                    </button>
+                    
+                    <!-- Botón de registro (opcional, comentado como en el original) -->
+                    <!-- <a href="{% url 'registro' %}" 
+                       class="text-white hover:text-gray-200 px-4 py-2 rounded-lg hover:bg-white/10 transition-all">
+                        <i class="fas fa-user-plus mr-2"></i>Registrarse
+                    </a> -->
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+
+    <!-- Formulario oculto para logout -->
+    {% if user.is_authenticated %}
+    <form id="logout-form" action="{% url 'logout' %}" method="post" class="hidden">
+        {% csrf_token %}
+    </form>
+    {% endif %}
+
+    <!-- Contenido principal -->
+    <main class="flex-1">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+            {% block content %}
+            <!-- El contenido de las páginas irá aquí -->
+            {% endblock %}
+        </div>
+    </main>
+
+    <!-- Footer (opcional) -->
+    <footer class="bg-gray-800 dark:bg-gray-900 text-white py-8 mt-auto">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <p>&copy; 2025 CMI - Centro Médico Integral. Todos los derechos reservados.</p>
+        </div>
+    </footer>
+
+    {% block extra_js %}
+    <!-- JavaScript adicional puede ir aquí -->
+    {% endblock %}
+
+    <!-- Flowbite JS -->
+    <script src="https://cdn.jsdelivr.net/npm/flowbite@2.5.2/dist/flowbite.min.js"></script>
+
+</body>
+</html>

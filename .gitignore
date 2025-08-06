@@ -24,3 +24,18 @@ Thumbs.db
 # Ignorar el entorno virtual
 venv_gestion_pacientes/
 venv/
+
+# Node.js dependencies
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# npm logs
+.npm
+
+# CSS compilado (se genera con npm run build-css)
+# static/styles/tailwind.css
+
+# Opcional: Descomentar si no quieres trackear el CSS compilado
+# Deja comentado si quieres incluir el CSS en el repo para deployment
