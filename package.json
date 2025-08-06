@@ -5,14 +5,20 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build-css": "tailwindcss -i ./static/styles/input.css -o ./static/styles/tailwind.css --watch",
-    "build-css-prod": "tailwindcss -i ./static/styles/input.css -o ./static/styles/tailwind.css"
+    "build-css": "tailwindcss -i ./static/styles/input.css -o ./static/styles/tailwind.css",
+    "build-css-watch": "tailwindcss -i ./static/styles/input.css -o ./static/styles/tailwind.css --watch",
+    "build-css-prod": "tailwindcss -i ./static/styles/input.css -o ./static/styles/tailwind.css --minify",
+    "collectstatic": "python manage.py collectstatic --noinput",
+    "build-and-collect": "npm run build-css && npm run collectstatic",
+    "dev-windows": "dev.bat",
+    "dev": "concurrently \"npm run build-css-watch\" \"python manage.py runserver\" --names \"🎨CSS,🚀DJANGO\" --prefix-colors \"blue,green\""
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
     "autoprefixer": "^10.4.21",
+    "concurrently": "^9.2.0",
     "daisyui": "^5.0.50",
     "postcss": "^8.5.6",
     "postcss-cli": "^11.0.1",
