@@ -19,7 +19,7 @@ from control_ordenes.forms import OrdenMedicaForm
 class OrdenMedicaAnonimaCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
     model = OrdenMedica
     form_class = OrdenMedicaForm
-    # template_name = 'control_ordenes/orden_form.html'
+    template_name = 'control_ordenes/orden_form.html'
     # Redirigir a la página de inicio después de crear la orden
     success_url = reverse_lazy('home')
 
@@ -27,6 +27,10 @@ class OrdenMedicaAnonimaCreateView(LoginRequiredMixin, UserPassesTestMixin, Crea
         form.instance.medico = self.request.user
         messages.success(self.request, "Orden médica creada con éxito.")
         return super().form_valid(form)
+
+    def form_invalid(self, form):
+        messages.error(self.request, "No se pudo crear la orden. Revisá los datos e intentá nuevamente.")
+        return super().form_invalid(form)
 
     def test_func(self):
         user = self.request.user

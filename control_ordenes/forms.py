@@ -11,8 +11,12 @@ class OrdenMedicaForm(forms.ModelForm):
             'dias_validez': 'Válido por',
         }
         widgets = {
-            'identificador_paciente': forms.TextInput(attrs={'class': 'form-control'}),
-            'dias_validez': forms.Select(choices=[(30, "30 días"), (60, "60 días")], attrs={'class': 'form-select'}),
+            'identificador_paciente': forms.TextInput(attrs={
+                'class': 'bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 mt-2 mb-4',
+            }),
+            'dias_validez': forms.Select(choices=[(30, "30 días"), (60, "60 días"), (90, "90 días")], attrs={
+                'class': 'border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 mt-2 mb-4',
+            }),
         }
 
 

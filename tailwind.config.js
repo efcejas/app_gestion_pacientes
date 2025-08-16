@@ -6,6 +6,13 @@ module.exports = {
     './static/js/**/*.js',
     './node_modules/flowbite/**/*.js'
   ],
+  safelist: [
+    // Mantener utilidades de color comunes por patrón y variantes
+    {
+      pattern: /(bg|text|border|ring)-(lime|blue|cyan|emerald|green|red|gray)-(100|200|300|400|500|600|700|800|900)/,
+      variants: ['hover', 'focus', 'active'],
+    },
+  ],
   theme: {
     extend: {},
   },
@@ -17,11 +24,8 @@ module.exports = {
   daisyui: {
     themes: [
       "light",
-      "dark", 
+      "dark",
       "cupcake",
-      "bumblebee",
-      "emerald",
-      "corporate",
       "synthwave",
       "retro",
       "cyberpunk",
