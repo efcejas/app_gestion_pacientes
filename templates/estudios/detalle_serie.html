@@ -1,0 +1,36 @@
+{% extends 'base_tailwind.html' %}
+{% block content %}
+<h1 class="text-2xl font-semibold mb-4">Instancias de la Serie</h1>
+
+<div class="overflow-x-auto">
+  <table class="min-w-full text-sm">
+    <thead class="bg-gray-100">
+      <tr>
+        <th class="px-2 py-1 text-left">ID Instancia</th>
+        <th class="px-2 py-1 text-left">SOP Class</th>
+        <th class="px-2 py-1 text-left">Tamaño</th>
+      </tr>
+    </thead>
+    <tbody>
+    {% for inst in instances %}
+      {% with iid=inst.id|default:inst sop=inst.SOPClassUID|default:inst.MainDicomTags.SOPClassUID|default:"-" size=inst.FileSize|default:"-" %}
+      <tr class="border-b hover:bg-gray-50">
+        <td class="px-2 py-1 font-mono text-xs">{{ iid|slice:":16" }}...</td>
+        <td class="px-2 py-1">{{ sop }}</td>
+        <td class="px-2 py-1">
+          {% if size != "-" %}
+            {{ size|filesizeformat }}
+          {% else %}
+            —
+          {% endif %}
+        </td>
+      </tr>
+      {% endwith %}
+    {% empty %}
+      <tr><td colspan="3" class="px-2 py-4 text-center text-gray-500">Sin instancias</td></tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}
+

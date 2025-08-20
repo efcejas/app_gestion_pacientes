@@ -1,0 +1,14 @@
+{% extends 'base_tailwind.html' %}
+{% block content %}
+<h1 class="text-2xl font-semibold mb-4">Series del Estudio {{ study_id|slice:':12' }}...</h1>
+<ul class="list-disc pl-5 text-sm space-y-1">
+  {% for sid in series_ids %}
+    <li class="font-mono">
+      {{ sid|slice:':16' }}... -
+      <a class="text-blue-600 hover:underline" href="{% url 'estudios:lista_instancias' study_id sid %}">Instancias</a>
+    </li>
+  {% empty %}
+    <li class="text-gray-500">Sin series</li>
+  {% endfor %}
+</ul>
+{% endblock %}

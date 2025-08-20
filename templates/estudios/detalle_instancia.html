@@ -1,0 +1,9 @@
+{% extends 'base_tailwind.html' %}
+{% block content %}
+<h1 class="text-2xl font-semibold mb-4">Detalle Instancia {{ instance_id|slice:':20' }}...</h1>
+<details open class="mb-4">
+  <summary class="cursor-pointer font-semibold">Metadatos</summary>
+  <pre class="text-xs bg-gray-50 p-2 overflow-x-auto">{{ meta|pprint }}</pre>
+</details>
+<p class="text-sm text-gray-600">(Próximo: previsualización de imágenes o descarga via WADO-RS)</p>
+{% endblock %}

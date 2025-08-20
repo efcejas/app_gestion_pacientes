@@ -1,0 +1,59 @@
+{% extends 'base_tailwind.html' %}
+{% block content %}
+<h1 class="text-2xl text-blue-600 font-semibold mb-4">Detalle Estudio</h1>
+
+<div class="text-blue-600 grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+  <div class="p-4 border rounded">
+    <h2 class="font-semibold mb-2">Tags Compartidos</h2>
+    <ul class="text-sm space-y-1">
+      <li><strong>Paciente:</strong> {{ shared.PatientName.Value|default:"-" }}</li>
+      <li><strong>ID Paciente:</strong> {{ shared.PatientID.Value|default:"-" }}</li>
+      <li><strong>Descripción:</strong> {{ shared.StudyDescription.Value|default:"-" }}</li>
+      <li><strong>Fecha:</strong> {{ shared.StudyDate.Value|default:"-" }}</li>
+      <li><strong>Modalidades:</strong> {{ shared.ModalitiesInStudy.Value|default:"-" }}</li>
+    </ul>
+  </div>
+
+  <div class="p-4 border rounded">
+    <h2 class="font-semibold mb-2">Metadatos</h2>
+    <details class="text-sm">
+      <summary class="cursor-pointer text-blue-600">Ver metadatos completos</summary>
+      <pre class="text-xs bg-gray-50 p-2 mt-2 overflow-x-auto">
+{{ meta|pprint }}
+      </pre>
+    </details>
+  </div>
+</div>
+
+<h2 class="text-xl text-blue-600 font-semibold mb-2">Series</h2>
+<div class="overflow-x-auto text-blue-600">
+  <table class="min-w-full text-sm">
+    <thead class="bg-gray-100">
+      <tr>
+        <th class="px-2 py-1 text-left">ID Serie</th>
+        <th class="px-2 py-1 text-left">Descripción</th>
+        <th class="px-2 py-1 text-left">Número</th>
+        <th class="px-2 py-1"></th>
+      </tr>
+    </thead>
+    <tbody>
+    {% for serie in series %}
+      {# Compatibilidad: si 'series' es una lista de IDs (strings) usamos ese valor;
+         si más adelante pasás objetos/dicts con campos, también se mostrarán. #}
+      {% with sid=serie.id|default:serie sdesc=serie.SeriesDescription|default:"-" snum=serie.SeriesNumber|default:"-" %}
+      <tr class="border-b hover:bg-gray-50">
+        <td class="px-2 py-1 font-mono text-xs">{{ sid|slice:":12" }}...</td>
+        <td class="px-2 py-1">{{ sdesc }}</td>
+        <td class="px-2 py-1">{{ snum }}</td>
+        <td class="px-2 py-1 text-right">
+          <a class="text-blue-600 hover:underline" href="#">Instancias</a>
+        </td>
+      </tr>
+      {% endwith %}
+    {% empty %}
+      <tr><td colspan="4" class="px-2 py-4 text-center text-gray-500">Sin series</td></tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

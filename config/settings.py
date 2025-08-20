@@ -43,7 +43,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'usuarios',
     'control_ordenes',
-    'portal_pacientes'
+    'portal_pacientes',
+    'estudios'
 ]
 
 MIDDLEWARE = [
@@ -150,3 +151,11 @@ MEDIA_ROOT = BASE_DIR / 'media'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# --- Integración Orthanc (variables de entorno) ---
+# Base URL del Orthanc (REST API). Ej: http://localhost:8042
+ORTHANC_BASE_URL = config('ORTHANC_BASE_URL', default='http://localhost:8042')
+# Credenciales básicas (AuthenticationEnabled=true en Orthanc)
+# ORTHANC_USERNAME = config('ORTHANC_USERNAME', default='admin')
+# ORTHANC_PASSWORD = config('ORTHANC_PASSWORD', default='admin123')
+
