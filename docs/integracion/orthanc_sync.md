@@ -66,7 +66,7 @@ app_gestion_pacientes/
 Implementar esqueleto de `client.py` y modelos básicos.
 
 ---
-## Estado Actual (2025-08-19)
+## Estado Actual (2025-08-20)
 
 Se implementó una integración inicial basada en vistas funcionales y un cliente simple (`estudios/services.py`):
 
@@ -79,6 +79,7 @@ Métodos disponibles:
 - `list_instances_in_series(series_id)`
 - `get_series_metadata(series_id)`
 - `get_instance_metadata(instance_id)`
+- `get_study_instance_uid(study_id)` → resuelve y cachea el UID (shared-tags o metadata)
 
 Uso actual en UI: N+1 (lista IDs y para cada uno consulta tags). Optimizable luego usando QIDO-RS.
 
@@ -95,24 +96,26 @@ Rutas jerárquicas creadas:
 Templates básicos en `templates/estudios/` para exploración de la jerarquía.
 
 ### Pendiente inmediato
-1. Incluir `StudyInstanceUID` y `AccessionNumber` en lista (requiere `get_study_metadata`).
-2. Construir URL OHIF: `/ohif/viewer?StudyInstanceUIDs=<UID>` (abrir nueva pestaña).
-3. Añadir botón "Informar" (placeholder) → futura creación de `Report`.
-4. Definir estrategia caché (evitar exceso de requests en listas grandes).
+1. Mostrar columna AccessionNumber y resolver StudyInstanceUID vía `get_study_instance_uid`.
+2. Botón OHIF (target _blank) usando UID.
+3. Botón "Informar" placeholder → definirá creación de modelo `Report`.
+4. Paginación básica o límite (ej. primeros 50) para evitar latencia si crece el volumen.
+5. Documentar estrategia de fallback cuando falta AccessionNumber (input manual al crear reporte).
 
 ### Riesgos / Consideraciones
 - Latencia por múltiples llamadas secuenciales.
 - Campos faltantes (AccessionNumber) requieren fallback UI.
 - Ausencia de paginación si crece el volumen.
 
-### Roadmap Corto (próximas iteraciones)
+### Roadmap Corto (revisado)
 | Iteración | Entrega | Notas |
 |-----------|---------|-------|
-| 1 | Enriquecer lista con UID + Accession + botones OHIF/Informar | Mantener N+1 temporal |
-| 2 | Modelo `Study` + `Report` mínimo y migraciones | Persistir metadatos clave |
-| 3 | Comando `sync_orthanc_studies` (polling básico) | Idempotencia por UID |
-| 4 | Cache / QIDO-RS para reducir N+1 | Evaluar DICOMweb |
-| 5 | Flujo informe (draft→final) + PDF | Auditoría básica |
+| 1 | Lista enriquecida (UID, Accession, OHIF, Informar placeholder) | Usa N+1 + cache LRU en cliente |
+| 2 | Modelo `Study` + migración + persistencia mínima | Sincronía en vivo fallback |
+| 3 | Modelo `Report` (draft/final) + vista crear borrador | Accession editable si null |
+| 4 | Comando `sync_orthanc_studies` (polling) | Idempotencia UID, rellena tabla |
+| 5 | QIDO-RS / optimización batch + paginación | Reduce N+1 |
+| 6 | Flujo PDF + hash + auditoría básica | Cierre legal |
 
 ### Variables de entorno efectivas
 ```
@@ -125,5 +128,11 @@ ORTHANC_PASSWORD=********
 - ¿Un informe por estudio o múltiples? (actual propuesta: 1:1)
 - ¿Requerir AccessionNumber obligatorio? (si falta → editable manual)
 - Estados definitivos del informe (draft, final, annulled ?)
+- ¿Límite de estudios en la vista inicial? (ej. 50 + botón "ver más")
+- ¿Persistir primero estudios vistos (lazy) o batch inicial?
+
+### Notas adicionales (UI / utilidades)
+- Se creó `templatetags/estudios_filters.py` con filtro `dash_if_empty` para representación segura de valores vacíos.
+- Cache LRU (`@lru_cache`) en `get_study_instance_uid` reduce llamadas repetidas al mismo estudio.
 
 ---

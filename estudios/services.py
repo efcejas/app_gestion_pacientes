@@ -27,6 +27,25 @@ class OrthancClient:
     def get_study_metadata(self, study_id):
         return self._get(f'/studies/{study_id}')
 
+    @lru_cache(maxsize=512)
+    def get_study_instance_uid(self, study_id: str) -> str | None:
+        """Devuelve el StudyInstanceUID (0020,000D) para enlace OHIF.
+        Intenta primero en shared-tags; si no está, recurre a metadatos completos.
+        Devuelve None si no puede obtenerlo.
+        """
+        try:
+            tags = self.get_study_shared_tags(study_id)
+            uid = tags.get("StudyInstanceUID", {}).get("Value")
+            if uid:
+                return uid
+        except Exception:
+            pass
+        try:
+            meta = self.get_study_metadata(study_id)
+            return (meta.get("MainDicomTags", {}) or {}).get("StudyInstanceUID")
+        except Exception:
+            return None
+
     def get_study_shared_tags(self, study_id):
         return self._get(f'/studies/{study_id}/shared-tags')
 

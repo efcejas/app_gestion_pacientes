@@ -74,3 +74,4 @@
 - `status` de Study se deriva: reported si Report final existe.
 - Se puede omitir Series inicialmente (Instance referenciando directo Study).
 - Estado actual (2025-08-19): UI consume Orthanc en vivo; aún no se persiste `Study` ni `Report`. Próximo paso: materializar modelo `Study` (clave `study_instance_uid`) y `Report` 1:1; `AccessionNumber` opcional editable si falta.
+- Actualización 2025-08-20: Añadido método cacheado para `StudyInstanceUID`; próximo cambio estructural será crear modelos y migraciones (Iteración 2 del roadmap revisado).

@@ -3,67 +3,89 @@
 {% load static %}
 
 {% block content %}
-<div class="max-w-6xl mx-auto mt-10 px-4">
-    <!-- Título -->
-    <h1 class="text-3xl font-bold text-blue-700 mb-6 flex items-center gap-2">
-        <svg class="w-7 h-7 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="M9 12h6m-6 4h6m2 4H7a2 2 0 01-2-2V6a2 2 0 012-2h5l2 2h5a2 2 0 012 2v12a2 2 0 01-2 2z" />
-        </svg>
-        Estudios DICOM
-    </h1>
+<div class="w-full px-2 md:px-4 mt-8">
 
-    <!-- Contenedor tabla -->
-    <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
-        <table class="w-full text-sm text-left text-gray-600">
-            <thead class="text-xs uppercase bg-blue-100 text-blue-800">
-                <tr>
-                    <th scope="col" class="px-6 py-3">Paciente</th>
-                    <th scope="col" class="px-6 py-3">ID Paciente</th>
-                    <th scope="col" class="px-6 py-3">Descripción</th>
-                    <th scope="col" class="px-6 py-3">Fecha</th>
-                    <th scope="col" class="px-6 py-3">Hora</th>
-                    <th scope="col" class="px-6 py-3">Modalidad</th>
-                    <th scope="col" class="px-6 py-3 text-right">Acciones</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for s in studies %}
-                <tr class="bg-white border-b hover:bg-blue-50">
-                    <td class="px-6 py-4 font-medium text-gray-900">{{ s.patient_name|clean_name }}</td>
-                    <td class="px-6 py-4">{{ s.patient_id }}</td>
-                    <td class="px-6 py-4">{{ s.study_description }}</td>
-                    <td class="px-6 py-4">
-                        {% if s.study_date %}
-                            {{ s.study_date|slice:":4" }}-{{ s.study_date|slice:"4:6" }}-{{ s.study_date|slice:"6:8" }}
-                        {% else %}
-                            —
-                        {% endif %}
-                    </td>
-                    <td class="px-6 py-4">
-                        {% if s.study_time %}
-                            {{ s.study_time|slice:":2" }}:{{ s.study_time|slice:"2:4" }}
-                        {% else %}
-                            —
-                        {% endif %}
-                    </td>
-                    <td class="px-6 py-4">{{ s.modality|first_modality }}</td>
-                    <td class="px-6 py-4 text-right">
-                        <a href="{% url 'estudios:detalle_estudio' s.id %}"
-                           class="text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-3 py-1.5 shadow">
-                            Ver
-                        </a>
-                    </td>
-                </tr>
-                {% empty %}
-                <tr>
-                    <td colspan="6" class="px-6 py-6 text-center text-gray-500 bg-gray-50">
-                        No hay estudios disponibles
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
+<div class="mb-8 px-4 py-6 bg-white shadow-md rounded-lg text-center">
+    <h1 class="text-3xl md:text-4xl font-bold text-blue-800 mb-2">
+        Bienvenido a la Gestión de Estudios DICOM
+    </h1>
+    <p class="text-gray-700 text-base md:text-lg">
+        Aquí podrás gestionar todos los estudios DICOM de manera eficiente y sencilla.
+    </p>
+</div>
+
+<div class="relative overflow-x-auto shadow-md rounded-lg">
+    <table class="w-full table-auto text-sm text-left text-gray-700">
+        <thead class="text-xs uppercase bg-blue-100 text-blue-800 sticky top-0 z-10">
+            <tr>
+                <th class="px-4 py-3">Paciente</th>
+                <th class="px-4 py-3">ID Paciente</th>
+                <th class="px-4 py-3">Descripción</th>
+          <th class="px-4 py-3">Fecha</th>
+          <th class="px-4 py-3">Hora</th>
+          <th class="px-4 py-3 text-center">Modalidad</th>
+          <th class="px-4 py-3 text-center">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for s in studies %}
+        <tr class="bg-white border-b hover:bg-blue-50 even:bg-gray-50">
+          <td class="px-4 py-3 font-medium text-gray-900 whitespace-normal break-words">
+            {{ s.patient_name|clean_name }}
+          </td>
+          <td class="px-4 py-3 whitespace-normal break-words">
+            {{ s.patient_id }}
+          </td>
+          <td class="px-4 py-3 whitespace-normal break-words">
+            {{ s.study_description }}
+          </td>
+          <td class="px-4 py-3">
+            {% if s.study_date %}
+              {{ s.study_date|slice:":4" }}-{{ s.study_date|slice:"4:6" }}-{{ s.study_date|slice:"6:8" }}
+            {% else %} — {% endif %}
+          </td>
+          <td class="px-4 py-3">
+            {% if s.study_time %}
+              {{ s.study_time|slice:":2" }}:{{ s.study_time|slice:"2:4" }}
+            {% else %} — {% endif %}
+          </td>
+          <td class="px-4 py-3 text-center">
+            {{ s.modality|first_modality }}
+          </td>
+          <td class="px-3 py-3 text-center">
+            {% if s.viewer_url %}
+              <a href="{{ s.viewer_url }}" target="_blank" rel="noopener"
+                 class="inline-flex items-center justify-center w-9 h-9 rounded-md hover:bg-blue-100 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                 title="Ver en visor OHIF" aria-label="Ver en visor OHIF">
+                <!-- Ícono ojo -->
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-blue-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M2.458 12C3.732 7.943 7.523 5 12 5c4.477 0 8.268 2.943 9.542 7-1.274 4.057-5.065 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                </svg>
+              </a>
+            {% else %}
+              <span class="inline-flex items-center justify-center w-9 h-9 rounded-md text-gray-400" title="Sin visor">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M2.458 12C3.732 7.943 7.523 5 12 5c4.477 0 8.268 2.943 9.542 7-1.274 4.057-5.065 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                </svg>
+              </span>
+            {% endif %}
+          </td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="7" class="px-6 py-6 text-center text-gray-500 bg-gray-50">
+            No hay estudios disponibles
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
 </div>
 {% endblock %}
