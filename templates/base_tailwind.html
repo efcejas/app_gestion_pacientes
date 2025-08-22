@@ -1,6 +1,6 @@
 {% load static %}
 <!DOCTYPE html>
-<html lang="es" class="light">
+<html lang="es" data-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -15,9 +15,6 @@
     
     <!-- Estilos de Typekit -->
     <link rel="stylesheet" href="https://use.typekit.net/ztu8iib.css">
-    
-    <!-- Flowbite CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/flowbite@2.5.2/dist/flowbite.min.css" rel="stylesheet" />
     
     <!-- AlpineJS para interactividad -->
     <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
@@ -38,10 +35,17 @@
 </head>
 
 <body class="bg-blue-50 dark:bg-blue-900 min-h-screen" x-data="{ darkMode: localStorage.getItem('theme') === 'dark' }" 
-      x-init="$watch('darkMode', val => {
-          localStorage.setItem('theme', val ? 'dark' : 'light');
-          document.documentElement.classList.toggle('dark', val);
-      }); document.documentElement.classList.toggle('dark', darkMode);">
+            x-init="
+                // Sincronizar estado inicial
+                document.documentElement.classList.toggle('dark', darkMode);
+                document.documentElement.setAttribute('data-theme', darkMode ? 'dark' : 'light');
+                // Observar cambios
+                $watch('darkMode', val => {
+                    localStorage.setItem('theme', val ? 'dark' : 'light');
+                    document.documentElement.classList.toggle('dark', val);
+                    document.documentElement.setAttribute('data-theme', val ? 'dark' : 'light');
+                });
+            ">
 
     <!-- Navbar -->
     <nav class="navbar-gradient shadow-lg sticky top-0 z-50">
@@ -175,7 +179,7 @@
     {% endif %}
 
     <!-- Contenido principal -->
-    <main class="flex-1">
+    <main class="flex-1 pb-28"> <!-- pb para no quedar tapado por footer fijo -->
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
             {% if messages %}
             <!-- Toasts de mensajes -->

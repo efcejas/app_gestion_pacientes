@@ -9,6 +9,7 @@
   "heroku-postbuild": "npm run build-css-prod",
     "build-css": "tailwindcss -i ./static/styles/input.css -o ./static/styles/tailwind.css",
     "build-css-watch": "tailwindcss -i ./static/styles/input.css -o ./static/styles/tailwind.css --watch",
+  "dev-css": "npm run build-css-watch",
     "build-css-prod": "tailwindcss -i ./static/styles/input.css -o ./static/styles/tailwind.css --minify",
     "collectstatic": "python manage.py collectstatic --noinput",
     "build-and-collect": "npm run build-css && npm run collectstatic",
@@ -22,6 +23,7 @@
     "autoprefixer": "^10.4.21",
     "concurrently": "^9.2.0",
     "daisyui": "^5.0.50",
+  "@tailwindcss/typography": "^0.5.13",
     "postcss": "^8.5.6",
     "postcss-cli": "^11.0.1",
     "tailwindcss": "^3.4.0"

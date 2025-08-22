@@ -44,7 +44,8 @@ INSTALLED_APPS = [
     'usuarios',
     'control_ordenes',
     'portal_pacientes',
-    'estudios'
+    'estudios',
+    'informes',
 ]
 
 MIDDLEWARE = [

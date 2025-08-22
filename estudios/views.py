@@ -3,6 +3,7 @@ from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from django.http import Http404
 from .services import client
+from informes.models import Report
 
 @login_required
 def lista_estudios(request):
@@ -21,6 +22,9 @@ def lista_estudios(request):
             return v.split("\\", 1)[0]
         return v or ""
 
+    # Prefetch de reports existentes para minimizar queries: cargar todos por study_internal_id
+    existing_reports = {r.study_internal_id: r for r in Report.objects.filter(study_internal_id__in=studies_ids)}
+
     for sid in studies_ids:
         tags = client.get_study_shared_tags(sid)
 
@@ -34,6 +38,7 @@ def lista_estudios(request):
             if study_uid else None
         )
 
+        report = existing_reports.get(sid)
         studies.append({
             "id": sid,
             "patient_name": norm_name(get("0010,0010")),
@@ -43,12 +48,26 @@ def lista_estudios(request):
             "study_time": get("0008,0030"),
             "modality": short_modality(get("0008,0061")),
             "viewer_url": viewer_url,
+            "report_state": (report.estado if report else 'none'),
+            "report_id": (report.id if report else None),
         })
 
     # Ordenar por fecha y hora descendente (más actuales arriba)
     studies.sort(key=lambda s: (s["study_date"], s["study_time"]), reverse=True)
 
-    return render(request, "estudios/lista_estudios.html", {"studies": studies})
+    total_count = len(studies)
+    total_final = sum(1 for s in studies if s['report_state'] == 'final')
+
+    solo_final = request.GET.get('solo_final') == '1'
+    if solo_final:
+        studies = [s for s in studies if s['report_state'] == 'final']
+
+    return render(request, "estudios/lista_estudios.html", {
+        "studies": studies,
+        "solo_final": solo_final,
+        "total_count": total_count,
+        "total_final": total_final,
+    })
 
 @login_required
 def detalle_estudio(request, study_id: str):

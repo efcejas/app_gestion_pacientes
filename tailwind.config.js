@@ -1,5 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
+  darkMode: 'class', // habilita control manual con la clase 'dark' en <html> o <body>
   content: [
     './templates/**/*.html',
     './*/templates/**/*.html',
@@ -18,7 +19,8 @@ module.exports = {
   },
   plugins: [
     require('daisyui'),
-    require('flowbite/plugin')
+  require('flowbite/plugin'),
+  require('@tailwindcss/typography')
   ],
   // Configuración de DaisyUI
   daisyui: {

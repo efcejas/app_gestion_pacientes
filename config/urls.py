@@ -27,4 +27,5 @@ urlpatterns = [
     # Incluir rutas de la app portal_pacientes
     path("pacientes/", include("portal_pacientes.urls")), # Incluir rutas de la app portal_pacientes
     path("estudios/", include("estudios.urls")),  # Integración Orthanc: listado estudios/series/instancias
+    path("informes/", include("informes.urls")),  # Gestión de informes
 ]
