@@ -5,6 +5,8 @@ from django.contrib import messages
 from django.urls import reverse
 from .models import Report
 from .forms import ReportForm
+from .pdf_utils import render_report_to_pdf
+from django.conf import settings
 from estudios.services import client
 from functools import lru_cache
 
@@ -108,8 +110,23 @@ def crear_o_editar(request, study_id=None, report_id=None):
 				else:
 					form.instance.estado = Report.ESTADO_FINAL
 					form.instance.save(update_fields=['estado'])
-					messages.success(request, 'Informe finalizado.')
-					return redirect('estudios:lista_estudios')
+					# Demo firma digital (placeholder): hash simple del contenido y autor
+					if not form.instance.firma_digital:
+						import hashlib
+						payload = (form.instance.contenido + form.instance.autor.username).encode('utf-8', errors='ignore')
+						hexhash = hashlib.sha256(payload).hexdigest()[:32]
+						form.instance.firma_digital = f"FD-{hexhash}"
+						form.instance.save(update_fields=['firma_digital'])
+					# Generar PDF aquí también (incluye datos paciente/estudio)
+					pdf_context = {'study_info': study_info}
+					success, content_file, err = render_report_to_pdf(form.instance, context_extra=pdf_context)
+					if success:
+						filename = f"reporte_{form.instance.id}.pdf"
+						form.instance.pdf_file.save(filename, content_file, save=True)
+						messages.success(request, 'Informe finalizado y PDF generado.')
+					else:
+						messages.warning(request, f'Informe finalizado, pero falló la generación del PDF: {err}')
+					return redirect('informes:ver_final', form.instance.id)
 			messages.success(request, 'Borrador guardado.')
 			return redirect(reverse('informes:editar', args=[report.id]))
 	else:
@@ -144,7 +161,39 @@ def finalizar(request, report_id: int):
 		return redirect('informes:editar', report_id)
 	report.estado = Report.ESTADO_FINAL
 	report.save(update_fields=['estado'])
-	messages.success(request, 'Informe finalizado.')
+	# Firma digital demo si falta
+	if not report.firma_digital:
+		import hashlib
+		payload = (report.contenido + report.autor.username).encode('utf-8', errors='ignore')
+		report.firma_digital = 'FD-' + hashlib.sha256(payload).hexdigest()[:32]
+		report.save(update_fields=['firma_digital'])
+	# Generar PDF (intentar obtener tags para datos de paciente)
+	pdf_extra = {}
+	try:
+		shared = client.get_study_shared_tags(report.study_internal_id)
+		def val(code):
+			return (shared.get(code, {}) or {}).get('Value') or ''
+		name_raw = val('0010,0010')
+		patient_name = name_raw.replace('^', ' ').strip() if isinstance(name_raw, str) else name_raw
+		pdf_extra['study_info'] = {
+			'patient_name': patient_name,
+			'patient_id': val('0010,0020'),
+			'patient_sex': val('0010,0040'),
+			'birth_date': val('0010,0030'),
+			'study_description': val('0008,1030'),
+			'study_date': val('0008,0020'),
+			'study_time': val('0008,0030'),
+			'accession_number': val('0008,0050'),
+		}
+	except Exception:
+		pass
+	success, content_file, err = render_report_to_pdf(report, context_extra=pdf_extra)
+	if success:
+		filename = f"reporte_{report.id}.pdf"
+		report.pdf_file.save(filename, content_file, save=True)
+		messages.success(request, 'Informe finalizado y PDF generado.')
+	else:
+		messages.warning(request, f'Informe finalizado, pero falló la generación del PDF: {err}')
 	return redirect('estudios:lista_estudios')
 
 
@@ -181,3 +230,5 @@ def ver_final(request, report_id: int):
 		'viewer_url': viewer_url,
 		'study_info': study_info,
 	})
+
+

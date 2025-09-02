@@ -1,113 +1,125 @@
 {% extends 'base_tailwind.html' %}
 {% block content %}
-<div class="max-w-6xl mx-auto mt-8 space-y-6">
-  <!-- Breadcrumb -->
-  <nav class="text-xs text-gray-500 dark:text-gray-400" aria-label="Breadcrumb">
-    <ol class="flex flex-wrap gap-1 items-center">
-      <li>
-        <a href="{% url 'estudios:lista_estudios' %}" class="text-blue-600 hover:underline">Estudios</a>
-      </li>
-      <li aria-hidden="true">/</li>
-      <li>
-        <a href="#" class="text-gray-500 hover:underline">Informe Final</a>
-      </li>
-    </ol>
-  </nav>
+<div class="w-full mx-auto mt-2 space-y-6">
 
-<div class="max-w-lg p-6 bg-white border border-gray-200 rounded-lg shadow-sm flex flex-col">
-
-  <!-- Encabezado -->
-  <div class="mb-4 flex items-start justify-between md:gap-4">
-    <!-- Nombre + subtítulo -->
-    <div>
-      <h1 class="text-2xl font-bold text-blue-700">
-        {% if study_info.patient_name %}
-        {{ study_info.patient_name }}
-        {% else %}
-        Paciente
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+  <!-- Tarjeta paciente -->
+  <!-- Tarjeta izquierda: Datos del estudio / paciente -->
+    <div class="p-6 bg-white border border-gray-200 rounded-lg shadow-sm flex flex-col">
+    
+      <!-- Encabezado -->
+      <div class="mb-4 flex items-start justify-between md:gap-4">
+        <!-- Nombre + subtítulo -->
+        <div>
+          <h1 class="text-2xl font-bold text-blue-700">
+            {% if study_info.patient_name %}
+              {{ study_info.patient_name }}
+            {% else %}
+              Paciente
+            {% endif %}
+          </h1>
+        </div>
+    
+        <!-- Icono -->
+        <div class="flex-shrink-0 rounded-full bg-blue-700 p-3">
+          <svg class="w-6 h-6 text-white" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
+            <path fill-rule="evenodd"
+              d="M12 4a4 4 0 1 0 0 8 4 4 0 0 0 0-8Zm-2 9a4 4 0 0 0-4 4v1a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2v-1a4 4 0 0 0-4-4h-4Z"
+              clip-rule="evenodd" />
+          </svg>
+        </div>
+      </div>
+    
+      <!-- Datos del estudio -->
+      <div class="mb-3 space-y-1">
+        {% if study_info.patient_id %}
+        <p class="font-normal text-gray-700">DNI: {{ study_info.patient_id }}</p>
         {% endif %}
-      </h1>
-      <div class="badge badge-success">
-        <svg class="size-[1em]" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><g fill="currentColor" stroke-linejoin="miter" stroke-linecap="butt"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-linecap="square" stroke-miterlimit="10" stroke-width="2"></circle><polyline points="7 13 10 16 17 8" fill="none" stroke="currentColor" stroke-linecap="square" stroke-miterlimit="10" stroke-width="2"></polyline></g></svg>
-        {{ report.estado|capfirst }}
+        {% if study_info.study_description %}
+        <p class="font-normal text-gray-700">Descripción: {{ study_info.study_description }}</p>
+        {% endif %}
+        <p class="font-normal text-gray-700">
+          Fecha:
+          {% if study_info.study_date %}
+          {{ study_info.study_date|slice:":4"}}-{{ study_info.study_date|slice:"4:6"}}-{{ study_info.study_date|slice:"6:8" }}
+          {% else %}
+          -
+          {% endif %}
+        </p>
+      </div>
+    
+    </div>
+
+  <!-- Tarjeta estado / enlaces -->
+  <div class="p-6 bg-white border border-gray-200 rounded-lg shadow-sm flex flex-col gap-4">
+    <header class="flex items-start justify-between gap-3">
+      <div class="flex items-center flex-wrap gap-2">
+          <h1 class="text-sm font-bold text-blue-700 m-0">Estado del informe:</h1>
+          {% if not report %}
+            <span class="badge badge-warning" title="Nuevo informe">Nuevo</span>
+          {% elif report.es_final %}
+            <span class="badge badge-success" title="Informe finalizado">Final</span>
+          {% else %}
+            <span class="badge badge-warning" title="Informe en borrador">Borrador</span>
+          {% endif %}
+        </div>
+        {% if viewer_url %}
+        <a href="{{ viewer_url }}" target="_blank" rel="noopener" class="inline-flex items-center gap-1 text-xs font-medium text-blue-600 hover:text-blue-700 hover:underline">
+          Ver imágenes
+          <!-- Heroicons eye icon -->
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M1.458 12C2.732 7.943 6.523 5 12 5c5.477 0 9.268 2.943 10.542 7-1.274 4.057-5.065 7-10.542 7-5.477 0-9.268-2.943-10.542-7z" />
+            <circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="2" fill="none"/>
+          </svg>
+        </a>
+        {% endif %}
+    </header>
+    {% if report %}
+      <div class="text-[15px] text-gray-700">
+        Finalizado: {{ report.actualizado|date:"Y-m-d H:i" }}
+      </div>
+    {% endif %}
+    <div class="border-t border-gray-200 pt-4">
+      <div class="flex justify-end flex-wrap gap-2 mt-4">
+        <a href="#" class="btn btn-xs btn-outline btn-error">
+          Adenda
+        </a>
+        <a href="#" class="btn btn-xs btn-outline btn-info">
+          Enviar por mail
+        </a>
+        <a href="#" class="btn btn-xs btn-outline btn-warning">
+          Recitar
+        </a>
       </div>
     </div>
-    
-    <!-- Icono -->
-    <div class="flex-shrink-0 rounded-full bg-blue-700 p-3">
-      <svg class="w-6 h-6 text-white" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
-        <path fill-rule="evenodd"
-          d="M12 4a4 4 0 1 0 0 8 4 4 0 0 0 0-8Zm-2 9a4 4 0 0 0-4 4v1a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2v-1a4 4 0 0 0-4-4h-4Z"
-          clip-rule="evenodd" />
-      </svg>
+  </div>
+
+  <!-- Contenido del informe final -->
+  <section class="md:col-span-2">
+    <div class="bg-white border border-gray-200 rounded-lg shadow-sm p-6 prose max-w-none dark:prose-invert text-sm leading-relaxed">
+      {{ report.contenido|safe }}
     </div>
-  </div>
-  
-  <!-- Datos del estudio -->
-  <div class="mb-3 space-y-1">
-    {% if study_info.patient_id %}
-    <p class="font-normal text-gray-700">DNI: {{ study_info.patient_id }}</p>
-    {% endif %}
-    {% if study_info.study_description %}
-    <p class="font-normal text-gray-700">Descripción: {{ study_info.study_description }}</p>
-    {% endif %}
-    <p class="font-normal text-gray-700">
-      Fecha:
-      {% if study_info.study_date %}
-      {{ study_info.study_date|slice:":4"}}-{{ study_info.study_date|slice:"4:6"}}-{{ study_info.study_date|slice:"6:8" }}
-      {% else %}
-      -
-      {% endif %}
-    </p>
-  </div>
+  </section>
 
-  <!-- Footer -->
-  <div class="mt-4 pt-3 border-t text-end text-xs text-gray-500">
-    Finalizado: {{ report.actualizado|date:"Y-m-d H:i" }}
-  </div>
-
+  {% if report.pdf_file %}
+  <section class="md:col-span-2">
+    <div class="bg-white border border-gray-200 rounded-lg shadow-sm p-4 flex flex-col gap-3">
+      <h2 class="text-sm font-semibold text-gray-700 flex items-center gap-2 m-0">PDF generado <span class="badge badge-outline">Legal</span></h2>
+      <p class="text-xs text-gray-600 m-0">El PDF se abrirá en una nueva pestaña usando el visor de tu navegador / sistema.</p>
+      <div class="flex flex-wrap gap-2 text-xs">
+        <a href="{{ report.pdf_file.url }}" target="_blank" rel="noopener" class="btn btn-xs btn-primary">Ver PDF</a>
+        <a href="{{ report.pdf_file.url }}" download class="btn btn-xs btn-outline">Descargar PDF</a>
+      </div>
+    </div>
+  </section>
+  {% else %}
+  <section class="md:col-span-2">
+    <div class="bg-white border border-gray-100 rounded-lg shadow-sm p-4 text-xs text-gray-500">
+      PDF aún no generado.
+    </div>
+  </section>
+  {% endif %}
 </div>
 
-  <div class="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
-    <div class="flex gap-2 flex-wrap">
-      {% if viewer_url %}
-        <a href="{{ viewer_url }}" target="_blank" rel="noopener"
-           class="inline-flex items-center gap-1 px-3 h-9 rounded bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm"
-           title="Ver en visor OHIF">Ver estudio</a>
-      {% endif %}
-      <a href="{% url 'estudios:lista_estudios' %}"
-         class="inline-flex items-center px-3 h-9 text-sm font-medium border border-gray-300 rounded bg-white text-gray-700 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500">Volver</a>
-    </div>
-  </div>
-
-  <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-    <aside class="lg:col-span-4 space-y-6">
-      <div class="bg-white rounded-lg border shadow-sm">
-        <div class="p-4">
-          <h2 class="font-semibold text-sm text-gray-700 mb-2">Metadatos básicos</h2>
-          <dl class="text-xs text-gray-600 space-y-1">
-            <div class="flex justify-between"><dt class="font-medium">Paciente</dt><dd class="text-right truncate max-w-[60%]">{{ study_info.patient_name|default:"-" }}</dd></div>
-            <div class="flex justify-between"><dt class="font-medium">ID</dt><dd>{{ study_info.patient_id|default:"-" }}</dd></div>
-            <div class="flex justify-between"><dt class="font-medium">Accession</dt><dd>{{ study_info.accession_number|default:"-" }}</dd></div>
-            <div class="flex justify-between"><dt class="font-medium">Descripción</dt><dd class="text-right truncate max-w-[60%]">{{ study_info.study_description|default:"-" }}</dd></div>
-            <div class="flex justify-between"><dt class="font-medium">Fecha</dt><dd>{% if study_info.study_date %}{{ study_info.study_date|slice:":4" }}-{{ study_info.study_date|slice:"4:6" }}-{{ study_info.study_date|slice:"6:8" }}{% else %}-{% endif %}</dd></div>
-          </dl>
-        </div>
-        <div class="p-4 bg-gray-50 text-[11px] text-gray-500 border-t">
-          Finalizado: {{ report.actualizado|date:"Y-m-d H:i" }}
-        </div>
-      </div>
-      <div class="p-4 bg-blue-50 border border-blue-200 rounded text-xs text-blue-800">
-        Informe bloqueado (solo lectura).
-      </div>
-    </aside>
-
-    <section class="lg:col-span-8">
-      <div class="bg-white border rounded shadow-sm p-6 prose max-w-none">
-        {{ report.contenido|linebreaks }}
-      </div>
-    </section>
-
-  </div>
 </div>
 {% endblock %}

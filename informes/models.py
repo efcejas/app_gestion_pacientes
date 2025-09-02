@@ -20,6 +20,8 @@ class Report(models.Model):
 	estado = models.CharField(max_length=16, choices=ESTADOS, default=ESTADO_DRAFT, db_index=True)
 	creado = models.DateTimeField(auto_now_add=True)
 	actualizado = models.DateTimeField(auto_now=True)
+	pdf_file = models.FileField(upload_to='reportes_pdf/', blank=True, null=True, help_text='Versión PDF generada al finalizar')
+	firma_digital = models.CharField(max_length=256, blank=True, help_text='Representación (demo) de la firma digital del autor')
 
 	class Meta:
 		ordering = ['-creado']

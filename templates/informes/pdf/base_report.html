@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Informe {{ report.study_instance_uid }}</title>
+    <style>
+        body { font-family: DejaVu Sans, Arial, sans-serif; font-size: 12px; line-height: 1.4; }
+        .content { margin-top: 10px; }
+        .footer { position: fixed; bottom: 10px; left: 0; right:0; text-align: center; font-size: 10px; color: #666; }
+        @page { margin: 25mm 18mm 20mm 18mm; }
+    </style>
+</head>
+<body>
+    <!-- Encabezado: logo e institución (alineación vertical centrada) -->
+    <table width="100%" style="margin-bottom:6px; border-bottom:1px solid #666;">
+        <tr>
+            <td style="width:50px; vertical-align:middle; text-align:left; padding:2px 4px 4px 0;">
+                {% if logo_data_uri %}
+                    <img src="{{ logo_data_uri }}" alt="Logo" height="60" style="max-height:60px; width:auto;" />
+                {% endif %}
+            </td>
+            <td style="vertical-align:middle; font-size:10px; line-height:1.2;">
+                <strong style="font-size:14px; line-height:1.1; display:block; margin-bottom:3px;">{{ institucion.nombre }}</strong>
+                {{ institucion.linea1 }}<br>
+                {{ institucion.linea2 }}
+            </td>
+        </tr>
+    </table>
+    <!-- Banda datos paciente y metadatos en 3 columnas -->
+    <table width="100%" style="font-size:10px; line-height:1.15; margin-bottom:12px; border-bottom:1px solid #999; padding-bottom:4px;">
+        <tr>
+            <td style="width:33%; vertical-align:top;">
+                {% if study_info %}
+                    <strong>Paciente:</strong> {{ study_info.patient_name|default:"-" }}<br>
+                    DNI: {{ study_info.patient_id|default:"-" }}
+                {% else %}
+                    <strong>Paciente:</strong> -<br>DNI: -
+                {% endif %}
+            </td>
+            <td style="width:33%; vertical-align:top;">
+                {% if study_info %}
+                    {% if study_info.birth_date and study_info.birth_date|length >= 8 %}
+                        Nac.: {{ study_info.birth_date|slice:"6:8" }}-{{ study_info.birth_date|slice:"4:6" }}-{{ study_info.birth_date|slice:"0:4" }}
+                    {% else %}
+                        Nac.: -
+                    {% endif %}<br>
+                    {% if study_info.study_date and study_info.study_date|length >= 8 %}
+                        Estudio: {{ study_info.study_date|slice:"6:8" }}-{{ study_info.study_date|slice:"4:6" }}-{{ study_info.study_date|slice:"0:4" }}
+                    {% else %}
+                        Estudio: -
+                    {% endif %}
+                {% else %}
+                    Nac.: -<br>Estudio: -
+                {% endif %}
+            </td>
+            <td style="width:34%; vertical-align:top;">
+                Creado: {{ report.creado|date:"d-m-Y H:i" }}<br>
+                Finalizado: {{ report.actualizado|date:"d-m-Y H:i" }}
+            </td>
+        </tr>
+    </table>
+    <div class="content">
+        {{ report.contenido|safe }}
+    </div>
+    <table width="100%" style="margin-top:40px;">
+        <tr>
+            <td style="text-align:center; font-size:10px; color:#444;">
+                <div style="height:55px;">
+                    <!-- Espacio reservado para futura firma manuscrita -->
+                </div>
+                <div style="margin-top:2px; font-weight:bold;">{{ report.autor.get_full_name|default:report.autor.username }}</div>
+                <div style="margin-top:2px;">
+                    {% if report.firma_digital %}
+                        <span style="display:inline-block; font-size:9px; background:#f2f2f2; padding:2px 5px; border:1px solid #ccc;">Firma Digital (demo): {{ report.firma_digital }}</span>
+                    {% else %}
+                        <em style="font-size:9px;">Firma digital no generada</em>
+                    {% endif %}
+                </div>
+            </td>
+        </tr>
+    </table>
+    <div class="footer">Generado por el sistema - Página <pdf:pagenumber/> de <pdf:pagecount/></div>
+</body>
+</html>

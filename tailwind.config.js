@@ -25,6 +25,20 @@ module.exports = {
   // Configuración de DaisyUI
   daisyui: {
     themes: [
+      // Tema personalizado principal
+      {
+        app: {
+          primary: '#1d4ed8',
+          secondary: '#9333ea',
+          accent: '#0d9488',
+          neutral: '#1f2937',
+          'base-100': '#ffffff',
+          info: '#0ea5e9',       // Color para badge-info
+          success: '#10b981',    // badge-success
+          warning: '#f59e0b',    // badge-warning
+          error: '#ef4444',      // badge-error
+        },
+      },
       "light",
       "dark",
       "cupcake",

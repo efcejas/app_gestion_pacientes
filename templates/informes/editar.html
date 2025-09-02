@@ -1,123 +1,125 @@
 {% extends 'base_tailwind.html' %}
 {% load static %}
 {% block content %}
-
-<div class="max-w-6xl mx-auto mt-6 space-y-6">
-  <!-- Breadcrumb -->
-  <nav class="text-xs text-gray-500 dark:text-gray-400" aria-label="Breadcrumb">
-    <ol class="flex flex-wrap gap-1 items-center">
-      <li><a href="{% url 'estudios:lista_estudios' %}" class="hover:text-gray-700 dark:hover:text-gray-200">Estudios</a></li>
-      <li>/</li>
-      <li class="text-gray-700 dark:text-gray-200 font-medium">{% if report %}Editar informe{% else %}Nuevo informe{% endif %}</li>
-    </ol>
-  </nav>
-
-  <!-- Encabezado principal -->
-  <div class="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
-    <div class="space-y-1">
-      <h1 class="text-2xl font-bold text-blue-700 dark:text-blue-400 flex items-center gap-2">
-        {% if report %}
-          {{ study_info.patient_name|default:"Sin nombre" }}
-        {% else %}
-          Nuevo informe
-        {% endif %}
-      </h1>
-      <div class="flex flex-wrap gap-2">
-        {% if study_info.modality %}
-          <span class="px-2 py-0.5 rounded bg-indigo-100 text-indigo-700 dark:bg-indigo-800 dark:text-indigo-100 text-[11px] font-medium">{{ study_info.modality }}</span>
+<div class="w-full mx-auto mt-2">
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <!-- Tarjeta izquierda: Datos del estudio / paciente -->
+    <div class="p-6 bg-white border border-gray-200 rounded-lg shadow-sm flex flex-col">
+    
+      <!-- Encabezado -->
+      <div class="mb-4 flex items-start justify-between md:gap-4">
+        <!-- Nombre + subtítulo -->
+        <div>
+          <h1 class="text-2xl font-bold text-blue-700">
+            {% if study_info.patient_name %}
+              {{ study_info.patient_name }}
+            {% else %}
+              Paciente
+            {% endif %}
+          </h1>
+        </div>
+    
+        <!-- Icono -->
+        <div class="flex-shrink-0 rounded-full bg-blue-700 p-3">
+          <svg class="w-6 h-6 text-white" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
+            <path fill-rule="evenodd"
+              d="M12 4a4 4 0 1 0 0 8 4 4 0 0 0 0-8Zm-2 9a4 4 0 0 0-4 4v1a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2v-1a4 4 0 0 0-4-4h-4Z"
+              clip-rule="evenodd" />
+          </svg>
+        </div>
+      </div>
+    
+      <!-- Datos del estudio -->
+      <div class="mb-3 space-y-1">
+        {% if study_info.patient_id %}
+        <p class="font-normal text-gray-700">DNI: {{ study_info.patient_id }}</p>
         {% endif %}
         {% if study_info.study_description %}
-          <span class="px-2 py-0.5 rounded bg-slate-100 text-slate-600 dark:bg-slate-700 dark:text-slate-200 text-[11px]">{{ study_info.study_description|truncatechars:40 }}</span>
+        <p class="font-normal text-gray-700">Descripción: {{ study_info.study_description }}</p>
         {% endif %}
+        <p class="font-normal text-gray-700">
+          Fecha:
+          {% if study_info.study_date %}
+          {{ study_info.study_date|slice:":4"}}-{{ study_info.study_date|slice:"4:6"}}-{{ study_info.study_date|slice:"6:8" }}
+          {% else %}
+          -
+          {% endif %}
+        </p>
       </div>
+    
     </div>
-    <div class="flex items-center flex-wrap gap-3">
-      {% if report and report.es_final %}
-        <span class="px-2 py-1 text-xs font-semibold rounded bg-blue-100 text-blue-700">Final</span>
-      {% else %}
-        <span class="px-2 py-1 text-xs font-semibold rounded bg-amber-100 text-amber-700">Borrador</span>
-      {% endif %}
-      {% if viewer_url %}
-        <a href="{{ viewer_url }}" target="_blank" rel="noopener"
-           class="inline-flex items-center gap-1 px-3 h-9 rounded bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm"
-           title="Abrir en visor OHIF">
-          <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.477 0 8.268 2.943 9.542 7-1.274 4.057-5.065 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-          </svg>
-          Ver estudio
-        </a>
-      {% endif %}
-      <button id="toggle-wide" type="button" class="text-xs px-2 py-1 rounded border border-transparent hover:border-gray-300 text-gray-600 dark:text-gray-300" title="Alternar ancho" aria-pressed="false">↔</button>
-    </div>
-  </div>
 
-  <!-- Layout de dos columnas -->
-  <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-    <!-- Columna lateral info -->
-    <aside class="lg:col-span-4 space-y-6" id="side-panel">
-      <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm divide-y divide-gray-200 dark:divide-gray-700">
-        <div class="p-4">
-          <h2 class="font-semibold text-sm text-gray-900 dark:text-gray-100 mb-2">Datos del estudio</h2>
-          <dl class="text-xs text-gray-600 dark:text-gray-300 space-y-1">
-            <div class="flex justify-between"><dt class="font-medium">Paciente</dt><dd class="text-right truncate max-w-[60%]">{{ study_info.patient_name|default:"-" }}</dd></div>
-            <div class="flex justify-between"><dt class="font-medium">ID</dt><dd>{{ study_info.patient_id|default:"-" }}</dd></div>
-            <div class="flex justify-between"><dt class="font-medium">Accession</dt><dd>{{ study_info.accession_number|default:"-" }}</dd></div>
-            <div class="flex justify-between"><dt class="font-medium">Descripción</dt><dd class="text-right truncate max-w-[60%]">{{ study_info.study_description|default:"-" }}</dd></div>
-            <div class="flex justify-between"><dt class="font-medium">Fecha</dt><dd>{% if study_info.study_date %}{{ study_info.study_date|slice:":4" }}-{{ study_info.study_date|slice:"4:6" }}-{{ study_info.study_date|slice:"6:8" }}{% else %}-{% endif %}</dd></div>
-          </dl>
+    <!-- Tarjeta derecha: Estado del informe / enlaces / info -->
+    <div class="p-6 bg-white border border-gray-200 rounded-lg shadow-sm flex flex-col gap-4">
+      <header class="flex items-start justify-between gap-3">
+        <div class="flex items-center flex-wrap gap-2">
+          <h1 class="text-sm font-bold text-blue-700 m-0">Estado del informe:</h1>
+          {% if not report %}
+            <span class="badge badge-warning" title="Nuevo informe">Nuevo</span>
+          {% elif report.es_final %}
+            <span class="badge badge-success" title="Informe finalizado">Final</span>
+          {% else %}
+            <span class="badge badge-warning" title="Informe en borrador">Borrador</span>
+          {% endif %}
         </div>
-        {% if report %}
-        <div class="p-4 bg-gray-50 dark:bg-gray-700/50 text-[11px] text-gray-500 dark:text-gray-400">
+        {% if viewer_url %}
+        <a href="{{ viewer_url }}" target="_blank" rel="noopener" class="inline-flex items-center gap-1 text-xs font-medium text-blue-600 hover:text-blue-700 hover:underline">
+          Ver imágenes
+          <!-- Heroicons eye icon -->
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M1.458 12C2.732 7.943 6.523 5 12 5c5.477 0 9.268 2.943 10.542 7-1.274 4.057-5.065 7-10.542 7-5.477 0-9.268-2.943-10.542-7z" />
+            <circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="2" fill="none"/>
+          </svg>
+        </a>
+        {% endif %}
+      </header>
+      {% if report %}
+        <div class="text-[15px] text-gray-700">
           Creado: {{ report.creado|date:"Y-m-d H:i" }}<br>
           Actualizado: {{ report.actualizado|date:"Y-m-d H:i" }}
         </div>
-        {% endif %}
-      </div>
+      {% endif %}
       {% if report and report.es_final %}
-        <div class="p-4 bg-blue-50 border border-blue-200 rounded text-xs text-blue-800">
-          Informe finalizado. Solo lectura.
-        </div>
+        <div class="p-3 bg-blue-50 border border-blue-200 rounded text-xs text-blue-800">Informe finalizado. Solo lectura.</div>
       {% else %}
-        <div class="p-4 bg-amber-50 border border-amber-200 rounded text-xs text-amber-800">
-          Guardá con “Guardar borrador” o cierra definitivamente con “Finalizar”.
+        <div class="p-3 bg-amber-50 border border-amber-200 rounded text-xs text-amber-800">Guardá con “Guardar borrador” o cierra definitivamente con “Finalizar”.</div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<!-- Editor / formulario a ancho completo relativo al layout principal -->
+<div class="mt-6 w-full">
+  <section id="main-panel">
+    <form method="post" id="report-form"
+      class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm flex flex-col" novalidate data-is-final="{{ report.es_final|yesno:'true,false' }}">
+      {% csrf_token %}
+
+      {% if form.non_field_errors %}
+        <div class="p-4 border-b bg-red-50 text-red-700 text-sm">
+          {{ form.non_field_errors }}
         </div>
       {% endif %}
-    </aside>
 
-    <!-- Columna principal formulario con WYSIWYG -->
-    <section class="lg:col-span-8" id="main-panel">
-  <form method="post" id="report-form"
-    class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm flex flex-col h-full"
-    novalidate
-    data-is-final="{{ report.es_final|yesno:'true,false' }}">
-        {% csrf_token %}
+      <div class="p-5 flex-1 flex flex-col gap-3">
+        <div class="flex items-center justify-between gap-4 flex-wrap">
+          <label class="block text-sm font-medium text-gray-700 dark:text-gray-200">
+            Contenido del informe
+          </label>
+          <small id="save-indicator" class="text-[11px] text-gray-400">Sin cambios</small>
+        </div>
 
-        {% if form.non_field_errors %}
-          <div class="p-4 border-b bg-red-50 text-red-700 text-sm">
-            {{ form.non_field_errors }}
-          </div>
-        {% endif %}
+        <!-- Textarea real del form (oculto) -->
+        <div class="hidden">
+          {{ form.contenido }}
+        </div>
 
-        <div class="p-5 flex-1 flex flex-col gap-3">
-          <div class="flex items-center justify-between gap-4 flex-wrap">
-            <label class="block text-sm font-medium text-gray-700 dark:text-gray-200">
-              Contenido del informe
-            </label>
-            <small id="save-indicator" class="text-[11px] text-gray-400">Sin cambios</small>
-          </div>
-
-          <!-- Textarea real del form (oculto) -->
-          <div class="hidden">
-            {{ form.contenido }}
-          </div>
-
-          <!-- WYSIWYG: Toolbar + Editor -->
-          <div class="w-full border border-gray-200 rounded-lg bg-gray-50 dark:bg-gray-700 dark:border-gray-600">
-            <!-- Toolbar (tu bloque Flowbite/Tailwind) -->
-            <div class="px-3 py-2 border-b border-gray-200 dark:border-gray-600">
-              <div class="flex flex-wrap items-center gap-2">
-                <div class="flex flex-wrap items-center gap-1.5 rtl:space-x-reverse">
+        <!-- WYSIWYG: Toolbar + Editor -->
+        <div class="w-full border border-gray-200 rounded-lg bg-gray-50 dark:bg-gray-700 dark:border-gray-600">
+          <!-- Toolbar (tu bloque Flowbite/Tailwind) -->
+          <div class="px-3 py-2 border-b border-gray-200 dark:border-gray-600">
+            <div class="flex flex-wrap items-center gap-2">
+              <div class="flex flex-wrap items-center gap-1.5 rtl:space-x-reverse">
 
                   <!-- Botones básicos -->
                   <button id="toggleBoldButton" data-tooltip-target="tooltip-bold" type="button" class="p-1.5 text-gray-500 rounded-sm cursor-pointer hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-600">
@@ -321,29 +323,28 @@
              class="inline-flex items-center px-4 py-2 text-sm font-medium border border-gray-300 rounded-md bg-white text-gray-700 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500">
             Volver
           </a>
-          <div class="flex gap-3">
-            {% if not report or not report.es_final %}
-              <button type="submit" name="guardar"
-                class="inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold rounded-md bg-blue-600 text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm"
-                aria-label="Guardar borrador">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M4 7a2 2 0 012-2h10l4 4v10a2 2 0 01-2 2H6a2 2 0 01-2-2V7z" />
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M8 7v4h8V7M8 21v-8h8v8" />
-                </svg>
-                <span>Guardar borrador</span>
-              </button>
-              <button type="submit" name="finalizar" id="btn-finalizar"
-                class="inline-flex items-center gap-1 px-4 py-2 text-sm font-semibold rounded-md bg-green-600 text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 shadow-sm">
-                <span>Finalizar</span>
-              </button>
-            {% else %}
-              <span class="text-xs text-gray-500 self-center">Sin acciones</span>
-            {% endif %}
-          </div>
+            <div class="flex gap-3">
+              {% if not report or not report.es_final %}
+                <button type="submit" name="guardar"
+                  class="inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold rounded-md bg-blue-600 text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm"
+                  aria-label="Guardar borrador">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M4 7a2 2 0 012-2h10l4 4v10a2 2 0 01-2 2H6a2 2 0 01-2-2V7z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M8 7v4h8V7M8 21v-8h8v8" />
+                  </svg>
+                  <span>Guardar borrador</span>
+                </button>
+                <button type="submit" name="finalizar" id="btn-finalizar"
+                  class="inline-flex items-center gap-1 px-4 py-2 text-sm font-semibold rounded-md bg-green-600 text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 shadow-sm">
+                  <span>Finalizar</span>
+                </button>
+              {% else %}
+                <span class="text-xs text-gray-500 self-center">Sin acciones</span>
+              {% endif %}
+            </div>
         </div>
       </form>
-    </section>
-  </div>
+  </section>
 </div>
 
 <!-- Flowbite JS (necesario para dropdowns/tooltip) -->

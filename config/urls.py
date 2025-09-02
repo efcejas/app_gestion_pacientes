@@ -17,6 +17,8 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from django.views.generic import RedirectView
+from django.conf import settings
+from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -29,3 +31,7 @@ urlpatterns = [
     path("estudios/", include("estudios.urls")),  # Integración Orthanc: listado estudios/series/instancias
     path("informes/", include("informes.urls")),  # Gestión de informes
 ]
+
+# Servir archivos MEDIA en desarrollo
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
