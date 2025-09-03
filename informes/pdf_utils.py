@@ -19,11 +19,10 @@ def render_report_to_pdf(report, context_extra=None, template_name='informes/pdf
     try:
         import base64, os
         from pathlib import Path
+        fname = getattr(settings, 'LOGO_PDF_FILENAME', 'logo_cmi.png')
         candidates = [
-            Path(settings.BASE_DIR) / 'static' / 'img' / 'logo_cmi.png',
-            Path(settings.BASE_DIR) / 'static' / 'img' / 'CMIlogo.png',
-            Path(settings.BASE_DIR) / 'staticfiles' / 'img' / 'logo_cmi.png',
-            Path(settings.BASE_DIR) / 'staticfiles' / 'img' / 'CMIlogo.png',
+            Path(settings.BASE_DIR) / 'static' / 'img' / fname,
+            Path(settings.BASE_DIR) / 'staticfiles' / 'img' / fname,
         ]
         for c in candidates:
             if not c.exists() or not c.is_file():
@@ -50,9 +49,9 @@ def render_report_to_pdf(report, context_extra=None, template_name='informes/pdf
         logger.debug('Error general al preparar logo', exc_info=True)
     # Información institucional básica (placeholder editable)
     context.setdefault('institucion', {
-        'nombre': 'Centro Médico Integral',
-        'linea1': 'Av. Salud 1234 - Ciudad',
-        'linea2': 'Tel: (000) 000-0000 | info@cmi.local',
+        'nombre': getattr(settings, 'INSTITUCION_NOMBRE', 'Centro Médico Integral'),
+        'linea1': getattr(settings, 'INSTITUCION_LINEA1', ''),
+        'linea2': getattr(settings, 'INSTITUCION_LINEA2', ''),
     })
     if context_extra:
         context.update(context_extra)

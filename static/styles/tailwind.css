@@ -2526,13 +2526,6 @@ input:checked + .toggle-bg {
   height: var(--size);
 }
 
-.badge-outline {
-  color: var(--badge-color);
-  --badge-bg: #0000;
-  background-image: none;
-  border-color: currentColor;
-}
-
 .badge-success {
   --badge-color: var(--color-success);
   --badge-fg: var(--color-success-content);
@@ -96166,6 +96159,14 @@ input:checked + .toggle-bg {
     grid-column: span 2 / span 2;
   }
 
+  .md\:ml-auto {
+    margin-left: auto;
+  }
+
+  .md\:mt-0 {
+    margin-top: 0px;
+  }
+
   .md\:block {
     display: block;
   }
@@ -96180,6 +96181,18 @@ input:checked + .toggle-bg {
 
   .md\:grid-cols-2 {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .md\:flex-row {
+    flex-direction: row;
+  }
+
+  .md\:items-center {
+    align-items: center;
+  }
+
+  .md\:justify-between {
+    justify-content: space-between;
   }
 
   .md\:gap-4 {

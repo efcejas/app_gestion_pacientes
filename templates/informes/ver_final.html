@@ -98,27 +98,36 @@
   <section class="md:col-span-2">
     <div class="bg-white border border-gray-200 rounded-lg shadow-sm p-6 prose max-w-none dark:prose-invert text-sm leading-relaxed">
       {{ report.contenido|safe }}
-    </div>
-  </section>
-
-  {% if report.pdf_file %}
-  <section class="md:col-span-2">
-    <div class="bg-white border border-gray-200 rounded-lg shadow-sm p-4 flex flex-col gap-3">
-      <h2 class="text-sm font-semibold text-gray-700 flex items-center gap-2 m-0">PDF generado <span class="badge badge-outline">Legal</span></h2>
-      <p class="text-xs text-gray-600 m-0">El PDF se abrirá en una nueva pestaña usando el visor de tu navegador / sistema.</p>
-      <div class="flex flex-wrap gap-2 text-xs">
+      <footer class="mt-6 border-t border-gray-300 pt-4">
+        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+          <div class="flex items-center gap-2 text-xs text-green-600">
+        <svg class="w-4 h-4 text-green-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+        </svg>
+        PDF final generado correctamente
+          </div>
+          {% if report.pdf_file %}
+          <div class="flex flex-wrap gap-2 mt-2 md:mt-0 md:ml-auto justify-end">
         <a href="{{ report.pdf_file.url }}" target="_blank" rel="noopener" class="btn btn-xs btn-primary">Ver PDF</a>
         <a href="{{ report.pdf_file.url }}" download class="btn btn-xs btn-outline">Descargar PDF</a>
-      </div>
-    </div>
-  </section>
-  {% else %}
-  <section class="md:col-span-2">
-    <div class="bg-white border border-gray-100 rounded-lg shadow-sm p-4 text-xs text-gray-500">
-      PDF aún no generado.
-    </div>
-  </section>
+          </div>
+          {% else %}
+          <div class="flex flex-wrap gap-2 mt-2 md:mt-0 md:ml-auto justify-end">
+            <span class="text-xs text-gray-500">PDF aún no generado.</span>
+          </div>
+          {% endif %}
+        </div>
+  {% if report.firma_digital %}
+    <p><strong>Firma Digital (demo, sin validez legal):</strong> <code>{{ report.firma_digital }}</code></p>
   {% endif %}
+      </footer>
+    </div>
+  </section>
+  <div class="md:col-span-2 flex justify-end mt-2">
+    <a href="{% url 'estudios:lista_estudios' %}" class="btn btn-sm btn-outline btn-primary flex items-center gap-1">
+      ← Volver a la lista de estudios
+    </a>
+  </div>
 </div>
 
 </div>

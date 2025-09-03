@@ -3,7 +3,7 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 from django.db import transaction
 from django.contrib import messages
 from django.urls import reverse
-from .models import Report
+from .models import Report, LogInforme
 from .forms import ReportForm
 from .pdf_utils import render_report_to_pdf
 from django.conf import settings
@@ -79,17 +79,29 @@ def crear_o_editar(request, study_id=None, report_id=None):
 		if not uid:
 			messages.error(request, 'No se pudo obtener el StudyInstanceUID.')
 			return redirect('estudios:lista_estudios')
-		report, created = Report.objects.select_for_update().get_or_create(
-			study_instance_uid=uid,
-			defaults={
-				'study_internal_id': study_id,
-				'accession_number': accession,
-				'autor': request.user,
-			}
-		)
-		if not created and report.es_final:
-			messages.info(request, 'El informe ya está finalizado.')
-			return redirect('estudios:lista_estudios')
+		# Buscamos el último reporte por study_internal_id
+		qs = Report.objects.select_for_update().filter(study_internal_id=study_id).order_by('-version')
+		last_report = qs.first()
+		if last_report and last_report.es_final:
+			# Creamos nueva versión (borrador) con version+1
+			report = Report.objects.create(
+				study_instance_uid=uid,
+				study_internal_id=study_id,
+				accession_number=accession,
+				autor=request.user,
+				version=last_report.version + 1
+			)
+		else:
+			if last_report:
+				report = last_report
+			else:
+				report = Report.objects.create(
+					study_instance_uid=uid,
+					study_internal_id=study_id,
+					accession_number=accession,
+					autor=request.user,
+					version=1
+				)
 
 	# Permisos de autor
 	if report and report.autor_id != request.user.id:
@@ -100,29 +112,74 @@ def crear_o_editar(request, study_id=None, report_id=None):
 		form = ReportForm(request.POST, instance=report)
 		if form.is_valid():
 			form.instance.autor = report.autor  # evitar cambio
+			# Sanitizar contenido HTML (baseline)
+			try:
+				import bleach
+			except Exception:
+				bleach = None
+			if bleach:
+				allowed_tags = ['p','br','strong','em','ul','ol','li','h1','h2','h3','h4','blockquote','span','u','sub','sup']
+				allowed_attrs = {'span': ['style']}
+				form.instance.contenido = bleach.clean(form.instance.contenido, tags=allowed_tags, attributes=allowed_attrs, strip=True)
 			if report.es_final:
 				messages.warning(request, 'Informe finalizado: no se puede modificar.')
 				return redirect('informes:editar', report.id)
 			form.save()
+			# Log de guardado draft
+			from django.conf import settings as _s
+			LogInforme.objects.create(
+				report=form.instance,
+				accion='draft_save',
+				usuario=request.user,
+				contenido_hash=form.instance.contenido_hash or '',
+				pdf_hash=form.instance.pdf_hash or '',
+				report_version=form.instance.version,
+				template_version=getattr(_s, 'REPORT_TEMPLATE_VERSION', '1.0.0')
+			)
 			if 'finalizar' in request.POST:
 				if not form.instance.contenido.strip():
 					messages.error(request, 'No podés finalizar un informe vacío.')
 				else:
 					form.instance.estado = Report.ESTADO_FINAL
 					form.instance.save(update_fields=['estado'])
-					# Demo firma digital (placeholder): hash simple del contenido y autor
+					# Hash contenido y firma demo (si falta)
+					import hashlib
+					content_bytes = form.instance.contenido.encode('utf-8', errors='ignore')
+					form.instance.contenido_hash = hashlib.sha256(content_bytes).hexdigest()
+					updates = ['estado', 'contenido_hash']
 					if not form.instance.firma_digital:
-						import hashlib
 						payload = (form.instance.contenido + form.instance.autor.username).encode('utf-8', errors='ignore')
 						hexhash = hashlib.sha256(payload).hexdigest()[:32]
-						form.instance.firma_digital = f"FD-{hexhash}"
-						form.instance.save(update_fields=['firma_digital'])
-					# Generar PDF aquí también (incluye datos paciente/estudio)
-					pdf_context = {'study_info': study_info}
+						form.instance.firma_digital = f"FD-{hexhash}"  # demo
+						updates.append('firma_digital')
+					form.instance.save(update_fields=updates)
+					# Log finalize (pre PDF hash)
+					from django.conf import settings as _s2
+					LogInforme.objects.create(
+						report=form.instance,
+						accion='finalize',
+						usuario=request.user,
+						contenido_hash=form.instance.contenido_hash,
+						pdf_hash='',
+						report_version=form.instance.version,
+						template_version=getattr(_s2, 'REPORT_TEMPLATE_VERSION', '1.0.0')
+					)
+					# Guardar snapshot inmutable si no existe
+					if not form.instance.study_snapshot:
+						form.instance.study_snapshot = study_info
+						form.instance.save(update_fields=['study_snapshot'])
+					# Generar PDF (usa snapshot para consistencia)
+					pdf_context = {'study_info': form.instance.study_snapshot or study_info}
 					success, content_file, err = render_report_to_pdf(form.instance, context_extra=pdf_context)
 					if success:
 						filename = f"reporte_{form.instance.id}.pdf"
-						form.instance.pdf_file.save(filename, content_file, save=True)
+						# Leer bytes ANTES de guardar (Django consume el file al guardar)
+						pdf_bytes = content_file.read()
+						import hashlib as _hashlib
+						form.instance.pdf_hash = _hashlib.sha256(pdf_bytes).hexdigest() if pdf_bytes else ''
+						from django.core.files.base import ContentFile as _CF
+						form.instance.pdf_file.save(filename, _CF(pdf_bytes), save=True)
+						form.instance.save(update_fields=['pdf_hash'])
 						messages.success(request, 'Informe finalizado y PDF generado.')
 					else:
 						messages.warning(request, f'Informe finalizado, pero falló la generación del PDF: {err}')
@@ -159,38 +216,64 @@ def finalizar(request, report_id: int):
 	if not report.contenido.strip():
 		messages.error(request, 'No podés finalizar un informe vacío.')
 		return redirect('informes:editar', report_id)
+	# Sanitizar antes de congelar
+	try:
+		import bleach
+	except Exception:
+		bleach = None
+	if bleach:
+		allowed_tags = ['p','br','strong','em','ul','ol','li','h1','h2','h3','h4','blockquote','span','u','sub','sup']
+		allowed_attrs = {'span': ['style']}
+		report.contenido = bleach.clean(report.contenido, tags=allowed_tags, attributes=allowed_attrs, strip=True)
+		report.save(update_fields=['contenido'])
 	report.estado = Report.ESTADO_FINAL
 	report.save(update_fields=['estado'])
-	# Firma digital demo si falta
+	# Hash contenido y firma demo si falta
+	import hashlib
+	content_bytes = report.contenido.encode('utf-8', errors='ignore')
+	report.contenido_hash = hashlib.sha256(content_bytes).hexdigest()
+	updates = ['estado', 'contenido_hash']
 	if not report.firma_digital:
-		import hashlib
 		payload = (report.contenido + report.autor.username).encode('utf-8', errors='ignore')
 		report.firma_digital = 'FD-' + hashlib.sha256(payload).hexdigest()[:32]
-		report.save(update_fields=['firma_digital'])
-	# Generar PDF (intentar obtener tags para datos de paciente)
-	pdf_extra = {}
-	try:
-		shared = client.get_study_shared_tags(report.study_internal_id)
-		def val(code):
-			return (shared.get(code, {}) or {}).get('Value') or ''
-		name_raw = val('0010,0010')
-		patient_name = name_raw.replace('^', ' ').strip() if isinstance(name_raw, str) else name_raw
-		pdf_extra['study_info'] = {
-			'patient_name': patient_name,
-			'patient_id': val('0010,0020'),
-			'patient_sex': val('0010,0040'),
-			'birth_date': val('0010,0030'),
-			'study_description': val('0008,1030'),
-			'study_date': val('0008,0020'),
-			'study_time': val('0008,0030'),
-			'accession_number': val('0008,0050'),
-		}
-	except Exception:
-		pass
-	success, content_file, err = render_report_to_pdf(report, context_extra=pdf_extra)
+		updates.append('firma_digital')
+	report.save(update_fields=updates)
+	# Obtener snapshot (si no existe, construir y guardar ahora)
+	if not report.study_snapshot:
+		try:
+			shared = client.get_study_shared_tags(report.study_internal_id)
+			def val(code):
+				return (shared.get(code, {}) or {}).get('Value') or ''
+			name_raw = val('0010,0010')
+			patient_name = name_raw.replace('^', ' ').strip() if isinstance(name_raw, str) else name_raw
+			report.study_snapshot = {
+				'patient_name': patient_name,
+				'patient_id': val('0010,0020'),
+				'patient_sex': val('0010,0040'),
+				'birth_date': val('0010,0030'),
+				'study_description': val('0008,1030'),
+				'study_date': val('0008,0020'),
+				'study_time': val('0008,0030'),
+				'accession_number': val('0008,0050'),
+			}
+			report.save(update_fields=['study_snapshot'])
+		except Exception:
+			report.study_snapshot = {}
+	success, content_file, err = render_report_to_pdf(report, context_extra={'study_info': report.study_snapshot})
 	if success:
 		filename = f"reporte_{report.id}.pdf"
-		report.pdf_file.save(filename, content_file, save=True)
+		# Leer bytes antes de guardar
+		pdf_bytes = content_file.read()
+		report.pdf_hash = hashlib.sha256(pdf_bytes).hexdigest() if pdf_bytes else ''
+		from django.core.files.base import ContentFile as _CF
+		report.pdf_file.save(filename, _CF(pdf_bytes), save=True)
+		report.save(update_fields=['pdf_hash'])
+		# Log PDF hash (actualizar log finalize más reciente de este report agregando pdf_hash y pdf_size)
+		last_finalize = report.logs.filter(accion='finalize').order_by('-timestamp').first()
+		if last_finalize:
+			last_finalize.pdf_hash = report.pdf_hash
+			last_finalize.pdf_size = len(pdf_bytes) if pdf_bytes else 0
+			last_finalize.save(update_fields=['pdf_hash','pdf_size'])
 		messages.success(request, 'Informe finalizado y PDF generado.')
 	else:
 		messages.warning(request, f'Informe finalizado, pero falló la generación del PDF: {err}')
@@ -201,27 +284,14 @@ def finalizar(request, report_id: int):
 @user_passes_test(staff_required)
 def ver_final(request, report_id: int):
 	report = get_object_or_404(Report, pk=report_id, estado=Report.ESTADO_FINAL)
-	# Obtener tags para mostrar cabecera
-	shared = None
-	study_info = {}
+	# Mostrar siempre snapshot (no volver a pedir a Orthanc salvo para viewer URL)
+	study_info = report.study_snapshot or {}
 	viewer_url = None
 	try:
 		shared = client.get_study_shared_tags(report.study_internal_id)
-		def val(code):
-			return (shared.get(code, {}) or {}).get('Value') or ''
-		name_raw = val('0010,0010')
-		patient_name = name_raw.replace('^', ' ').strip() if isinstance(name_raw, str) else name_raw
-		uid = val('0020,000d')
+		uid = (shared.get('0020,000d', {}) or {}).get('Value')
 		if uid:
 			viewer_url = f"{client.base_url}/ohif/viewer?StudyInstanceUIDs={uid}"
-		study_info = {
-			'patient_name': patient_name,
-			'patient_id': val('0010,0020'),
-			'accession_number': val('0008,0050'),
-			'study_description': val('0008,1030'),
-			'study_date': val('0008,0020'),
-			'study_time': val('0008,0030'),
-		}
 	except Exception:
 		pass
 	return render(request, 'informes/ver_final.html', {

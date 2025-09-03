@@ -156,6 +156,13 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # --- Integración Orthanc (variables de entorno) ---
 # Base URL del Orthanc (REST API). Ej: http://localhost:8042
 ORTHANC_BASE_URL = config('ORTHANC_BASE_URL', default='http://localhost:8042')
+# --- Parámetros Institución / Branding ---
+INSTITUCION_NOMBRE = config('INSTITUCION_NOMBRE', default='Centro Médico Integral')
+INSTITUCION_LINEA1 = config('INSTITUCION_LINEA1', default='Av. Salud 1234 - Ciudad')
+INSTITUCION_LINEA2 = config('INSTITUCION_LINEA2', default='Tel: (000) 000-0000 | info@cmi.local')
+LOGO_PDF_FILENAME = config('LOGO_PDF_FILENAME', default='logo_cmi.png')  # dentro de static/img/
+# Versionado de plantilla de informes (incrementar manualmente cuando cambie el layout base que afecta representación)
+REPORT_TEMPLATE_VERSION = '1.0.0'
 # Credenciales básicas (AuthenticationEnabled=true en Orthanc)
 # ORTHANC_USERNAME = config('ORTHANC_USERNAME', default='admin')
 # ORTHANC_PASSWORD = config('ORTHANC_PASSWORD', default='admin123')

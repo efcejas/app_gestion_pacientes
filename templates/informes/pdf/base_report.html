@@ -71,7 +71,7 @@
                 <div style="margin-top:2px; font-weight:bold;">{{ report.autor.get_full_name|default:report.autor.username }}</div>
                 <div style="margin-top:2px;">
                     {% if report.firma_digital %}
-                        <span style="display:inline-block; font-size:9px; background:#f2f2f2; padding:2px 5px; border:1px solid #ccc;">Firma Digital (demo): {{ report.firma_digital }}</span>
+                        <span style="display:inline-block; font-size:9px; background:#f2f2f2; padding:2px 5px; border:1px solid #ccc;">Firma Digital (demo, sin validez legal): {{ report.firma_digital }}</span>
                     {% else %}
                         <em style="font-size:9px;">Firma digital no generada</em>
                     {% endif %}
