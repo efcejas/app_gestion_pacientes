@@ -1,461 +1,342 @@
-{% extends "base.html" %}
+{% extends "base_tailwind.html" %}
 {% block title %}Mis Órdenes Médicas{% endblock %}
 
 {% block content %}
-<div class="container mt-2">
-    <h2 class="mb-2 text-center">Órdenes Médicas Registradas</h2>
+<div x-data="ordenesUI(JSON.parse('{{ ordenes_data_json|escapejs }}'), '{{ request.GET.sort|default:'' }}', '{{ request.GET.dir|default:'asc' }}')" x-init="init()">
+    <style>[x-cloak]{display:none !important}</style>
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4">
+        <h2 class="text-2xl font-semibold text-blue-800 dark:text-blue-200 text-center mb-4">Órdenes Médicas Registradas</h2>
 
-    <!-- Formulario de filtro en una tarjeta Bootstrap (siempre visible) -->
-    <div class="card mb-4 shadow-sm">
-        <div class="card-body">
-            <form method="get" class="row g-2 align-items-end">
-                <div class="col-md-3">
-                    <label class="form-label">{{ filtro_form.identificador.label }}</label>
-                    {{ filtro_form.identificador }}
+        <!-- Stats -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-4">
+            <div class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4">
+                <div class="text-xs text-gray-500 mb-1">Total</div>
+                <div class="text-2xl font-semibold">{{ stats.total }}</div>
+            </div>
+            <div class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4">
+                <div class="text-xs text-gray-500 mb-1">Vencidas</div>
+                <div class="text-2xl font-semibold text-red-600">{{ stats.vencidas }}</div>
+            </div>
+            <div class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4">
+                <div class="text-xs text-gray-500 mb-1">Próximas (≤10d)</div>
+                <div class="text-2xl font-semibold text-yellow-600">{{ stats.proximas }}</div>
+            </div>
+            <div class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4">
+                <div class="text-xs text-gray-500 mb-1">Vigentes</div>
+                <div class="text-2xl font-semibold text-green-600">{{ stats.vigentes }}</div>
+            </div>
+        </div>
+        <!-- Filtros -->
+                <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-4 mb-5 border border-gray-200 dark:border-gray-700" x-data="{open:true}">
+                    <div class="flex justify-between items-center mb-3">
+                        <h3 class="text-sm font-medium text-gray-700 dark:text-gray-300">Filtros</h3>
+                        <button type="button" class="text-sm text-blue-600 hover:underline" @click="open=!open" x-text="open ? 'Ocultar' : 'Mostrar'"></button>
+                    </div>
+                    <form method="get" class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end" x-show="open" x-cloak>
+                    <div>
+                        <label for="{{ filtro_form.identificador.id_for_label }}" class="block text-sm font-medium text-gray-700 dark:text-gray-300">{{ filtro_form.identificador.label }}</label>
+                        {{ filtro_form.identificador }}
+                    </div>
+                    <div>
+                        <label for="{{ filtro_form.fecha_emision.id_for_label }}" class="block text-sm font-medium text-gray-700 dark:text-gray-300">{{ filtro_form.fecha_emision.label }}</label>
+                        {{ filtro_form.fecha_emision }}
+                    </div>
+                    <div>
+                        <label for="{{ filtro_form.fecha_vencimiento.id_for_label }}" class="block text-sm font-medium text-gray-700 dark:text-gray-300">{{ filtro_form.fecha_vencimiento.label }}</label>
+                        {{ filtro_form.fecha_vencimiento }}
+                    </div>
+                    <div class="flex gap-2">
+                        <button type="submit" class="inline-flex justify-center items-center px-4 py-2 rounded-md bg-blue-600 text-white hover:bg-blue-700 shadow text-sm w-full">Filtrar</button>
+                        <a href="{% url 'control_ordenes:lista_ordenes' %}" class="inline-flex justify-center items-center px-4 py-2 rounded-md bg-gray-100 text-gray-800 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-100 dark:hover:bg-gray-600 shadow text-sm w-full">Limpiar</a>
+                    </div>
+                </form>
+            </div>
+
+        {% if ordenes %}
+                <div class="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-gray-100">
+                    <div class="relative overflow-x-auto hidden md:block">
+                    <table class="min-w-full text-sm">
+                        <thead class="bg-gray-50 dark:bg-gray-700 text-gray-700 dark:text-gray-100">
+                            <tr class="uppercase text-xs tracking-wider">
+                                <th class="text-left py-3 pl-4 pr-2 font-semibold">Identificador</th>
+                                <th class="text-left py-3 px-2 font-semibold">
+                                    <a href="#" @click.prevent="toggleSort('fecha_emision')"
+                                         class="inline-flex items-center gap-1 hover:underline" aria-label="Ordenar por fecha de emisión">
+                                        <span>Fecha de emisión</span>
+                                        <template x-if="sortKey==='fecha_emision' && sortDir==='asc'"><svg class="w-3 h-3" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M10 6l-6 6h12L10 6z"/></svg></template>
+                                        <template x-if="sortKey==='fecha_emision' && sortDir==='desc'"><svg class="w-3 h-3" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M10 14l6-6H4l6 6z"/></svg></template>
+                                        <template x-if="sortKey!=='fecha_emision'"><svg class="w-3 h-3 opacity-60" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M7 7h6M5 10h10M7 13h6" stroke="currentColor" stroke-width="2" fill="none"/></svg></template>
+                                    </a>
+                                </th>
+                                <th class="text-left py-3 px-2 font-semibold">
+                                    <a href="#" @click.prevent="toggleSort('fecha_vencimiento')"
+                                         class="inline-flex items-center gap-1 hover:underline" aria-label="Ordenar por fecha de vencimiento">
+                                        <span>Vence en</span>
+                                        <template x-if="sortKey==='fecha_vencimiento' && sortDir==='asc'"><svg class="w-3 h-3" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M10 6l-6 6h12L10 6z"/></svg></template>
+                                        <template x-if="sortKey==='fecha_vencimiento' && sortDir==='desc'"><svg class="w-3 h-3" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M10 14l6-6H4l6 6z"/></svg></template>
+                                        <template x-if="sortKey!=='fecha_vencimiento'"><svg class="w-3 h-3 opacity-60" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M7 7h6M5 10h10M7 13h6" stroke="currentColor" stroke-width="2" fill="none"/></svg></template>
+                                    </a>
+                                </th>
+                                <th class="text-center py-3 px-2 font-semibold">Renovación</th>
+                                <th class="text-center py-3 px-2 font-semibold">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
+                            <template x-for="o in ordenesSorted()" :key="o.id">
+                            <tr class="hover:bg-gray-50 dark:hover:bg-gray-900/30">
+                                <td class="py-3 pl-4 pr-2 whitespace-nowrap" x-text="o.identificador"></td>
+                                <td class="py-3 px-2 whitespace-nowrap" x-text="o.fecha_emision_label"></td>
+                                <td class="py-3 px-2">
+                                    <div class="flex items-center gap-2">
+                                        <template x-if="o.dias_restantes < 0">
+                                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">Vencida</span>
+                                        </template>
+                                        <template x-if="o.dias_restantes >= 0 && o.dias_restantes <= 10">
+                                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800" x-text="o.dias_restantes + ' días'"></span>
+                                        </template>
+                                        <template x-if="o.dias_restantes > 10">
+                                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800" x-text="o.dias_restantes + ' días'"></span>
+                                        </template>
+                                        <span class="text-xs text-gray-500" x-text="(o.dias_restantes < 0 ? 'Venció: ' : 'Vence: ') + o.fecha_vencimiento_label"></span>
+                                    </div>
+                                </td>
+                                <td class="py-3 px-2 text-center">
+                                    <template x-if="o.renovada">
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-gray-200 text-gray-700">Renovada</span>
+                                    </template>
+                                    <template x-if="!o.renovada">
+                                        <button type="button" class="inline-flex items-center px-3 py-1.5 rounded-md bg-blue-600 text-white hover:bg-blue-700 text-xs"
+                                                        @click="abrirRenovar({ id: o.id })">Renovar</button>
+                                    </template>
+                                </td>
+                                <td class="py-3 px-2">
+                                    <div class="flex items-center justify-center gap-2">
+                                        <button class="inline-flex items-center px-3 py-1.5 rounded-md bg-amber-500 text-white hover:bg-amber-600 text-xs"
+                                                        @click="abrirEditar({ id: o.id, identificador: o.identificador, fecha_emision: o.fecha_emision_iso, dias_validez: o.dias_validez })">Editar</button>
+                                        <button class="inline-flex items-center px-3 py-1.5 rounded-md bg-red-600 text-white hover:bg-red-700 text-xs"
+                                                        @click="abrirEliminar({ id: o.id })">Eliminar</button>
+                                    </div>
+                                </td>
+                            </tr>
+                            </template>
+                        </tbody>
+                    </table>
                 </div>
-                <div class="col-md-3">
-                    <label class="form-label">{{ filtro_form.fecha_emision.label }}</label>
-                    {{ filtro_form.fecha_emision }}
+                <!-- Vista móvil en tarjetas -->
+                <div class="p-4 md:hidden divide-y divide-gray-200 dark:divide-gray-700 text-gray-900 dark:text-gray-100">
+            <template x-for="o in ordenesSorted()" :key="o.id">
+            <div class="py-3">
+                        <div class="flex items-center justify-between">
+                <div class="font-medium text-gray-900 dark:text-gray-100" x-text="o.identificador"></div>
+                <div class="text-xs text-gray-500" x-text="o.fecha_emision_label"></div>
+                        </div>
+                        <div class="mt-2 flex items-center gap-2">
+                <template x-if="o.dias_restantes < 0"><span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">Vencida</span></template>
+                <template x-if="o.dias_restantes >= 0 && o.dias_restantes <= 10"><span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800" x-text="o.dias_restantes + ' días'"></span></template>
+                <template x-if="o.dias_restantes > 10"><span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800" x-text="o.dias_restantes + ' días'"></span></template>
+                <span class="text-xs text-gray-500" x-text="(o.dias_restantes < 0 ? 'Venció: ' : 'Vence: ') + o.fecha_vencimiento_label"></span>
+                        </div>
+                        <div class="mt-3 flex items-center gap-2">
+                <template x-if="!o.renovada"><button class="inline-flex items-center px-3 py-1.5 rounded-md bg-blue-600 text-white hover:bg-blue-700 text-xs" @click="abrirRenovar({ id: o.id })">Renovar</button></template>
+                <template x-if="o.renovada"><span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-gray-200 text-gray-700">Renovada</span></template>
+                <button class="inline-flex items-center px-3 py-1.5 rounded-md bg-amber-500 text-white hover:bg-amber-600 text-xs" @click="abrirEditar({ id: o.id, identificador: o.identificador, fecha_emision: o.fecha_emision_iso, dias_validez: o.dias_validez })">Editar</button>
+                <button class="inline-flex items-center px-3 py-1.5 rounded-md bg-red-600 text-white hover:bg-red-700 text-xs" @click="abrirEliminar({ id: o.id })">Eliminar</button>
+                        </div>
+                    </div>
+            </template>
                 </div>
-                <div class="col-md-3">
-                    <label class="form-label">{{ filtro_form.fecha_vencimiento.label }}</label>
-                    {{ filtro_form.fecha_vencimiento }}
+            </div>
+        {% else %}
+            {% if total_ordenes == 0 %}
+                <div class="mt-6 p-6 text-center rounded-lg bg-blue-50 border border-blue-200 text-blue-900">
+                    <div class="text-3xl mb-2">😟</div>
+                    <strong>No hay órdenes médicas registradas aún.</strong><br>
+                    <span class="text-sm">Podés crear una nueva orden médica desde el menú principal.</span>
                 </div>
-                <div class="col-md-3 d-flex gap-2">
-                    <button type="submit" class="btn btn-primary w-100">Filtrar</button>
-                    <a href="{% url 'control_ordenes:lista_ordenes' %}" class="btn btn-secondary w-100">Limpiar</a>
+            {% else %}
+                <div class="mt-6 p-6 text-center rounded-lg bg-yellow-50 border border-yellow-200 text-yellow-900">
+                    <div class="text-3xl mb-2">🔎</div>
+                    <strong>No se encontraron órdenes con los criterios de búsqueda.</strong><br>
+                    <span class="text-sm">Usá el botón <span class="font-semibold text-blue-600">Limpiar</span> para ver todas nuevamente.</span>
+                </div>
+            {% endif %}
+        {% endif %}
+
+        <div class="text-center mt-6 mb-10">
+            <a href="{% url 'home' %}" class="inline-flex items-center gap-2 px-4 py-2 rounded-md bg-blue-600 text-white hover:bg-blue-700 shadow">
+                <span>← Volver al inicio</span>
+            </a>
+        </div>
+    </div>
+
+    <!-- Modales -->
+    <!-- Renovar -->
+        <div x-cloak x-show="showRenovar" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50" x-transition>
+        <div class="bg-white dark:bg-gray-900 rounded-lg shadow-lg w-full max-w-md p-5" @click.away="showRenovar=false">
+            <h3 class="text-lg font-semibold mb-4">Renovar Orden Médica</h3>
+            <form @submit.prevent="submitRenovar">
+                <div class="space-y-3">
+                    <div>
+                <label for="renovar_fecha" class="block text-sm font-medium mb-1">Nueva fecha de emisión</label>
+                <input id="renovar_fecha" type="date" x-model="renovar.fecha" class="w-full rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 px-3 py-2" required>
+                    </div>
+                    <div>
+                <label for="renovar_validez" class="block text-sm font-medium mb-1">Nueva validez</label>
+                <select id="renovar_validez" x-model="renovar.validez" class="w-full rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 px-3 py-2" required>
+                            <option value="30">30 días</option>
+                            <option value="60">60 días</option>
+                            <option value="90">90 días</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="mt-5 flex justify-end gap-2">
+                    <button type="button" class="px-4 py-2 rounded-md bg-gray-100 hover:bg-gray-200" @click="showRenovar=false">Cancelar</button>
+                    <button type="submit" class="px-4 py-2 rounded-md bg-blue-600 text-white hover:bg-blue-700">Renovar</button>
                 </div>
             </form>
         </div>
     </div>
 
-    {% if ordenes %}
-    <div class="table-responsive" style="max-height: 500px; overflow-y: auto; border-radius: 1rem;">
-        <table class="table table-striped align-middle shadow-sm rounded-3 overflow-hidden">
-            <thead class="table-dark">
-                <tr>
-                    <th class="ps-3">Identificador</th>
-                    <th>
-                        <a href="?sort=fecha_emision&dir={% if request.GET.sort == 'fecha_emision' and request.GET.dir == 'asc' %}desc{% else %}asc{% endif %}"
-                           class="text-white text-decoration-none d-flex align-items-center gap-1 sort-link"
-                           title="Ordenar por fecha de emisión">
-                            Fecha de emisión
-                            {% if request.GET.sort == 'fecha_emision' %}
-                                {% if request.GET.dir == 'asc' %}
-                                    <i class="bi bi-caret-up-fill"></i>
-                                {% else %}
-                                    <i class="bi bi-caret-down-fill"></i>
-                                {% endif %}
-                            {% else %}
-                                <i class="bi bi-arrow-down-up text-light opacity-75"></i>
-                            {% endif %}
-                        </a>
-                    </th>
-                    <th>
-                        <a href="?sort=fecha_vencimiento&dir={% if request.GET.sort == 'fecha_vencimiento' and request.GET.dir == 'asc' %}desc{% else %}asc{% endif %}"
-                           class="text-white text-decoration-none d-flex align-items-center gap-1 sort-link"
-                           title="Ordenar por fecha de vencimiento">
-                            Vence en
-                            {% if request.GET.sort == 'fecha_vencimiento' %}
-                                {% if request.GET.dir == 'asc' %}
-                                    <i class="bi bi-caret-up-fill"></i>
-                                {% else %}
-                                    <i class="bi bi-caret-down-fill"></i>
-                                {% endif %}
-                            {% else %}
-                                <i class="bi bi-arrow-down-up text-light opacity-75"></i>
-                            {% endif %}
-                        </a>
-                    </th>
-                    <th class="text-center">Renovación</th>
-                    <th class="text-center">Acciones</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for orden in ordenes %}
-                <tr>
-                    <td class="ps-3">{{ orden.identificador_paciente }}</td>
-                    <td>{{ orden.fecha_emision|date:"d/m/Y" }}</td>
-                    <td class="text-nowrap">
-                        {% if orden.dias_restantes < 0 %}
-                            <span class="badge bg-danger"><i class="bi bi-x-circle"></i> Vencida</span>
-                        {% elif orden.dias_restantes <= 10 %}
-                            <span class="badge bg-warning text-dark"><i class="bi bi-exclamation-triangle"></i> {{ orden.dias_restantes }} días</span>
-                        {% else %}
-                            <span class="badge bg-success"><i class="bi bi-check-circle"></i> {{ orden.dias_restantes }} días</span>
-                        {% endif %}
-                        <small class="text-muted">
-                            {% if orden.dias_restantes < 0 %}
-                                Venció: {{ orden.fecha_vencimiento|date:"d/m/Y" }}
-                            {% else %}
-                                Vence: {{ orden.fecha_vencimiento|date:"d/m/Y" }}
-                            {% endif %}
-                        </small>
-                    </td>
-                    <td class="text-center">
-                        {% if orden.renovada %}
-                        <span class="badge bg-secondary">Renovada</span>
-                        {% else %}
-                        <button type="button" class="btn btn-sm btn-primary btn-renovar" data-orden-id="{{ orden.id }}"
-                            data-bs-toggle="modal" data-bs-target="#modalRenovarOrden">
-                            Renovar
-                        </button>
-                        {% endif %}
-                    </td>
-                    <td class="text-center">
-                        <button 
-                            class="btn btn-sm btn-warning btn-editar-orden"
-                            data-bs-toggle="modal"
-                            data-bs-target="#modalEditarOrden"
-                            data-id="{{ orden.id }}"
-                            data-identificador="{{ orden.identificador_paciente }}"
-                            data-fecha-emision="{{ orden.fecha_emision|date:'Y-m-d' }}"
-                            data-dias-validez="{{ orden.dias_validez }}">
-                            <i class="bi bi-pencil"></i> Editar
-                        </button>
-                        <button 
-                            class="btn btn-sm btn-danger btn-eliminar-orden"
-                            data-bs-toggle="modal"
-                            data-bs-target="#modalEliminarOrden"
-                            data-id="{{ orden.id }}">
-                            <i class="bi bi-trash"></i> Eliminar
-                        </button>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+    <!-- Editar -->
+        <div x-cloak x-show="showEditar" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50" x-transition>
+        <div class="bg-white dark:bg-gray-900 rounded-lg shadow-lg w-full max-w-md p-5" @click.away="showEditar=false">
+            <h3 class="text-lg font-semibold mb-4">Editar Orden Médica</h3>
+            <form @submit.prevent="submitEditar">
+                <div class="space-y-3">
+                    <div>
+                <label for="editar_identificador" class="block text-sm font-medium mb-1">Identificador</label>
+                <input id="editar_identificador" type="text" x-model="editar.identificador" class="w-full rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 px-3 py-2" required>
+                    </div>
+                    <div>
+                <label for="editar_fecha_emision" class="block text-sm font-medium mb-1">Fecha de emisión</label>
+                <input id="editar_fecha_emision" type="date" x-model="editar.fecha_emision" class="w-full rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 px-3 py-2" required>
+                    </div>
+                    <div>
+                <label for="editar_dias_validez" class="block text-sm font-medium mb-1">Días de validez</label>
+                <select id="editar_dias_validez" x-model="editar.dias_validez" class="w-full rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 px-3 py-2" required>
+                            <option value="30">30 días</option>
+                            <option value="60">60 días</option>
+                            <option value="90">90 días</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="mt-5 flex justify-end gap-2">
+                    <button type="button" class="px-4 py-2 rounded-md bg-gray-100 hover:bg-gray-200" @click="showEditar=false">Cancelar</button>
+                    <button type="submit" class="px-4 py-2 rounded-md bg-amber-600 text-white hover:bg-amber-700">Guardar cambios</button>
+                </div>
+            </form>
+        </div>
     </div>
-    {% else %}
-    {% if total_ordenes == 0 %}
-        <div class="alert alert-info text-center mt-4 py-4" role="alert" style="font-size: 1.2rem;">
-            <i class="bi bi-emoji-frown display-4 d-block mb-2 text-secondary"></i>
-            <strong>No hay órdenes médicas registradas aún.</strong><br>
-            Puedes crear una nueva orden médica desde el menú principal.
-        </div>
-    {% else %}
-        <div class="alert alert-warning text-center mt-4 py-4" role="alert" style="font-size: 1.2rem;">
-            <i class="bi bi-search display-4 d-block mb-2 text-secondary"></i>
-            <strong>No se encontraron órdenes con los criterios de búsqueda.</strong><br>
-            Usa el botón <span class="fw-bold text-primary">Limpiar</span> en la barra de búsqueda para ver todas las órdenes nuevamente.
-        </div>
-    {% endif %}
-    {% endif %}
 
-    <div class="text-center mt-4 mb-5">
-        <a href="{% url 'home' %}" class="btn-personal btn-primario">
-            <i class="bi bi-house-door"></i> Volver al inicio
-        </a>
+    <!-- Eliminar -->
+        <div x-cloak x-show="showEliminar" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50" x-transition>
+        <div class="bg-white dark:bg-gray-900 rounded-lg shadow-lg w-full max-w-md p-5" @click.away="showEliminar=false">
+            <h3 class="text-lg font-semibold mb-3">Eliminar Orden Médica</h3>
+            <p class="text-sm text-gray-700 dark:text-gray-300">¿Estás seguro de que deseas eliminar esta orden?</p>
+            <div class="mt-5 flex justify-end gap-2">
+                <button type="button" class="px-4 py-2 rounded-md bg-gray-100 hover:bg-gray-200" @click="showEliminar=false">Cancelar</button>
+                <button type="button" class="px-4 py-2 rounded-md bg-red-600 text-white hover:bg-red-700" @click="submitEliminar">Eliminar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toasts -->
+        <div class="fixed bottom-4 right-4 space-y-2 z-50">
+            <div x-cloak x-show="toast.renovacion" x-transition class="px-4 py-2 rounded-lg bg-green-600 text-white shadow">¡La orden fue renovada exitosamente!</div>
+            <div x-cloak x-show="toast.edicion" x-transition class="px-4 py-2 rounded-lg bg-green-600 text-white shadow">¡La orden fue editada exitosamente!</div>
+            <div x-cloak x-show="toast.eliminacion" x-transition class="px-4 py-2 rounded-lg bg-red-600 text-white shadow">¡La orden fue eliminada exitosamente!</div>
     </div>
 </div>
 
-<!-- Modal de Renovación -->
-<div class="modal fade" id="modalRenovarOrden" tabindex="-1" aria-labelledby="modalRenovarLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content">
-      <form id="formRenovarOrden">
-        <div class="modal-header">
-          <h5 class="modal-title" id="modalRenovarLabel">Renovar Orden Médica</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-        </div>
-        <div class="modal-body">
-          <input type="hidden" id="ordenIdRenovar" name="orden_id">
-          <div class="mb-3">
-            <label for="nuevaFechaEmision" class="form-label">Nueva fecha de emisión</label>
-            <input type="date" class="form-control" id="nuevaFechaEmision" name="nueva_fecha_emision" required>
-          </div>
-          <div class="mb-3">
-            <label for="nuevaValidez" class="form-label">Nueva validez</label>
-            <select class="form-select" id="nuevaValidez" name="nueva_validez" required>
-              <option value="30">30 días</option>
-              <option value="60">60 días</option>
-              <option value="90">90 días</option>
-            </select>
-          </div>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-          <button type="submit" class="btn btn-primary">Renovar</button>
-        </div>
-      </form>
+<!-- Loading overlay global durante acciones AJAX -->
+<div x-cloak x-show="loading" class="fixed inset-0 bg-black/30 backdrop-blur-sm z-[70] flex items-center justify-center">
+    <div class="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg px-6 py-4 shadow-lg flex items-center gap-3">
+        <svg class="animate-spin h-5 w-5 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+        </svg>
+        <span class="text-sm">Procesando...</span>
     </div>
-  </div>
-</div>
-
-<!-- Modal de Edición de Orden -->
-<div class="modal fade" id="modalEditarOrden" tabindex="-1" aria-labelledby="modalEditarOrdenLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <form id="formEditarOrden">
-        <div class="modal-header">
-          <h5 class="modal-title" id="modalEditarOrdenLabel">Editar Orden Médica</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-        </div>
-        <div class="modal-body">
-          <input type="hidden" id="editarOrdenId" name="orden_id">
-          <div class="mb-3">
-            <label for="editarIdentificador" class="form-label">Identificador</label>
-            <input type="text" class="form-control" id="editarIdentificador" name="identificador_paciente" required>
-          </div>
-          <div class="mb-3">
-            <label for="editarFechaEmision" class="form-label">Fecha de emisión</label>
-            <input type="date" class="form-control" id="editarFechaEmision" name="fecha_emision" required>
-          </div>
-          <div class="mb-3">
-            <label for="editarDiasValidez" class="form-label">Días de validez</label>
-            <select class="form-select" id="editarDiasValidez" name="dias_validez" required>
-              <option value="30">30 días</option>
-              <option value="60">60 días</option>
-              <option value="90">90 días</option>
-            </select>
-          </div>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-          <button type="submit" class="btn btn-primary">Guardar cambios</button>
-        </div>
-      </form>
-    </div>
-  </div>
-</div>
-
-<!-- Modal de Confirmación de Eliminación -->
-<div class="modal fade" id="modalEliminarOrden" tabindex="-1" aria-labelledby="modalEliminarOrdenLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <form id="formEliminarOrden">
-        <div class="modal-header">
-          <h5 class="modal-title" id="modalEliminarOrdenLabel">Eliminar Orden Médica</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-        </div>
-        <div class="modal-body">
-          <input type="hidden" id="eliminarOrdenId" name="orden_id">
-          <p>¿Estás seguro de que deseas eliminar esta orden?</p>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-          <button type="submit" class="btn btn-danger">Eliminar</button>
-        </div>
-      </form>
-    </div>
-  </div>
-</div>
-
-<!-- Toast de confirmación de renovación -->
-<div class="position-fixed bottom-0 end-0 p-3" style="z-index: 1055">
-  <div id="toastRenovacion" class="toast align-items-center text-bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
-    <div class="d-flex">
-      <div class="toast-body">
-        ¡La orden fue renovada exitosamente!
-      </div>
-      <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Cerrar"></button>
-    </div>
-  </div>
-</div>
-
-<!-- Toast de confirmación de edición -->
-<div class="position-fixed bottom-0 end-0 p-3" style="z-index: 1055">
-  <div id="toastEdicion" class="toast align-items-center text-bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
-    <div class="d-flex">
-      <div class="toast-body">
-        ¡La orden fue editada exitosamente!
-      </div>
-      <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Cerrar"></button>
-    </div>
-  </div>
-</div>
-
-<!-- Toast de confirmación de eliminación -->
-<div class="position-fixed bottom-0 end-0 p-3" style="z-index: 1055">
-  <div id="toastEliminacion" class="toast align-items-center text-bg-danger border-0" role="alert" aria-live="assertive" aria-atomic="true">
-    <div class="d-flex">
-      <div class="toast-body">
-        ¡La orden fue eliminada exitosamente!
-      </div>
-      <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Cerrar"></button>
-    </div>
-  </div>
 </div>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        // 1. Al abrir el modal, poner el ID y la fecha de hoy
-        const botonesRenovar = document.querySelectorAll('.btn-renovar');
-        const inputOrdenId = document.getElementById('ordenIdRenovar');
-        const inputFechaEmision = document.getElementById('nuevaFechaEmision');
-
-        botonesRenovar.forEach(function (boton) {
-            boton.addEventListener('click', function () {
-                const ordenId = this.getAttribute('data-orden-id');
-                inputOrdenId.value = ordenId;
-                // Fecha de hoy por defecto
-                const hoy = new Date();
-                const yyyy = hoy.getFullYear();
-                const mm = String(hoy.getMonth() + 1).padStart(2, '0');
-                const dd = String(hoy.getDate()).padStart(2, '0');
-                inputFechaEmision.value = `${yyyy}-${mm}-${dd}`;
-            });
-        });
-
-        // 2. Enviar el formulario por AJAX
-        const formRenovar = document.getElementById('formRenovarOrden');
-        formRenovar.addEventListener('submit', function (e) {
-            e.preventDefault();
-
-            const ordenId = inputOrdenId.value;
-            const nuevaFecha = inputFechaEmision.value;
-            const nuevaValidez = document.getElementById('nuevaValidez').value;
-
-            fetch(`/control_ordenes/renovar/${ordenId}/`, {
-                method: 'POST',
-                headers: {
-                    'X-CSRFToken': '{{ csrf_token }}',
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    nueva_fecha_emision: nuevaFecha,
-                    nueva_validez: nuevaValidez
-                })
-            })
-                .then(response => {
-                    if (!response.ok) throw new Error("Error actualizando");
-                    return response.json();
-                })
-                .then(data => {
-                    if (data.success) {
-                        // Cerrar el modal
-                        const modal = bootstrap.Modal.getInstance(document.getElementById('modalRenovarOrden'));
-                        modal.hide();
-                        // Mostrar el toast flotante
-                        const toastEl = document.getElementById('toastRenovacion');
-                        const toast = new bootstrap.Toast(toastEl);
-                        toast.show();
-                        // Recargar la página después de 1.5 segundos (opcional)
-                        setTimeout(() => location.reload(), 3000);
-                    } else {
-                        alert("No se pudo renovar la orden.");
-                    }
-                })
-                .catch(err => {
-                    alert("Ocurrió un error al renovar.");
-                    console.error(err);
-                });
-        });
-
-        // Al hacer clic en "Editar", cargar los datos en el modal
-        document.querySelectorAll('.btn-editar-orden').forEach(function(btn) {
-            btn.addEventListener('click', function() {
-                document.getElementById('editarOrdenId').value = this.dataset.id;
-                document.getElementById('editarIdentificador').value = this.dataset.identificador;
-                document.getElementById('editarFechaEmision').value = this.dataset.fechaEmision;
-                document.getElementById('editarDiasValidez').value = this.dataset.diasValidez;
-            });
-        });
-
-        // Enviar el formulario por AJAX
-        document.getElementById('formEditarOrden').addEventListener('submit', function(e) {
-            e.preventDefault();
-            const ordenId = document.getElementById('editarOrdenId').value;
-            const data = {
-                identificador_paciente: document.getElementById('editarIdentificador').value,
-                fecha_emision: document.getElementById('editarFechaEmision').value,
-                dias_validez: document.getElementById('editarDiasValidez').value
-            };
-
-            fetch(`/control_ordenes/orden/${ordenId}/editar-modal/`, {
-                method: 'POST',
-                headers: {
-                    'X-CSRFToken': '{{ csrf_token }}',
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(data)
-            })
-            .then(response => {
-                if (!response.ok) throw new Error("Error al editar la orden");
-                return response.json();
-            })
-            .then(data => {
-                if (data.success) {
-                    // Guardar un flag en localStorage
-                    localStorage.setItem('ordenEditada', '1');
-                    // Cerrar el modal y recargar la página
-                    const modal = bootstrap.Modal.getInstance(document.getElementById('modalEditarOrden'));
-                    modal.hide();
-                    modal._element.addEventListener('hidden.bs.modal', function () {
-                        location.reload();
-                    }, { once: true });
-                } else {
-                    alert("No se pudo editar la orden.");
-                }
-            })
-            .catch(err => {
-                alert("Ocurrió un error al editar.");
-                console.error(err);
-            });
-        });
-
-        // Al hacer clic en "Eliminar", pasar el ID al modal
-        document.querySelectorAll('.btn-eliminar-orden').forEach(function(btn) {
-            btn.addEventListener('click', function() {
-                document.getElementById('eliminarOrdenId').value = this.dataset.id;
-            });
-        });
-
-        // Enviar el formulario de eliminación por AJAX
-        document.getElementById('formEliminarOrden').addEventListener('submit', function(e) {
-            e.preventDefault();
-            const ordenId = document.getElementById('eliminarOrdenId').value;
-
-            fetch(`/control_ordenes/orden/${ordenId}/eliminar-modal/`, {
-                method: 'POST',
-                headers: {
-                    'X-CSRFToken': '{{ csrf_token }}',
-                    'Content-Type': 'application/json',
-                }
-            })
-            .then(response => {
-                if (!response.ok) throw new Error("Error al eliminar la orden");
-                return response.json();
-            })
-            .then(data => {
-                if (data.success) {
-                    // Guardar un flag en localStorage
-                    localStorage.setItem('ordenEliminada', '1');
-                    // Cerrar el modal y recargar la página
-                    const modal = bootstrap.Modal.getInstance(document.getElementById('modalEliminarOrden'));
-                    modal.hide();
-                    modal._element.addEventListener('hidden.bs.modal', function () {
-                        location.reload();
-                    }, { once: true });
-                } else {
-                    alert("No se pudo eliminar la orden.");
-                }
-            })
-            .catch(err => {
-                alert("Ocurrió un error al eliminar.");
-                console.error(err);
-            });
-        });
-
-        // Mostrar toast de edición si corresponde
-        if (localStorage.getItem('ordenEditada')) {
-            const toastEl = document.getElementById('toastEdicion');
-            if (toastEl) {
-                const toast = new bootstrap.Toast(toastEl);
-                toast.show();
-            }
-            localStorage.removeItem('ordenEditada');
+function ordenesUI(data=[], initSortKey='', initSortDir='asc'){
+    return {
+        csrf: '{{ csrf_token }}',
+        // datos y ordenamiento en cliente
+        items: data,
+        sortKey: initSortKey || 'fecha_vencimiento',
+        sortDir: (initSortDir === 'desc') ? 'desc' : 'asc',
+        toggleSort(key){
+            if(this.sortKey === key){ this.sortDir = (this.sortDir === 'asc') ? 'desc' : 'asc'; }
+            else { this.sortKey = key; this.sortDir = 'asc'; }
+            this.updateURL();
+        },
+        updateURL(){
+            try {
+                const url = new URL(window.location.href);
+                const params = url.searchParams;
+                params.set('sort', this.sortKey);
+                params.set('dir', this.sortDir);
+                // No tocamos otros parámetros (filtros) y evitamos recargar la página
+                history.replaceState({}, '', `${url.pathname}?${params.toString()}`);
+            } catch(e) { /* no-op */ }
+        },
+        ordenesSorted(){
+            const arr = this.items.slice();
+            const key = this.sortKey;
+            const dir = this.sortDir === 'asc' ? 1 : -1;
+            const accessor = (o)=> key === 'fecha_emision' ? o.fecha_emision_iso : o.fecha_vencimiento_iso;
+            arr.sort((a,b)=> (accessor(a) > accessor(b) ? 1 : accessor(a) < accessor(b) ? -1 : 0) * dir);
+            return arr;
+        },
+        showRenovar: false,
+        showEditar: false,
+        showEliminar: false,
+        renovar: { id: null, fecha: '', validez: '30' },
+        editar: { id: null, identificador: '', fecha_emision: '', dias_validez: '30' },
+        eliminarId: null,
+        toast: { renovacion: false, edicion: false, eliminacion: false },
+        loading: false,
+        init(){ /* reservado por si agregamos algo luego */ },
+        hoyISO(){ const d=new Date(); const m=String(d.getMonth()+1).padStart(2,'0'); const day=String(d.getDate()).padStart(2,'0'); return `${d.getFullYear()}-${m}-${day}`; },
+        abrirRenovar({id}){ this.renovar.id=id; this.renovar.fecha=this.hoyISO(); this.renovar.validez='30'; this.showRenovar=true; },
+        abrirEditar({id, identificador, fecha_emision, dias_validez}){ this.editar={ id, identificador, fecha_emision, dias_validez: String(dias_validez||'30') }; this.showEditar=true; },
+        abrirEliminar({id}){ this.eliminarId=id; this.showEliminar=true; },
+            async submitRenovar(){
+            try{
+                    this.loading = true;
+                    const res = await fetch(`/control_ordenes/renovar/${this.renovar.id}/`, { method:'POST', headers:{ 'X-CSRFToken': this.csrf, 'Content-Type':'application/json' }, body: JSON.stringify({ nueva_fecha_emision: this.renovar.fecha, nueva_validez: this.renovar.validez }) });
+                if(!res.ok) throw new Error('Error actualizando');
+                const data = await res.json();
+                    if(data.success){ this.showRenovar=false; this.toast.renovacion=true; setTimeout(()=>{ this.toast.renovacion=false; location.reload(); }, 1200); }
+                else alert('No se pudo renovar la orden.');
+            } catch(e){ alert('Ocurrió un error al renovar.'); console.error(e); }
+                finally { this.loading = false; }
+        },
+            async submitEditar(){
+            try{
+                    this.loading = true;
+                    const res = await fetch(`/control_ordenes/orden/${this.editar.id}/editar-modal/`, { method:'POST', headers:{ 'X-CSRFToken': this.csrf, 'Content-Type':'application/json' }, body: JSON.stringify({ identificador_paciente: this.editar.identificador, fecha_emision: this.editar.fecha_emision, dias_validez: this.editar.dias_validez }) });
+                if(!res.ok) throw new Error('Error al editar la orden');
+                const data = await res.json();
+                if(data.success){ this.showEditar=false; this.toast.edicion=true; setTimeout(()=>{ location.reload(); }, 800); }
+                else alert('No se pudo editar la orden.');
+            } catch(e){ alert('Ocurrió un error al editar.'); console.error(e); }
+                finally { this.loading = false; }
+        },
+            async submitEliminar(){
+            try{
+                    this.loading = true;
+                    const res = await fetch(`/control_ordenes/orden/${this.eliminarId}/eliminar-modal/`, { method:'POST', headers:{ 'X-CSRFToken': this.csrf, 'Content-Type':'application/json' } });
+                if(!res.ok) throw new Error('Error al eliminar la orden');
+                const data = await res.json();
+                if(data.success){ this.showEliminar=false; this.toast.eliminacion=true; setTimeout(()=>{ location.reload(); }, 800); }
+                else alert('No se pudo eliminar la orden.');
+            } catch(e){ alert('Ocurrió un error al eliminar.'); console.error(e); }
+                finally { this.loading = false; }
         }
-
-        // Mostrar toast de eliminación si corresponde
-        if (localStorage.getItem('ordenEliminada')) {
-            const toastEl = document.getElementById('toastEliminacion');
-            if (toastEl) {
-                const toast = new bootstrap.Toast(toastEl);
-                toast.show();
-            }
-            localStorage.removeItem('ordenEliminada');
-        }
-    });
+    }
+}
 </script>
 {% endblock %}

@@ -7,6 +7,20 @@
     
     <title>{% block title %}Gestión de Pacientes{% endblock %}</title>
     
+    <!-- Pre-aplicar tema antes de cargar CSS para evitar flicker dark/light -->
+    <script>
+        (function(){
+            try {
+                var ls = localStorage.getItem('theme');
+                var prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+                var dark = ls ? (ls === 'dark') : prefersDark;
+                var de = document.documentElement;
+                if(dark){ de.classList.add('dark'); de.setAttribute('data-theme','dark'); }
+                else { de.classList.remove('dark'); de.setAttribute('data-theme','light'); }
+            } catch(e) {}
+        })();
+    </script>
+
     <!-- Tailwind CSS -->
     <link rel="stylesheet" href="{% static 'styles/tailwind.css' %}">
     
@@ -20,6 +34,7 @@
     <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
     
     <style>
+    [x-cloak]{ display:none !important; }
         /* Estilo personalizado para el gradiente de la navbar */
         .navbar-gradient {
             background: linear-gradient(135deg, #1e40af 0%, #3b82f6 50%, #06b6d4 100%);
@@ -34,11 +49,8 @@
     </style>
 </head>
 
-<body class="bg-blue-50 dark:bg-blue-900 min-h-screen" x-data="{ darkMode: localStorage.getItem('theme') === 'dark' }" 
+<body class="bg-blue-50 dark:bg-blue-900 min-h-screen" x-data="{ darkMode: document.documentElement.classList.contains('dark') }" 
             x-init="
-                // Sincronizar estado inicial
-                document.documentElement.classList.toggle('dark', darkMode);
-                document.documentElement.setAttribute('data-theme', darkMode ? 'dark' : 'light');
                 // Observar cambios
                 $watch('darkMode', val => {
                     localStorage.setItem('theme', val ? 'dark' : 'light');
@@ -68,8 +80,8 @@
                     <!-- Toggle de tema -->
                     <button @click="darkMode = !darkMode" 
                             class="text-white hover:text-gray-200 p-2 rounded-lg hover:bg-white/10 transition-all">
-                        <i x-show="!darkMode" class="fas fa-moon"></i>
-                        <i x-show="darkMode" class="fas fa-sun"></i>
+                        <i x-cloak x-show="!darkMode" class="fas fa-moon"></i>
+                        <i x-cloak x-show="darkMode" class="fas fa-sun"></i>
                     </button>
                     
                     <!-- Dropdown del usuario -->
@@ -82,7 +94,7 @@
                         </button>
                         
                         <!-- Dropdown menu -->
-                        <div x-show="open" 
+                        <div x-cloak x-show="open" 
                              x-transition:enter="transition ease-out duration-200"
                              x-transition:enter-start="opacity-0 scale-95"
                              x-transition:enter-end="opacity-100 scale-100"
@@ -108,16 +120,16 @@
                 </div>
 
                 <!-- Botón menú móvil -->
-                <div class="md:hidden">
+        <div class="md:hidden">
                     <button @click="mobileMenuOpen = !mobileMenuOpen" 
                             class="text-white hover:text-gray-200 p-2 rounded-lg hover:bg-white/10 transition-all">
-                        <i x-show="!mobileMenuOpen" class="fas fa-bars"></i>
-                        <i x-show="mobileMenuOpen" class="fas fa-times"></i>
+            <i x-cloak x-show="!mobileMenuOpen" class="fas fa-bars"></i>
+            <i x-cloak x-show="mobileMenuOpen" class="fas fa-times"></i>
                     </button>
                 </div>
 
                 <!-- Menú móvil -->
-                <div x-show="mobileMenuOpen" 
+                <div x-cloak x-show="mobileMenuOpen" 
                      x-transition:enter="transition ease-out duration-200"
                      x-transition:enter-start="opacity-0 -translate-y-1"
                      x-transition:enter-end="opacity-100 translate-y-0"
@@ -136,10 +148,10 @@
                             <i class="fas fa-key mr-2"></i>Cambiar contraseña
                         </a>
                         
-                        <button @click="darkMode = !darkMode" 
+                <button @click="darkMode = !darkMode" 
                                 class="block w-full text-left text-white hover:text-gray-200 py-2 hover:bg-blue-600 rounded px-2 transition-colors">
-                            <i x-show="!darkMode" class="fas fa-moon mr-2"></i>
-                            <i x-show="darkMode" class="fas fa-sun mr-2"></i>
+                    <i x-cloak x-show="!darkMode" class="fas fa-moon mr-2"></i>
+                    <i x-cloak x-show="darkMode" class="fas fa-sun mr-2"></i>
                             <span x-text="darkMode ? 'Modo claro' : 'Modo oscuro'"></span>
                         </button>
                         
@@ -185,7 +197,7 @@
             <!-- Toasts de mensajes -->
             <div class="fixed top-4 right-4 z-[60] space-y-3">
                 {% for message in messages %}
-                <div x-data="{ show: true }" x-init="setTimeout(() => show = false, 4000)" x-show="show"
+                <div x-cloak x-data="{ show: true }" x-init="setTimeout(() => show = false, 4000)" x-show="show"
                      x-transition:enter="transition ease-out duration-200"
                      x-transition:enter-start="opacity-0 translate-y-1"
                      x-transition:enter-end="opacity-100 translate-y-0"

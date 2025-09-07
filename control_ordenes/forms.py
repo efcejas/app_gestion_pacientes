@@ -26,7 +26,7 @@ class OrdenMedicaFiltroForm(forms.Form):
         required=False,
         widget=forms.TextInput(attrs={
             'placeholder': 'Buscar identificador',
-            'class': 'form-control'
+            'class': 'bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 text-gray-900 dark:text-gray-100 text-sm rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 block w-full px-3 py-2'
         })
     )
     fecha_emision = forms.DateField(
@@ -34,7 +34,7 @@ class OrdenMedicaFiltroForm(forms.Form):
         required=False,
         widget=forms.DateInput(attrs={
             'type': 'date',
-            'class': 'form-control'
+            'class': 'bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 text-gray-900 dark:text-gray-100 text-sm rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 block w-full px-3 py-2'
         })
     )
     fecha_vencimiento = forms.DateField(
@@ -42,6 +42,6 @@ class OrdenMedicaFiltroForm(forms.Form):
         required=False,
         widget=forms.DateInput(attrs={
             'type': 'date',
-            'class': 'form-control'
+            'class': 'bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 text-gray-900 dark:text-gray-100 text-sm rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 block w-full px-3 py-2'
         })
     )

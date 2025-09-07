@@ -78,7 +78,58 @@ class OrdenesDelMedicoListView(LoginRequiredMixin, UserPassesTestMixin, ListView
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['filtro_form'] = OrdenMedicaFiltroForm(self.request.GET)
-        context['total_ordenes'] = OrdenMedica.objects.count()
+        # Totales generales (no renovadas)
+        base_qs = OrdenMedica.objects.filter(renovada=False)
+        total = base_qs.count()
+        vencidas = 0
+        proximas = 0
+        vigentes = 0
+        for o in base_qs:  # usa la prop dias_restantes calculada en Python
+            dr = o.dias_restantes
+            if dr < 0:
+                vencidas += 1
+            elif dr <= 10:
+                proximas += 1
+            else:
+                vigentes += 1
+        context['stats'] = {
+            'total': total,
+            'vencidas': vencidas,
+            'proximas': proximas,
+            'vigentes': vigentes,
+        }
+        try:
+            context['mostradas'] = len(context.get('ordenes', []))
+        except TypeError:
+            context['mostradas'] = 0
+        # QS sin parametros de orden para evitar duplicados y flicker en los links de ordenamiento
+        q = self.request.GET.copy()
+        for k in ['sort', 'dir']:
+            if k in q:
+                del q[k]
+        context['qs_no_sort'] = q.urlencode()
+        # Serialización básica para ordenamiento en cliente (Alpine)
+        ordenes = context.get('ordenes', [])
+        data = []
+        for o in ordenes:
+            try:
+                fv = o.fecha_vencimiento()
+                data.append({
+                    'id': o.id,
+                    'identificador': o.identificador_paciente,
+                    'fecha_emision_iso': o.fecha_emision.isoformat() if hasattr(o.fecha_emision, 'isoformat') else str(o.fecha_emision),
+                    'fecha_emision_label': o.fecha_emision.strftime('%d/%m/%Y'),
+                    'fecha_vencimiento_iso': fv.isoformat() if hasattr(fv, 'isoformat') else str(fv),
+                    'fecha_vencimiento_label': fv.strftime('%d/%m/%Y'),
+                    'dias_validez': o.dias_validez,
+                    'dias_restantes': o.dias_restantes,
+                    'renovada': o.renovada,
+                })
+            except Exception:
+                pass
+        # Proveer JSON válido para el frontend (Alpine)
+        context['ordenes_data'] = data  # compat
+        context['ordenes_data_json'] = json.dumps(data, ensure_ascii=False)
         return context
 
     def test_func(self):
