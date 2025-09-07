@@ -77,7 +77,28 @@
     {% if report %}
       <div class="text-[15px] text-gray-700">
         Finalizado: {{ report.actualizado|date:"Y-m-d H:i" }}
+        {% if report.version %}
+          · Versión: {{ report.version }}
+        {% endif %}
       </div>
+      {% if report.pdf_hash or report.contenido_hash %}
+        <div class="text-[12px] text-gray-600 mt-1">
+          {% if report.pdf_hash %}
+            Código de verificación: <code class="font-mono tracking-tight">{{ report.pdf_hash|slice:":12" }}…</code>
+            <button type="button" class="ml-2 text-blue-600 hover:underline" data-copy="{{ report.pdf_hash }}">copiar</button>
+          {% elif report.contenido_hash %}
+            Código de verificación: <code class="font-mono tracking-tight">{{ report.contenido_hash|slice:":12" }}…</code>
+            <button type="button" class="ml-2 text-blue-600 hover:underline" data-copy="{{ report.contenido_hash }}">copiar</button>
+          {% endif %}
+          <details class="mt-1">
+            <summary class="text-xs text-gray-500 cursor-pointer hover:text-gray-700">Detalles técnicos</summary>
+            <div class="mt-2 text-[12px] text-gray-500 font-mono break-all">
+              {% if report.contenido_hash %}HTML SHA-256: <code>{{ report.contenido_hash }}</code>{% endif %}
+              {% if report.pdf_hash %}<br>PDF SHA-256: <code>{{ report.pdf_hash }}</code>{% endif %}
+            </div>
+          </details>
+        </div>
+      {% endif %}
     {% endif %}
     <div class="border-t border-gray-200 pt-4">
       <div class="flex justify-end flex-wrap gap-2 mt-4">
@@ -110,6 +131,7 @@
           <div class="flex flex-wrap gap-2 mt-2 md:mt-0 md:ml-auto justify-end">
         <a href="{{ report.pdf_file.url }}" target="_blank" rel="noopener" class="btn btn-xs btn-primary">Ver PDF</a>
         <a href="{{ report.pdf_file.url }}" download class="btn btn-xs btn-outline">Descargar PDF</a>
+        {% if report.pdf_file.size %}<span class="text-[11px] text-gray-500 self-center">({{ report.pdf_file.size }} bytes)</span>{% endif %}
           </div>
           {% else %}
           <div class="flex flex-wrap gap-2 mt-2 md:mt-0 md:ml-auto justify-end">
@@ -118,7 +140,7 @@
           {% endif %}
         </div>
   {% if report.firma_digital %}
-    <p><strong>Firma Digital (demo, sin validez legal):</strong> <code>{{ report.firma_digital }}</code></p>
+    <p class="text-[12px] text-gray-500"><strong>Firma Digital</strong> (demo, sin validez legal): <code>{{ report.firma_digital }}</code></p>
   {% endif %}
       </footer>
     </div>
@@ -131,4 +153,20 @@
 </div>
 
 </div>
+<script>
+  // Copiar al portapapeles el hash completo
+  document.querySelectorAll('[data-copy]').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const text = btn.getAttribute('data-copy');
+      try {
+        await navigator.clipboard.writeText(text);
+        const old = btn.textContent;
+        btn.textContent = 'copiado';
+        setTimeout(() => btn.textContent = old || 'copiar', 1200);
+      } catch (e) {
+        alert('No se pudo copiar');
+      }
+    });
+  });
+</script>
 {% endblock %}

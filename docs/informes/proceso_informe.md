@@ -20,7 +20,13 @@ Actual implementado (2025-09-02):
 6. Se genera PDF (xhtml2pdf) con plantilla `base_report.html`, se calcula `pdf_hash` y se actualiza log `finalize` con `pdf_hash` y tamaño en bytes.
 7. Vista final (`ver_final`) muestra snapshot congelado y enlaces PDF.
 
+Actualización 2025-09-05:
+- Refactor de hashing, firma demo y sanitización a `informes/utils.py`.
+- Búsqueda de logo robusta (múltiples rutas y variantes de nombre) antes de generar PDF.
+
 Layout PDF: encabezado con logo parametrizable y datos institución, banda con datos paciente/estudio y firma DEMO al pie (texto “demo, sin validez legal”).
+
+Detección de logo: ver sección en `docs/arquitectura.md` (Gestión de Logo en PDF).
 
 Pendiente:
 - Formulario estructurado / plantillas dinámicas.

@@ -26,8 +26,7 @@ urlpatterns = [
     path("", RedirectView.as_view(pattern_name="home", permanent=False)),  # Página principal
     path("control_ordenes/", include("control_ordenes.urls")),  # Incluir rutas de la app control_ordenes
 
-    # Incluir rutas de la app portal_pacientes
-    path("pacientes/", include("portal_pacientes.urls")), # Incluir rutas de la app portal_pacientes
+    # (Eliminado) Rutas de portal_pacientes
     path("estudios/", include("estudios.urls")),  # Integración Orthanc: listado estudios/series/instancias
     path("informes/", include("informes.urls")),  # Gestión de informes
 ]

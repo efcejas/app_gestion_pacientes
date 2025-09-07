@@ -9,6 +9,13 @@ from .pdf_utils import render_report_to_pdf
 from django.conf import settings
 from estudios.services import client
 from functools import lru_cache
+from .utils import (
+	sanitize_report_html,
+	build_study_info_from_tags,
+	hash_content,
+	hash_pdf_bytes,
+	demo_signature,
+)
 
 
 def staff_required(u):
@@ -35,23 +42,7 @@ def crear_o_editar(request, study_id=None, report_id=None):
 		return client.get_study_shared_tags(sid)
 
 	def build_study_info(tags):
-		if not tags:
-			return {}
-		def val(code):
-			return (tags.get(code, {}) or {}).get('Value') or ''
-		name_raw = val('0010,0010')
-		patient_name = name_raw.replace('^', ' ').strip() if isinstance(name_raw, str) else name_raw
-		return {
-			'patient_name': patient_name,
-			'patient_id': val('0010,0020'),
-			'patient_sex': val('0010,0040'),
-			'birth_date': val('0010,0030'),
-			'study_description': val('0008,1030'),
-			'study_date': val('0008,0020'),
-			'study_time': val('0008,0030'),
-			'accession_number': val('0008,0050'),
-			' modalities': val('0008,0061'),
-		}
+		return build_study_info_from_tags(tags)
 
 	if report_id:
 		report = get_object_or_404(Report.objects.select_for_update(), pk=report_id)
@@ -113,14 +104,7 @@ def crear_o_editar(request, study_id=None, report_id=None):
 		if form.is_valid():
 			form.instance.autor = report.autor  # evitar cambio
 			# Sanitizar contenido HTML (baseline)
-			try:
-				import bleach
-			except Exception:
-				bleach = None
-			if bleach:
-				allowed_tags = ['p','br','strong','em','ul','ol','li','h1','h2','h3','h4','blockquote','span','u','sub','sup']
-				allowed_attrs = {'span': ['style']}
-				form.instance.contenido = bleach.clean(form.instance.contenido, tags=allowed_tags, attributes=allowed_attrs, strip=True)
+			form.instance.contenido = sanitize_report_html(form.instance.contenido)
 			if report.es_final:
 				messages.warning(request, 'Informe finalizado: no se puede modificar.')
 				return redirect('informes:editar', report.id)
@@ -143,14 +127,10 @@ def crear_o_editar(request, study_id=None, report_id=None):
 					form.instance.estado = Report.ESTADO_FINAL
 					form.instance.save(update_fields=['estado'])
 					# Hash contenido y firma demo (si falta)
-					import hashlib
-					content_bytes = form.instance.contenido.encode('utf-8', errors='ignore')
-					form.instance.contenido_hash = hashlib.sha256(content_bytes).hexdigest()
+					form.instance.contenido_hash = hash_content(form.instance.contenido)
 					updates = ['estado', 'contenido_hash']
 					if not form.instance.firma_digital:
-						payload = (form.instance.contenido + form.instance.autor.username).encode('utf-8', errors='ignore')
-						hexhash = hashlib.sha256(payload).hexdigest()[:32]
-						form.instance.firma_digital = f"FD-{hexhash}"  # demo
+						form.instance.firma_digital = demo_signature(form.instance.contenido, form.instance.autor.username)
 						updates.append('firma_digital')
 					form.instance.save(update_fields=updates)
 					# Log finalize (pre PDF hash)
@@ -175,8 +155,7 @@ def crear_o_editar(request, study_id=None, report_id=None):
 						filename = f"reporte_{form.instance.id}.pdf"
 						# Leer bytes ANTES de guardar (Django consume el file al guardar)
 						pdf_bytes = content_file.read()
-						import hashlib as _hashlib
-						form.instance.pdf_hash = _hashlib.sha256(pdf_bytes).hexdigest() if pdf_bytes else ''
+						form.instance.pdf_hash = hash_pdf_bytes(pdf_bytes)
 						from django.core.files.base import ContentFile as _CF
 						form.instance.pdf_file.save(filename, _CF(pdf_bytes), save=True)
 						form.instance.save(update_fields=['pdf_hash'])
@@ -217,25 +196,15 @@ def finalizar(request, report_id: int):
 		messages.error(request, 'No podés finalizar un informe vacío.')
 		return redirect('informes:editar', report_id)
 	# Sanitizar antes de congelar
-	try:
-		import bleach
-	except Exception:
-		bleach = None
-	if bleach:
-		allowed_tags = ['p','br','strong','em','ul','ol','li','h1','h2','h3','h4','blockquote','span','u','sub','sup']
-		allowed_attrs = {'span': ['style']}
-		report.contenido = bleach.clean(report.contenido, tags=allowed_tags, attributes=allowed_attrs, strip=True)
-		report.save(update_fields=['contenido'])
+	report.contenido = sanitize_report_html(report.contenido)
+	report.save(update_fields=['contenido'])
 	report.estado = Report.ESTADO_FINAL
 	report.save(update_fields=['estado'])
 	# Hash contenido y firma demo si falta
-	import hashlib
-	content_bytes = report.contenido.encode('utf-8', errors='ignore')
-	report.contenido_hash = hashlib.sha256(content_bytes).hexdigest()
+	report.contenido_hash = hash_content(report.contenido)
 	updates = ['estado', 'contenido_hash']
 	if not report.firma_digital:
-		payload = (report.contenido + report.autor.username).encode('utf-8', errors='ignore')
-		report.firma_digital = 'FD-' + hashlib.sha256(payload).hexdigest()[:32]
+		report.firma_digital = demo_signature(report.contenido, report.autor.username)
 		updates.append('firma_digital')
 	report.save(update_fields=updates)
 	# Obtener snapshot (si no existe, construir y guardar ahora)
@@ -264,7 +233,7 @@ def finalizar(request, report_id: int):
 		filename = f"reporte_{report.id}.pdf"
 		# Leer bytes antes de guardar
 		pdf_bytes = content_file.read()
-		report.pdf_hash = hashlib.sha256(pdf_bytes).hexdigest() if pdf_bytes else ''
+		report.pdf_hash = hash_pdf_bytes(pdf_bytes)
 		from django.core.files.base import ContentFile as _CF
 		report.pdf_file.save(filename, _CF(pdf_bytes), save=True)
 		report.save(update_fields=['pdf_hash'])

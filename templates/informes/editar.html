@@ -106,7 +106,10 @@
           <label class="block text-sm font-medium text-gray-700 dark:text-gray-200">
             Contenido del informe
           </label>
-          <small id="save-indicator" class="text-[11px] text-gray-400">Sin cambios</small>
+          <div class="flex items-center gap-3">
+            <small id="count-indicator" class="text-[11px] text-gray-400">0 palabras</small>
+            <small id="save-indicator" class="text-[11px] text-gray-400">Sin cambios</small>
+          </div>
         </div>
 
         <!-- Textarea real del form (oculto) -->
@@ -369,6 +372,7 @@
   const isFinal = form?.dataset.isFinal === 'true';
   const textarea = form ? (form.querySelector('textarea[name="{{ form.contenido.name }}"]') || form.querySelector('textarea[name="contenido"]')) : null;
   const initialHTML = textarea ? textarea.value : '';
+  let isDirty = false;
 
   const CustomBold = Bold.extend({
     renderHTML({ mark, HTMLAttributes }) {
@@ -414,6 +418,8 @@
       if (ind) ind.textContent = 'Cambios sin guardar…';
       if (textarea) textarea.value = editor.getHTML();
       updateActiveButtons();
+  isDirty = true;
+  updateCounts();
     },
     onSelectionUpdate() { updateActiveButtons(); }
   });
@@ -525,11 +531,21 @@
     updateHeadingButtons();
   }
 
+  function updateCounts(){
+    const el = document.getElementById('count-indicator');
+    if (!el) return;
+    const text = editor.getText ? editor.getText() : editor.getHTML().replace(/<[^>]+>/g,' ');
+    const chars = text.replace(/\s+/g,'').length;
+    const words = (text.trim().match(/\S+/g) || []).length;
+  el.textContent = `${words} palabras · ${chars} caracteres`;
+  }
+
   form?.addEventListener('submit', () => {
     if (!textarea) return;
     textarea.value = editor.getHTML();
     const ind = document.getElementById('save-indicator');
     if (ind) ind.textContent = 'Guardando…';
+  isDirty = false;
   });
 
   const btnFinalizar = document.getElementById('btn-finalizar');
@@ -548,6 +564,34 @@
   if (isFinal) {
     document.querySelectorAll('.p-1.5').forEach(b => b.setAttribute('disabled', 'disabled'));
   }
+
+  // Atajo Ctrl+S para guardar borrador (si no es final)
+  if (!isFinal) {
+    document.addEventListener('keydown', (e) => {
+      const key = e.key?.toLowerCase();
+      if ((e.ctrlKey || e.metaKey) && key === 's') {
+        e.preventDefault();
+        const btnGuardar = form?.querySelector('button[name="guardar"]');
+        if (btnGuardar) {
+          if (textarea) textarea.value = editor.getHTML();
+          if (form.requestSubmit) {
+            form.requestSubmit(btnGuardar);
+          } else {
+            btnGuardar.click();
+          }
+        }
+      }
+    });
+  }
+
+  // Aviso al salir con cambios sin guardar
+  window.addEventListener('beforeunload', (e) => {
+    if (!isFinal && isDirty) {
+      e.preventDefault();
+      e.returnValue = '';
+      return '';
+    }
+  });
 
   const toggleWide = document.getElementById('toggle-wide');
   const sidePanel = document.getElementById('side-panel');
@@ -568,6 +612,7 @@
   }
 
   updateActiveButtons();
+  updateCounts();
 </script>
 <!-- Fin TipTap + integración -->
 

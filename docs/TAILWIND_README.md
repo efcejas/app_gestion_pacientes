@@ -20,9 +20,7 @@ Esta rama contiene la migración del proyecto a **Tailwind CSS + DaisyUI + Flowb
 
 ### **Templates:**
 - `templates/base_tailwind.html` - Template base solo con Tailwind
-- `templates/portal_pacientes/tailwind_test.html` - Prueba básica de Tailwind
-- `templates/portal_pacientes/base_tailwind_demo.html` - Demo del template base
-- `templates/portal_pacientes/flowbite_daisyui_demo.html` - Demo completo con todos los componentes
+	(Se removieron templates de demo de portal de pacientes)
 
 ## ⚡ **Comandos importantes:**
 
@@ -50,9 +48,7 @@ python manage.py runserver
 
 ## 🌐 **URLs de prueba:**
 
-- **Demo completo:** `/pacientes/flowbite-daisyui-demo/`
-- **Base Tailwind:** `/pacientes/base-tailwind-demo/`
-- **Test básico:** `/pacientes/tailwind-test/`
+	(Se removieron URLs de demo del portal de pacientes)
 
 ## 🔄 **Flujo de desarrollo:**
 

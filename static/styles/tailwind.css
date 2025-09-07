@@ -5205,6 +5205,14 @@ input:checked + .toggle-bg {
   margin-top: auto;
 }
 
+.ml-2 {
+  margin-left: 0.5rem;
+}
+
+.mt-1 {
+  margin-top: 0.25rem;
+}
+
 .block {
   display: block;
 }
@@ -5634,6 +5642,10 @@ input:checked + .toggle-bg {
 
 .break-words {
   overflow-wrap: break-word;
+}
+
+.break-all {
+  word-break: break-all;
 }
 
 .rounded {
@@ -17208,6 +17220,10 @@ input:checked + .toggle-bg {
 .text-xs {
   font-size: 0.75rem;
   line-height: 1rem;
+}
+
+.text-\[12px\] {
+  font-size: 12px;
 }
 
 .font-bold {

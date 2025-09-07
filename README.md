@@ -91,7 +91,6 @@ usuarios/      # app de usuarios (AUTH_USER_MODEL)
 informes/      # informes médicos
 control_ordenes/
 estudios/
-portal_pacientes/
 static/        # input.css -> tailwind.css generado
 templates/     # templates globales y por app
 ```
