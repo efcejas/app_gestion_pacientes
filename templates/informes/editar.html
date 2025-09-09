@@ -55,11 +55,11 @@
         <div class="flex items-center flex-wrap gap-2">
           <h1 class="text-sm font-bold text-blue-700 m-0">Estado del informe:</h1>
           {% if not report %}
-            <span class="badge badge-warning" title="Nuevo informe">Nuevo</span>
+            <span class="inline-flex items-center gap-1 rounded-full bg-amber-100 text-amber-800 px-2.5 py-0.5 text-xs font-medium border border-amber-200" title="Nuevo informe">Nuevo</span>
           {% elif report.es_final %}
-            <span class="badge badge-success" title="Informe finalizado">Final</span>
+            <span class="inline-flex items-center gap-1 rounded-full bg-emerald-100 text-emerald-800 px-2.5 py-0.5 text-xs font-medium border border-emerald-200" title="Informe finalizado">Final</span>
           {% else %}
-            <span class="badge badge-warning" title="Informe en borrador">Borrador</span>
+            <span class="inline-flex items-center gap-1 rounded-full bg-amber-100 text-amber-800 px-2.5 py-0.5 text-xs font-medium border border-amber-200" title="Informe en borrador">Borrador</span>
           {% endif %}
         </div>
         {% if viewer_url %}

@@ -12,7 +12,6 @@ class RegistroUsuarioForm(UserCreationForm):
         help_text="Hasta 150 caracteres. Solo letras, números y los símbolos @ . + - _",
         max_length=150,
         widget=forms.TextInput(attrs={
-            'class': 'form-control',
             'placeholder': 'Ingrese un nombre de usuario único',
             'autofocus': True,
             'autocomplete': 'username'
@@ -23,7 +22,6 @@ class RegistroUsuarioForm(UserCreationForm):
         label="Nombre",
         max_length=30,
         widget=forms.TextInput(attrs={
-            'class': 'form-control',
             'placeholder': 'Ingrese su nombre',
         })
     )
@@ -32,7 +30,6 @@ class RegistroUsuarioForm(UserCreationForm):
         label="Apellido",
         max_length=30,
         widget=forms.TextInput(attrs={
-            'class': 'form-control',
             'placeholder': 'Ingrese su apellido',
         })
     )
@@ -40,21 +37,19 @@ class RegistroUsuarioForm(UserCreationForm):
     email = forms.EmailField(
         label="Correo electrónico",
         widget=forms.EmailInput(attrs={
-            'class': 'form-control',  # Clase de Bootstrap
-            'placeholder': 'Ingrese su correo electrónico',  # Placeholder
+            'placeholder': 'Ingrese su correo electrónico',
         })
     )
     rol = forms.ChoiceField(
         choices=Usuario.ROLES, label="Rol",
         widget=forms.Select(attrs={
-            'class': 'form-control',  # Clase de Bootstrap
+            # clases aplicadas en templates via add_class
         })
     )
     password1 = forms.CharField(
         label="Contraseña",
         help_text=password_validators_help_text_html(),  # 🔥 Esto incluye los requisitos
         widget=forms.PasswordInput(attrs={
-            'class': 'form-control',
             'placeholder': 'Ingrese su contraseña',
         })
     )
@@ -62,7 +57,6 @@ class RegistroUsuarioForm(UserCreationForm):
         label="Confirmar contraseña",
         help_text="Ingrese la misma contraseña para confirmar.",
         widget=forms.PasswordInput(attrs={
-            'class': 'form-control',
             'placeholder': 'Confirme su contraseña',
         })
     )
@@ -78,7 +72,6 @@ class LoginForm(AuthenticationForm):
         label="",  # No mostrar el label
         max_length=150,
         widget=forms.TextInput(attrs={
-            'class': 'form-control',  # Clase de Bootstrap
             'placeholder': 'Ingrese su usuario',  # Placeholder
             'autofocus': True,  # Enfocar automáticamente este campo
         })
@@ -86,7 +79,6 @@ class LoginForm(AuthenticationForm):
     password = forms.CharField(
         label="",  # No mostrar el label
         widget=forms.PasswordInput(attrs={
-            'class': 'form-control',  # Clase de Bootstrap
             'placeholder': 'Ingrese su contraseña',  # Placeholder
         })
     )
@@ -101,7 +93,6 @@ class CambioContrasenaForm(PasswordChangeForm):
     old_password = forms.CharField(
         label="",
         widget=forms.PasswordInput(attrs={
-            'class': 'form-control',
             'placeholder': 'Ingrese su contraseña actual',
         })
     )
@@ -110,7 +101,6 @@ class CambioContrasenaForm(PasswordChangeForm):
         label="",
         help_text=password_validators_help_text_html(),  # HTML con <ul><li>...
         widget=forms.PasswordInput(attrs={
-            'class': 'form-control',
             'placeholder': 'Ingrese su nueva contraseña',
         })
     )
@@ -118,7 +108,6 @@ class CambioContrasenaForm(PasswordChangeForm):
     new_password2 = forms.CharField(
         label="",
         widget=forms.PasswordInput(attrs={
-            'class': 'form-control',
             'placeholder': 'Confirme su nueva contraseña',
         })
     )
@@ -131,7 +120,6 @@ class RestablecerContrasenaForm(PasswordResetForm):
     email = forms.EmailField(
         label="",  # Etiqueta del campo
         widget=forms.EmailInput(attrs={
-            'class': 'form-control',
             'placeholder': 'Ingrese su correo electrónico',
         })
     )
@@ -139,14 +127,13 @@ class RestablecerContrasenaForm(PasswordResetForm):
     class Meta:
         fields = ['email']
         widgets = {
-            'email': forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'Ingrese su correo electrónico'}),
+            'email': forms.EmailInput(attrs={'placeholder': 'Ingrese su correo electrónico'}),
         }
 
 class RestablecerPasswordNuevaForm(SetPasswordForm):
     new_password1 = forms.CharField(
         label="",
         widget=forms.PasswordInput(attrs={
-            'class': 'form-control',
             'placeholder': 'Ingrese su nueva contraseña'
         }),
         help_text=password_validators_help_text_html()
@@ -154,7 +141,6 @@ class RestablecerPasswordNuevaForm(SetPasswordForm):
     new_password2 = forms.CharField(
         label="",
         widget=forms.PasswordInput(attrs={
-            'class': 'form-control',
             'placeholder': 'Confirme su nueva contraseña'
         })
     )
