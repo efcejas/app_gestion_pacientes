@@ -1,13 +1,12 @@
-# 🚀 Migración a Tailwind CSS - Rama `migracion-tailwind`
+# 🚀 Tailwind CSS en CMI - Rama `migracion-tailwind`
 
-Esta rama contiene la migración del proyecto a **Tailwind CSS + DaisyUI + Flowbite** para crear interfaces modernas y responsivas.
+Base de estilos unificada con **Tailwind CSS + Flowbite + AlpineJS**. Bootstrap fue removido de los templates.
 
 ## 🎨 **Tecnologías agregadas:**
 
-- **Tailwind CSS v3.4.0** - Framework de utilidades CSS
-- **DaisyUI v5.0.50** - Sistema de componentes para Tailwind
-- **Flowbite v3.1.2** - Componentes interactivos con JavaScript
-- **AlpineJS v3** - JavaScript reactivo ligero
+- Tailwind CSS v3
+- Flowbite v3 (componentes interactivos)
+- AlpineJS v3 (JS reactivo ligero)
 
 ## 📁 **Archivos importantes:**
 
@@ -19,8 +18,7 @@ Esta rama contiene la migración del proyecto a **Tailwind CSS + DaisyUI + Flowb
 - `static/styles/tailwind.css` - CSS compilado (generado automáticamente)
 
 ### **Templates:**
-- `templates/base_tailwind.html` - Template base solo con Tailwind
-	(Se removieron templates de demo de portal de pacientes)
+- `templates/base_tailwind.html` - Template base con anti-flicker dark mode, toasts y navbar.
 
 ## ⚡ **Comandos importantes:**
 
@@ -46,9 +44,10 @@ python manage.py collectstatic --noinput
 python manage.py runserver
 ```
 
-## 🌐 **URLs de prueba:**
-
-	(Se removieron URLs de demo del portal de pacientes)
+## 🧩 Patrones usados
+- Filtro `add_class` en templates para aplicar clases Tailwind a widgets de Django.
+- Anti-flicker de tema en `<head>` y toggle dark mode con Alpine.
+- Componentes Flowbite solo si aportan interactividad (tooltips, dropdowns, etc.).
 
 ## 🔄 **Flujo de desarrollo:**
 
@@ -59,21 +58,18 @@ python manage.py runserver
 5. **Automático:** Tailwind recompila
 6. **Refrescar:** F5 en navegador
 
-## 🎯 **Migración gradual:**
+## 🎯 Estado de migración
 
-- ✅ Base template con Tailwind (`base_tailwind.html`)
-- ✅ Configuración de DaisyUI y Flowbite
-- ✅ Modo oscuro automático
-- ✅ Componentes responsivos
-- 🔄 Migrar páginas existentes una por una
-- 🔄 Reemplazar Bootstrap gradualmente
+- ✅ Base `base_tailwind.html`
+- ✅ Autenticación y reseteo de contraseña migrados
+- ✅ Listado de órdenes (Alpine + sort cliente)
+- ✅ Informes y estudios con badges y botones Tailwind
+- ✅ Eliminado Bootstrap en templates
 
-## 📝 **Notas importantes:**
-
-- **Modo desarrollo:** Siempre usar `npm run build-css` (watch mode)
-- **Antes de commit:** Ejecutar `npm run build-css-prod`
-- **Archivos CSS:** El `tailwind.css` se incluye en el repo para deployment
-- **Compatibilidad:** Funciona junto con Bootstrap temporalmente
+## 📝 Notas importantes
+- Modo desarrollo: `npm run build-css` (watch mode)
+- Antes de deploy: `npm run build-css-prod` + `collectstatic`
+- El CSS generado (`static/styles/tailwind.css`) se incluye para facilitar deploy.
 
 ## 🚀 **Próximos pasos:**
 
@@ -84,5 +80,5 @@ python manage.py runserver
 
 ---
 
-**Rama creada:** 5 de agosto de 2025  
-**Estado:** 🟢 Ready for development
+Actualizado: 9 de septiembre de 2025  
+Estado: 🟢 UI unificada en Tailwind
