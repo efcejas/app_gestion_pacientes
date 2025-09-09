@@ -51,6 +51,8 @@ npm run dev-css       # Solo watcher de estilos
 npm run dev-windows   # Misma idea pero en dos ventanas separadas (batch)
 ```
 
+Nota: `dev.bat` limpia variables de entorno conflictivas de email (`EMAIL_HOST_PASSWORD`, `OVERRIDE_PWD`) antes de ejecutar `runserver`, para asegurar que `.env` prevalezca.
+
 ## 📦 Scripts NPM clave
 | Script | Qué hace |
 |--------|----------|
@@ -125,6 +127,7 @@ Configurable con `ORTHANC_BASE_URL` (y potencialmente usuario/clave si se habili
 | Clase Tailwind no aparece | Clase construida dinámicamente (no literal) -> agregar a safelist |
 | Cambié tailwind.config.js y no refleja | Reiniciar watcher (`Ctrl+C` y `npm run dev`) |
 | Error collectstatic | Revisar permisos / variables de entorno / rutas STATIC_* |
+| No envía emails | Verificar `.env` (App Password de 16 chars sin espacios), que no exista var de sistema `EMAIL_HOST_PASSWORD`, y `EMAIL_USE_SSL=True` con `EMAIL_PORT=465` para Gmail |
 
 ## 📄 Licencia
 Privado / interno (definir más adelante).

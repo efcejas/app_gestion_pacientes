@@ -88,13 +88,13 @@
           <td class="px-3 py-3 text-center">
             {% with state=s.report_state|default:"none" %}
               {% if state == "none" %}
-                <div class="badge badge-error w-24 justify-center whitespace-nowrap" title="Sin informe">No informado</div>
+                <div class="inline-flex items-center justify-center w-24 px-2 py-0.5 rounded text-xs font-medium bg-red-100 text-red-800 whitespace-nowrap" title="Sin informe">No informado</div>
               {% elif state == "draft" %}
-                <div class="badge badge-warning w-24 justify-center whitespace-nowrap" title="Informe en borrador">Borrador</div>
+                <div class="inline-flex items-center justify-center w-24 px-2 py-0.5 rounded text-xs font-medium bg-yellow-100 text-yellow-800 whitespace-nowrap" title="Informe en borrador">Borrador</div>
               {% elif state == "final" %}
-                <div class="badge badge-success w-24 justify-center whitespace-nowrap" title="Informe finalizado">Final</div>
+                <div class="inline-flex items-center justify-center w-24 px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800 whitespace-nowrap" title="Informe finalizado">Final</div>
               {% else %}
-                <div class="badge w-24 justify-center" title="Estado desconocido">—</div>
+                <div class="inline-flex items-center justify-center w-24 px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-700" title="Estado desconocido">—</div>
               {% endif %}
             {% endwith %}
           </td>

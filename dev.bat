@@ -17,7 +17,7 @@ REM Esperar un poco
 timeout /t 2 /nobreak >nul
 
 REM Abrir segunda ventana para Django server  
-start cmd /k "title Django Server && cd /d "%~dp0" && python manage.py runserver"
+start cmd /k "title Django Server && cd /d "%~dp0" && set EMAIL_HOST_PASSWORD=& set OVERRIDE_PWD=& python manage.py runserver"
 
 echo ✅ Ventanas de desarrollo abiertas!
 echo.

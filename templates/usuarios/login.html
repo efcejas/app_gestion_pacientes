@@ -1,71 +1,84 @@
-{% extends "base.html" %}
+{% extends "base_tailwind.html" %}
 
 {% block title %}Iniciar Sesión{% endblock %}
 
 {% block content %}
-<div class="d-flex justify-content-center align-items-center" style="min-height: 65vh;">
-    <div class="card shadow rounded-4 border-0" style="width: 100%; max-width: 420px;">
-        <div class="card-header text-white text-center" style="background-color: var(--color-primario); border-top-left-radius: 1rem; border-top-right-radius: 1rem;">
-            <h5 class="mb-0">Inicio de sesión</h5>
+<div class="min-h-[65vh] flex items-center justify-center px-4">
+    <div class="w-full max-w-md bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow">
+        <div class="text-white text-center rounded-t-xl py-3 bg-gradient-to-r from-blue-600 to-indigo-600">
+            <h5 class="m-0 text-base font-semibold">Inicio de sesión</h5>
         </div>
-        <div class="card-body">
-            <form method="post" novalidate>
+        <div class="p-6">
+            <form method="post" novalidate class="space-y-4">
                 {% csrf_token %}
 
-                <!-- Usuario -->
-                <div class="mb-3">
-                    <div class="input-group">
-                        <span class="input-group-text"><i class="bi bi-person"></i></span>
-                        {{ form.username }}
-                    </div>
-                    {{ form.username.errors }}
-                </div>
+                        <!-- Usuario -->
+                        <div>
+                            <label for="{{ form.username.id_for_label }}" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Usuario</label>
+                            <input
+                                id="{{ form.username.id_for_label }}"
+                                name="{{ form.username.html_name }}"
+                                type="text"
+                                value="{{ form.username.value|default_if_none:'' }}"
+                                autocomplete="username"
+                                autofocus
+                                class="w-full rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-400 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                required
+                            />
+                            {% if form.username.errors %}
+                                <p class="mt-1 text-sm text-red-600">{{ form.username.errors|join:", " }}</p>
+                            {% endif %}
+                        </div>
 
-                <!-- Contraseña -->
-                <div class="mb-3">
-                    <div class="input-group">
-                        <span class="input-group-text"><i class="bi bi-lock"></i></span>
-                        {{ form.password }}
-                    </div>
-                    {{ form.password.errors }}
-                </div>
+                        <!-- Contraseña -->
+                        <div>
+                            <label for="{{ form.password.id_for_label }}" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Contraseña</label>
+                            <input
+                                id="{{ form.password.id_for_label }}"
+                                name="{{ form.password.html_name }}"
+                                type="password"
+                                value=""
+                                autocomplete="current-password"
+                                class="w-full rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-400 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                required
+                            />
+                            {% if form.password.errors %}
+                                <p class="mt-1 text-sm text-red-600">{{ form.password.errors|join:", " }}</p>
+                            {% endif %}
+                        </div>
 
                 <!-- Errores generales -->
                 {% if form.non_field_errors %}
-                    <div class="alert alert-danger mt-3">
-                        {{ form.non_field_errors|join:"<br>" }}
+                    <div class="mt-2 rounded-md border border-red-200 bg-red-50 text-red-800 px-3 py-2 text-sm">
+                        {{ form.non_field_errors|join:"<br>"|safe }}
                     </div>
                 {% endif %}
 
                 <!-- Mensajes del sistema -->
                 {% if messages %}
-                    {% for message in messages %}
-                        <div class="alert alert-{{ message.tags }} mt-3">
-                            {{ message }}
-                        </div>
-                    {% endfor %}
+                    <div class="space-y-2">
+                        {% for message in messages %}
+                            <div class="rounded-md border px-3 py-2 text-sm{% if 'error' in message.tags %} bg-red-50 border-red-200 text-red-800{% endif %}{% if 'success' in message.tags %} bg-green-50 border-green-200 text-green-800{% endif %}{% if 'warning' in message.tags %} bg-yellow-50 border-yellow-200 text-yellow-800{% endif %}{% if 'info' in message.tags %} bg-blue-50 border-blue-200 text-blue-800{% endif %}">{{ message }}</div>
+                        {% endfor %}
+                    </div>
                 {% endif %}
 
                 <!-- Botón -->
-                <div class="d-grid mt-4">
-                    <button type="submit" class="btn-personal btn-primario">
-                        <i class="bi bi-box-arrow-in-right"></i> Ingresar
+                <div class="pt-2">
+                                <button type="submit" class="w-full inline-flex items-center justify-center rounded-md bg-blue-600 text-white px-4 py-2.5 text-sm font-medium hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                                    <i class="fas fa-sign-in-alt mr-2"></i> Ingresar
                     </button>
                 </div>
             </form>
         </div>
-        <div class="card-footer bg-light text-center rounded-bottom-4">
+        <div class="bg-gray-50 dark:bg-gray-900 text-center rounded-b-xl px-4 py-3">
+                    <p class="mb-1">
+                        <a href="{% url 'password_reset' %}" class="text-blue-600 hover:text-blue-700"> <i class="fas fa-question-circle"></i> ¿Olvidaste tu contraseña?</a>
+                    </p>
             <p class="mb-0">
-                <a href="{% url 'password_reset' %}" class="text-decoration-none" style="color: var(--color-primario);">
-                    <i class="bi bi-question-circle"></i> ¿Olvidaste tu contraseña?
-                </a>
+                        <a href="{% url 'registro' %}" class="text-indigo-600 hover:text-indigo-700"> <i class="fas fa-user-plus"></i> Registrarse</a>
             </p>
-            <p class="mb-0">
-                <a href="{% url 'registro' %}" class="text-decoration-none" style="color: var(--color-acento);">
-                    <i class="bi bi-person-plus"></i> Registrarse
-                </a>
-            </p>
-        </div>        
+        </div>
     </div>
 </div>
 {% endblock %}

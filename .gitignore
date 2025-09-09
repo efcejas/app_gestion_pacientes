@@ -35,6 +35,8 @@ yarn-error.log*
 .npm
 
 # CSS compilado (se genera con npm run build-css)
+.env
+scripts/
 # static/styles/tailwind.css
 
 # Opcional: Descomentar si no quieres trackear el CSS compilado

@@ -10,7 +10,7 @@
     </div>
     <div class="grid gap-8 mb-6 lg:mb-16 md:grid-cols-2">
         <!-- Card para registrar nueva orden médica -->
-        <div class="card lg:card-side bg-white shadow-sm">
+        <div class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-sm flex flex-col lg:flex-row">
             <figure class="bg-cyan-500 p-6 flex items-center justify-center">
                 <svg class="h-16 w-16 text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24"
                     height="24" fill="currentColor" viewBox="0 0 24 24">
@@ -22,10 +22,10 @@
                         clip-rule="evenodd" />
                 </svg>
             </figure>
-            <div class="card-body">
-                <h2 class="card-title text-blue-800">Registrar nueva orden médica</h2>
+            <div class="p-6 flex-1">
+                <h2 class="text-lg font-semibold text-blue-800">Registrar nueva orden médica</h2>
                 <p class="text-gray-600">Acá podés registrar una nueva orden médica codificada.</p>
-                <div class="card-actions justify-end mt-5">
+                <div class="flex justify-end mt-5">
                     <button data-modal-target="modal-nueva-orden" data-modal-toggle="modal-nueva-orden"
                         class="block text-white bg-green-600 hover:bg-green-700 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-md text-sm px-5 py-2.5 text-center"
                         type="button">
@@ -35,10 +35,10 @@
                         class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
                         <div class="relative p-4 w-full max-w-md max-h-full">
                             <!-- Modal content -->
-                            <div class="relative bg-white rounded-lg shadow-sm">
+                            <div class="relative bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
                                 <!-- Modal header -->
-                                <div class="flex items-center justify-between p-4 md:p-5 border-b rounded-t border-gray-200">
-                                    <h3 class="text-xl font-semibold text-blue-800">
+                                <div class="flex items-center justify-between p-4 md:p-5 border-b rounded-t border-gray-200 dark:border-gray-700">
+                                    <h3 class="text-xl font-semibold text-blue-800 dark:text-blue-200">
                                         Registrar nueva orden médica
                                     </h3>
                                     <button type="button"
@@ -56,15 +56,14 @@
                                 <div class="p-4 md:p-5">
                                     <form method="post" action="{% url 'control_ordenes:crear_orden' %}">
                                         {% csrf_token %}
-                                        <div class="text-blue-800">
-                                            <label for="identificador_paciente" class="form-label">Identificador del
-                                                paciente</label>
+                                        <div class="text-blue-800 dark:text-blue-200 space-y-3">
+                                            <label for="identificador_paciente" class="block text-sm font-medium mb-1">Identificador del paciente</label>
                                             {{ form.identificador_paciente }}
-                                            <label for="dias_validez" class="form-label">Válido por</label>
+                                            <label for="dias_validez" class="block text-sm font-medium mb-1">Válido por</label>
                                             {{ form.dias_validez }}
                                         </div>
                                         <button type="submit"
-                                            class="w-full text-white bg-green-600 hover:bg-green-700 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-md text-sm px-5 py-2.5 text-center">
+                                            class="mt-4 w-full text-white bg-green-600 hover:bg-green-700 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-md text-sm px-5 py-2.5 text-center">
                                             <i class="fas fa-plus mr-2"></i> Registrar Orden
                                         </button>
                                     </form>
@@ -76,7 +75,7 @@
             </div>
         </div>
         <!-- Card para ver órdenes médicas -->
-        <div class="card lg:card-side bg-white shadow-sm">
+        <div class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-sm flex flex-col lg:flex-row">
             <figure class="bg-yellow-400 p-6 flex items-center justify-center">
                 <svg class="h-16 w-16 text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24"
                     height="24" fill="currentColor" viewBox="0 0 24 24">
@@ -85,11 +84,11 @@
                         clip-rule="evenodd" />
                 </svg>
             </figure>
-            <div class="card-body">
-                <h2 class="card-title text-blue-800">Ver órdenes médicas</h2>
+            <div class="p-6 flex-1">
+                <h2 class="text-lg font-semibold text-blue-800">Ver órdenes médicas</h2>
                 <p class="text-gray-600">Acá podés consultar las órdenes médicas registradas.</p>
-                <div class="card-actions justify-end mt-5">
-                    <a href="{% url 'control_ordenes:lista_ordenes' %}" class="btn btn-warning">
+                <div class="flex justify-end mt-5">
+                    <a href="{% url 'control_ordenes:lista_ordenes' %}" class="inline-flex items-center px-5 py-2.5 rounded-md bg-amber-500 text-white hover:bg-amber-600 text-sm">
                         <i class="fas fa-list mr-2"></i> Ver Órdenes
                     </a>
                 </div>

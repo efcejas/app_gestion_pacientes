@@ -56,11 +56,11 @@
       <div class="flex items-center flex-wrap gap-2">
           <h1 class="text-sm font-bold text-blue-700 m-0">Estado del informe:</h1>
           {% if not report %}
-            <span class="badge badge-warning" title="Nuevo informe">Nuevo</span>
+            <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-yellow-100 text-yellow-800" title="Nuevo informe">Nuevo</span>
           {% elif report.es_final %}
-            <span class="badge badge-success" title="Informe finalizado">Final</span>
+            <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800" title="Informe finalizado">Final</span>
           {% else %}
-            <span class="badge badge-warning" title="Informe en borrador">Borrador</span>
+            <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-yellow-100 text-yellow-800" title="Informe en borrador">Borrador</span>
           {% endif %}
         </div>
         {% if viewer_url %}
@@ -102,13 +102,13 @@
     {% endif %}
     <div class="border-t border-gray-200 pt-4">
       <div class="flex justify-end flex-wrap gap-2 mt-4">
-        <a href="#" class="btn btn-xs btn-outline btn-error">
+        <a href="#" class="inline-flex items-center gap-1 rounded border border-red-300 text-red-700 hover:bg-red-50 px-2 py-1 text-xs font-medium">
           Adenda
         </a>
-        <a href="#" class="btn btn-xs btn-outline btn-info">
+        <a href="#" class="inline-flex items-center gap-1 rounded border border-blue-300 text-blue-700 hover:bg-blue-50 px-2 py-1 text-xs font-medium">
           Enviar por mail
         </a>
-        <a href="#" class="btn btn-xs btn-outline btn-warning">
+        <a href="#" class="inline-flex items-center gap-1 rounded border border-yellow-300 text-yellow-700 hover:bg-yellow-50 px-2 py-1 text-xs font-medium">
           Recitar
         </a>
       </div>
@@ -129,8 +129,8 @@
           </div>
           {% if report.pdf_file %}
           <div class="flex flex-wrap gap-2 mt-2 md:mt-0 md:ml-auto justify-end">
-        <a href="{{ report.pdf_file.url }}" target="_blank" rel="noopener" class="btn btn-xs btn-primary">Ver PDF</a>
-        <a href="{{ report.pdf_file.url }}" download class="btn btn-xs btn-outline">Descargar PDF</a>
+  <a href="{{ report.pdf_file.url }}" target="_blank" rel="noopener" class="inline-flex items-center rounded bg-blue-600 text-white px-3 py-1 text-xs font-medium hover:bg-blue-700">Ver PDF</a>
+  <a href="{{ report.pdf_file.url }}" download class="inline-flex items-center rounded border border-gray-300 text-gray-700 hover:bg-gray-50 px-3 py-1 text-xs font-medium">Descargar PDF</a>
         {% if report.pdf_file.size %}<span class="text-[11px] text-gray-500 self-center">({{ report.pdf_file.size }} bytes)</span>{% endif %}
           </div>
           {% else %}
@@ -146,7 +146,7 @@
     </div>
   </section>
   <div class="md:col-span-2 flex justify-end mt-2">
-    <a href="{% url 'estudios:lista_estudios' %}" class="btn btn-sm btn-outline btn-primary flex items-center gap-1">
+    <a href="{% url 'estudios:lista_estudios' %}" class="inline-flex items-center gap-1 rounded border border-blue-300 text-blue-700 hover:bg-blue-50 px-3 py-1.5 text-sm font-medium">
       ← Volver a la lista de estudios
     </a>
   </div>
