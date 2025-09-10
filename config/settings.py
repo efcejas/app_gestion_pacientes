@@ -71,6 +71,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'config.context_processors.feature_flags',
             ],
         },
     },
@@ -153,6 +154,10 @@ MEDIA_ROOT = BASE_DIR / 'media'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# --- Feature flags simples (permiten desactivar secciones en prod) ---
+FEATURE_ESTUDIOS = config('FEATURE_ESTUDIOS', default=True, cast=bool)
+FEATURE_INFORMES = config('FEATURE_INFORMES', default=True, cast=bool)
 
 # --- Integración Orthanc (variables de entorno) ---
 # Base URL del Orthanc (REST API). Ej: http://localhost:8042

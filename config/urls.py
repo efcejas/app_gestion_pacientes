@@ -25,11 +25,13 @@ urlpatterns = [
     path("usuarios/", include("usuarios.urls")),  # Incluir rutas de la app usuarios
     path("", RedirectView.as_view(pattern_name="home", permanent=False)),  # Página principal
     path("control_ordenes/", include("control_ordenes.urls")),  # Incluir rutas de la app control_ordenes
-
-    # (Eliminado) Rutas de portal_pacientes
-    path("estudios/", include("estudios.urls")),  # Integración Orthanc: listado estudios/series/instancias
-    path("informes/", include("informes.urls")),  # Gestión de informes
 ]
+
+# Habilitar/Deshabilitar secciones según flags
+if getattr(settings, 'FEATURE_ESTUDIOS', True):
+    urlpatterns.append(path("estudios/", include("estudios.urls")))  # Integración Orthanc
+if getattr(settings, 'FEATURE_INFORMES', True):
+    urlpatterns.append(path("informes/", include("informes.urls")))  # Gestión de informes
 
 # Servir archivos MEDIA en desarrollo
 if settings.DEBUG:
