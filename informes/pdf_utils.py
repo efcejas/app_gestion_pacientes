@@ -105,6 +105,21 @@ def render_report_to_pdf(report, context_extra=None, template_name='informes/pdf
     })
     if context_extra:
         context.update(context_extra)
+    # Firma manuscrita del autor (si subió imagen)
+    try:
+        user = report.autor
+        if getattr(user, 'signature_image', None) and user.signature_image:
+            try:
+                img_bytes = user.signature_image.read()
+                if img_bytes and len(img_bytes) > 10:
+                    import base64
+                    # Mejor soporte PNG/JPG
+                    mime2 = 'image/png' if img_bytes[:4] == b'\x89PNG' else 'image/jpeg'
+                    context['firma_mano_data_uri'] = 'data:%s;base64,%s' % (mime2, base64.b64encode(img_bytes).decode('ascii'))
+            except Exception:
+                logger.debug('No se pudo leer signature_image', exc_info=True)
+    except Exception:
+        pass
     # El cuerpo del informe ya viene como HTML en report.contenido
     html = render_to_string(template_name, context)
     pdf_io = BytesIO()

@@ -1,0 +1,107 @@
+{% extends 'base_tailwind.html' %}
+{% block content %}
+<div class="max-w-3xl mx-auto mt-6">
+  <div class="bg-white border border-gray-200 rounded-lg shadow-sm p-6">
+    <h1 class="text-lg font-semibold text-gray-800">Nueva adenda para informe #{{ report.id }}</h1>
+    <p class="text-sm text-gray-600 mt-1">Estudio: {{ report.study_instance_uid }} · Autor del informe: {{ report.autor.get_full_name|default:report.autor.username }}</p>
+  <form method="post" class="mt-4 space-y-3" novalidate id="adenda-form">
+      {% csrf_token %}
+      <label class="block text-sm font-medium text-gray-700 mb-1">Contenido</label>
+      <div class="hidden">
+        {{ form.contenido }}
+      </div>
+
+      <!-- Toolbar básica -->
+      <div class="w-full border border-gray-200 rounded-lg bg-gray-50 dark:bg-gray-700 dark:border-gray-600">
+        <div class="px-3 py-2 border-b border-gray-200 dark:border-gray-600">
+          <div class="flex flex-wrap items-center gap-1.5">
+            <button id="ad-bold" type="button" class="p-1.5 text-gray-500 rounded-sm hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-600" title="Negrita">
+              <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5h4.5a3.5 3.5 0 1 1 0 7H8m0-7v7m0-7H6m2 7h6.5a3.5 3.5 0 1 1 0 7H8m0-7v7m0 0H6"/></svg>
+            </button>
+            <button id="ad-italic" type="button" class="p-1.5 text-gray-500 rounded-sm hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-600" title="Itálica">
+              <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m8.874 19 6.143-14M6 19h6.33m-.66-14H18"/></svg>
+            </button>
+            <button id="ad-underline" type="button" class="p-1.5 text-gray-500 rounded-sm hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-600" title="Subrayado">
+              <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-linecap="round" stroke-width="2" d="M6 19h12M8 5v9a4 4 0 0 0 8 0V5M6 5h4m4 0h4"/></svg>
+            </button>
+            <button id="ad-strike" type="button" class="p-1.5 text-gray-500 rounded-sm hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-600" title="Tachado">
+              <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 12h16M9 6h6m-9 12h6"/></svg>
+            </button>
+            <span class="w-px h-4 bg-gray-300 mx-1"></span>
+            <button id="ad-bullets" type="button" class="p-1.5 text-gray-500 rounded-sm hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-600" title="Lista">
+              <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-linecap="round" stroke-width="2" d="M9 8h10M9 12h10M9 16h10M4.99 8H5m-.02 4h.01m0 4H5"/></svg>
+            </button>
+            <button id="ad-ordered" type="button" class="p-1.5 text-gray-500 rounded-sm hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-600" title="Lista ordenada">
+              <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6h8m-8 6h8m-8 6h8M4 16a2 2 0 1 1 3.321 1.5L4 20h5M4 5l2-1v6m-2 0h4"/></svg>
+            </button>
+            <button id="ad-blockquote" type="button" class="p-1.5 text-gray-500 rounded-sm hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-600" title="Cita">
+              <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24"><path fill-rule="evenodd" d="M6 6a2 2 0 0 0-2 2v3a2 2 0 0 0 2 2h3a3 3 0 0 1-3 3H5a1 1 0 1 0 0 2h1a5 5 0 0 0 5-5V8a2 2 0 0 0-2-2H6Zm9 0a2 2 0 0 0-2 2v3a2 2 0 0 0 2 2h3a3 3 0 0 1-3 3h-1a1 1 0 1 0 0 2h1a5 5 0 0 0 5-5V8a2 2 0 0 0-2-2h-3Z" clip-rule="evenodd"/></svg>
+            </button>
+            <span class="w-px h-4 bg-gray-300 mx-1"></span>
+            <button id="ad-link" type="button" class="p-1.5 text-gray-500 rounded-sm hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-600" title="Enlace">
+              <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.213 9.787a3.391 3.391 0 0 0-4.795 0l-3.425 3.426a3.39 3.39 0 0 0 4.795 4.794l.321-.304m-.321-4.49a3.39 3.39 0 0 0 4.795 0l3.424-3.426a3.39 3.39 0 0 0-4.794-4.795l-1.028.961"/></svg>
+            </button>
+            <button id="ad-unlink" type="button" class="p-1.5 text-gray-500 rounded-sm hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-600" title="Quitar enlace">
+              <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-linecap="round" stroke-width="2" d="M13.2 9.8a3.4 3.4 0 0 0-4.8 0L5 13.2A3.4 3.4 0 0 0 9.8 18l.3-.3m-.3-4.5a3.4 3.4 0 0 0 4.8 0L18 9.8A3.4 3.4 0 0 0 13.2 5l-1 1m7.4 14-1.8-1.8m0 0L16 16.4m1.8 1.8 1.8-1.8m-1.8 1.8L16 20"/></svg>
+            </button>
+            <span class="w-px h-4 bg-gray-300 mx-1"></span>
+            <button id="ad-code" type="button" class="p-1.5 text-gray-500 rounded-sm hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-600" title="Código">
+              <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m8 8-4 4 4 4m8 0 4-4-4-4m-2-3-4 14"/></svg>
+            </button>
+          </div>
+        </div>
+        <div class="px-4 py-2 bg-white rounded-b-lg dark:bg-gray-800">
+          <div id="adenda-editor" class="block w-full px-0 text-sm text-gray-800 bg-white border-0 dark:bg-gray-800 focus:ring-0 dark:text-white min-h-[200px]"></div>
+        </div>
+      </div>
+      {% if form.non_field_errors %}
+        <div class="text-sm text-red-600">{{ form.non_field_errors }}</div>
+      {% endif %}
+      {% if form.contenido.errors %}
+        <div class="text-sm text-red-600">{{ form.contenido.errors }}</div>
+      {% endif %}
+      <div class="flex justify-end gap-2 mt-3">
+        <a href="{% url 'informes:ver_final' report.id %}" class="inline-flex items-center gap-1 rounded border border-gray-300 text-gray-700 hover:bg-gray-50 px-3 py-1.5 text-sm font-medium">Cancelar</a>
+        <button class="inline-flex items-center gap-1 rounded bg-blue-600 text-white px-3 py-1.5 text-sm font-medium hover:bg-blue-700" type="submit">Agregar adenda</button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}
+
+<!-- TipTap para Adenda (mismo subset sin imágenes) -->
+<script type="module">
+  import { Editor } from 'https://esm.sh/@tiptap/core@2.6.6';
+  import StarterKit from 'https://esm.sh/@tiptap/starter-kit@2.6.6';
+  import Underline from 'https://esm.sh/@tiptap/extension-underline@2.6.6';
+  import Link from 'https://esm.sh/@tiptap/extension-link@2.6.6';
+  const form = document.getElementById('adenda-form');
+  const textarea = form ? (form.querySelector('textarea[name="{{ form.contenido.name }}"]') || form.querySelector('textarea[name="contenido"]')) : null;
+  const initial = textarea ? textarea.value : '';
+  const editor = new Editor({
+    element: document.getElementById('adenda-editor'),
+    content: initial || '<p></p>',
+    extensions: [
+      StarterKit,
+      Underline,
+      Link.configure({ openOnClick: false, autolink: true, defaultProtocol: 'https' }),
+    ],
+    editorProps: { attributes: { class: 'focus:outline-none prose max-w-none dark:prose-invert' } },
+    onUpdate() { if (textarea) textarea.value = editor.getHTML(); }
+  });
+
+  const $ = id => document.getElementById(id);
+  const safePrompt = (msg, def='') => { const v = prompt(msg, def); return v && v.trim() ? v.trim() : null; };
+  $('ad-bold')?.addEventListener('click', () => editor.chain().focus().toggleBold().run());
+  $('ad-italic')?.addEventListener('click', () => editor.chain().focus().toggleItalic().run());
+  $('ad-underline')?.addEventListener('click', () => editor.chain().focus().toggleUnderline().run());
+  $('ad-strike')?.addEventListener('click', () => editor.chain().focus().toggleStrike().run());
+  $('ad-bullets')?.addEventListener('click', () => editor.chain().focus().toggleBulletList().run());
+  $('ad-ordered')?.addEventListener('click', () => editor.chain().focus().toggleOrderedList().run());
+  $('ad-blockquote')?.addEventListener('click', () => editor.chain().focus().toggleBlockquote().run());
+  $('ad-code')?.addEventListener('click', () => editor.chain().focus().toggleCode().run());
+  $('ad-link')?.addEventListener('click', () => { const url = safePrompt('Ingresá el enlace (https://...)','https://'); if (url) editor.chain().focus().toggleLink({ href: url }).run(); });
+  $('ad-unlink')?.addEventListener('click', () => editor.chain().focus().unsetLink().run());
+
+  form?.addEventListener('submit', () => { if (textarea) textarea.value = editor.getHTML(); });
+</script>

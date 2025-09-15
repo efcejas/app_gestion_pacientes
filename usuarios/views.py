@@ -1,11 +1,13 @@
 from django.urls import reverse_lazy
 from django.views.generic import CreateView, TemplateView
+from django.shortcuts import redirect, render
 from django.contrib.auth import login
+from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 
 from control_ordenes.forms import OrdenMedicaForm
 from .models import Usuario
-from .forms import RegistroUsuarioForm
+from .forms import RegistroUsuarioForm, FirmaMedicoForm, UsuarioPerfilForm
 
 class RegistroUsuarioView(CreateView):
     model = Usuario
@@ -31,3 +33,35 @@ class HomeView(LoginRequiredMixin, TemplateView):
         context["es_medico"] = user.is_authenticated and getattr(user, "rol", None) == "medico"
         context["es_admin_medico"] = user.is_authenticated and user.groups.filter(name="Administrativos con permisos médicos").exists()
         return context
+
+
+class SubirFirmaView(LoginRequiredMixin, TemplateView):
+    template_name = "usuarios/subir_firma.html"
+
+    def get(self, request, *args, **kwargs):
+        form = FirmaMedicoForm(instance=request.user)
+        return render(request, self.template_name, {"form": form})
+
+    def post(self, request, *args, **kwargs):
+        form = FirmaMedicoForm(request.POST, request.FILES, instance=request.user)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Firma actualizada correctamente.")
+            return redirect("perfil")
+        return render(request, self.template_name, {"form": form})
+
+
+class PerfilView(LoginRequiredMixin, TemplateView):
+    template_name = "usuarios/perfil.html"
+
+    def get(self, request, *args, **kwargs):
+        form = UsuarioPerfilForm(instance=request.user)
+        return render(request, self.template_name, {"form": form})
+
+    def post(self, request, *args, **kwargs):
+        form = UsuarioPerfilForm(request.POST, request.FILES, instance=request.user)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Perfil actualizado correctamente.")
+            return redirect("perfil")
+        return render(request, self.template_name, {"form": form})

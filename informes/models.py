@@ -69,3 +69,26 @@ class LogInforme(models.Model):
 
 	def __str__(self):
 		return f"LogInforme(report={self.report_id}, accion={self.accion}, ts={self.timestamp})"
+
+
+class Adenda(models.Model):
+	"""Adendas sobre un informe finalizado (append-only, no modifican el contenido original).
+	Se ordenan cronológicamente y pueden regenerar el PDF combinando cuerpo + adendas.
+	"""
+	report = models.ForeignKey(Report, on_delete=models.CASCADE, related_name='adendas', db_index=True)
+	autor = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, related_name='adendas_informes')
+	contenido = models.TextField(help_text='Contenido de la adenda (HTML permitido básico).')
+	creado = models.DateTimeField(auto_now_add=True)
+	actualizado = models.DateTimeField(auto_now=True)
+	visible = models.BooleanField(default=True, help_text='Permite ocultar una adenda sin eliminarla.')
+
+	class Meta:
+		ordering = ['creado']
+		verbose_name = 'Adenda'
+		verbose_name_plural = 'Adendas'
+		indexes = [
+			models.Index(fields=['report', 'creado']),
+		]
+
+	def __str__(self):
+		return f"Adenda(report={self.report_id}, autor={self.autor_id}, creado={self.creado:%Y-%m-%d %H:%M})"

@@ -1,0 +1,23 @@
+{% if widget.is_initial %}
+  <div class="mb-2">
+    <span class="text-xs text-gray-500">Archivo actual:</span>
+    <div class="mt-1 flex items-center gap-3">
+      {% if widget.value.url %}
+        <img src="{{ widget.value.url }}" alt="Firma actual" class="h-12 max-h-12 border rounded bg-white" />
+      {% endif %}
+      <div class="flex items-center gap-2 text-sm text-gray-600">
+        <input type="checkbox" name="{{ widget.checkbox_name }}" id="{{ widget.checkbox_id }}" class="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500" />
+        <label for="{{ widget.checkbox_id }}" class="select-none">{{ widget.clear_checkbox_label }}</label>
+      </div>
+    </div>
+  </div>
+{% endif %}
+<div>
+  <input
+    type="file"
+    name="{{ widget.name }}"
+    {% include "django/forms/widgets/attrs.html" %}
+    aria-label="Seleccionar archivo de firma"
+    class="w-full rounded border border-gray-300 text-gray-800 dark:text-gray-100 placeholder-gray-400 leading-relaxed tracking-wide focus:border-blue-500 focus:ring-blue-500 text-sm bg-white dark:bg-gray-900"
+  />
+</div>

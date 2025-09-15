@@ -3,8 +3,8 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 from django.db import transaction
 from django.contrib import messages
 from django.urls import reverse
-from .models import Report, LogInforme
-from .forms import ReportForm
+from .models import Report, LogInforme, Adenda
+from .forms import ReportForm, AdendaForm
 from .pdf_utils import render_report_to_pdf
 from django.conf import settings
 from estudios.services import client
@@ -263,11 +263,65 @@ def ver_final(request, report_id: int):
 			viewer_url = f"{client.base_url}/ohif/viewer?StudyInstanceUIDs={uid}"
 	except Exception:
 		pass
+	adendas = report.adendas.filter(visible=True).order_by('creado')
 	return render(request, 'informes/ver_final.html', {
 		'report': report,
 		'shared': shared,
 		'viewer_url': viewer_url,
 		'study_info': study_info,
+		'adendas': adendas,
+	})
+
+
+@login_required
+@user_passes_test(staff_required)
+@transaction.atomic
+def crear_adenda(request, report_id: int):
+	report = get_object_or_404(Report, pk=report_id)
+	if not report.es_final:
+		messages.error(request, 'Solo se pueden agregar adendas a informes finalizados.')
+		return redirect('informes:editar', report.id)
+	if request.method == 'POST':
+		form = AdendaForm(request.POST)
+		if form.is_valid():
+			# Sanitizar si tenemos util
+			try:
+				from .utils import sanitize_report_html as _sanitize
+				form.instance.contenido = _sanitize(form.cleaned_data['contenido'])
+			except Exception:
+				form.instance.contenido = form.cleaned_data['contenido']
+			form.instance.report = report
+			form.instance.autor = request.user
+			adenda = form.save()
+			# Log de adenda
+			LogInforme.objects.create(
+				report=report,
+				accion='addendum',
+				usuario=request.user,
+				contenido_hash=report.contenido_hash or '',
+				pdf_hash=report.pdf_hash or '',
+				report_version=report.version,
+				template_version=getattr(settings, 'REPORT_TEMPLATE_VERSION', '1.0.0'),
+			)
+			# Regenerar PDF incluyendo adendas actuales
+			success, content_file, err = render_report_to_pdf(report, context_extra={'study_info': report.study_snapshot})
+			if success:
+				filename = f"reporte_{report.id}.pdf"
+				pdf_bytes = content_file.read()
+				from .utils import hash_pdf_bytes as _hash_pdf
+				report.pdf_hash = _hash_pdf(pdf_bytes)
+				from django.core.files.base import ContentFile as _CF
+				report.pdf_file.save(filename, _CF(pdf_bytes), save=True)
+				report.save(update_fields=['pdf_hash'])
+				messages.success(request, 'Adenda agregada y PDF actualizado.')
+			else:
+				messages.warning(request, f'Adenda agregada, pero falló la actualización del PDF: {err}')
+			return redirect('informes:ver_final', report.id)
+	else:
+		form = AdendaForm()
+	return render(request, 'informes/adenda_form.html', {
+		'report': report,
+		'form': form,
 	})
 
 

@@ -2,6 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Informe {{ report.study_instance_uid }}</title>
     <style>
         body { font-family: DejaVu Sans, Arial, sans-serif; font-size: 12px; line-height: 1.4; }
@@ -62,20 +63,37 @@
     <div class="content">
         {{ report.contenido|safe }}
     </div>
+    {% if report.adendas.all %}
+    {% with adlist=report.adendas.all %}
+    {% if adlist %}
+    <div class="content" style="margin-top: 18px;">
+        <div style="font-weight:bold; border-top:1px solid #999; padding-top:6px;">Adendas</div>
+        <ol style="margin-top:6px; padding-left:18px;">
+        {% for a in adlist %}
+            {% if a.visible %}
+            <li>
+                <div style="font-size:10px; color:#555;">{{ a.creado|date:"d-m-Y H:i" }} · {{ a.autor.get_full_name|default:a.autor.username }}</div>
+                <div>{{ a.contenido|safe }}</div>
+            </li>
+            {% endif %}
+        {% endfor %}
+        </ol>
+    </div>
+    {% endif %}
+    {% endwith %}
+    {% endif %}
     <table width="100%" style="margin-top:40px;">
         <tr>
             <td style="text-align:center; font-size:10px; color:#444;">
-                <div style="height:55px;">
-                    <!-- Espacio reservado para futura firma manuscrita -->
-                </div>
-                <div style="margin-top:2px; font-weight:bold;">{{ report.autor.get_full_name|default:report.autor.username }}</div>
-                <div style="margin-top:2px;">
-                    {% if report.firma_digital %}
-                        <span style="display:inline-block; font-size:9px; background:#f2f2f2; padding:2px 5px; border:1px solid #ccc;">Firma Digital (demo, sin validez legal): {{ report.firma_digital }}</span>
+                <div style="height:80px;">
+                    {% if firma_mano_data_uri %}
+                        <img src="{{ firma_mano_data_uri }}" alt="Firma" style="max-height:80px; width:auto; opacity:0.95;" />
                     {% else %}
-                        <em style="font-size:9px;">Firma digital no generada</em>
+                        <!-- Espacio reservado para futura firma manuscrita -->
                     {% endif %}
                 </div>
+                <div style="margin-top:2px; font-weight:bold;">{{ report.autor.get_full_name|default:report.autor.username }}</div>
+                
             </td>
         </tr>
     </table>

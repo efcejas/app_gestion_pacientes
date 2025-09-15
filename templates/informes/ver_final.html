@@ -41,7 +41,7 @@
         <p class="font-normal text-gray-700">
           Fecha:
           {% if study_info.study_date %}
-          {{ study_info.study_date|slice:":4"}}-{{ study_info.study_date|slice:"4:6"}}-{{ study_info.study_date|slice:"6:8" }}
+          {{ study_info.study_date|slice:"6:8"}}-{{ study_info.study_date|slice:"4:6"}}-{{ study_info.study_date|slice:":4" }}
           {% else %}
           -
           {% endif %}
@@ -76,7 +76,7 @@
     </header>
     {% if report %}
       <div class="text-[15px] text-gray-700">
-        Finalizado: {{ report.actualizado|date:"Y-m-d H:i" }}
+        Finalizado: {{ report.actualizado|date:"d-m-Y H:i" }}
         {% if report.version %}
           · Versión: {{ report.version }}
         {% endif %}
@@ -102,7 +102,7 @@
     {% endif %}
     <div class="border-t border-gray-200 pt-4">
       <div class="flex justify-end flex-wrap gap-2 mt-4">
-        <a href="#" class="inline-flex items-center gap-1 rounded border border-red-300 text-red-700 hover:bg-red-50 px-2 py-1 text-xs font-medium">
+        <a href="{% url 'informes:crear_adenda' report.id %}" class="inline-flex items-center gap-1 rounded border border-red-300 text-red-700 hover:bg-red-50 px-2 py-1 text-xs font-medium">
           Adenda
         </a>
         <a href="#" class="inline-flex items-center gap-1 rounded border border-blue-300 text-blue-700 hover:bg-blue-50 px-2 py-1 text-xs font-medium">
@@ -119,6 +119,19 @@
   <section class="md:col-span-2">
     <div class="bg-white border border-gray-200 rounded-lg shadow-sm p-6 prose max-w-none dark:prose-invert text-sm leading-relaxed">
       {{ report.contenido|safe }}
+      {% if adendas %}
+      <div class="mt-8 border-t border-gray-300 pt-4">
+        <h2 class="text-base font-semibold text-gray-800">Adendas</h2>
+        <ol class="mt-2 space-y-3 list-decimal pl-6">
+          {% for a in adendas %}
+          <li>
+            <div class="text-[11px] text-gray-500">{{ a.creado|date:"d-m-Y H:i" }} · {{ a.autor.get_full_name|default:a.autor.username }}</div>
+            <div class="mt-1">{{ a.contenido|safe }}</div>
+          </li>
+          {% endfor %}
+        </ol>
+      </div>
+      {% endif %}
       <footer class="mt-6 border-t border-gray-300 pt-4">
         <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
           <div class="flex items-center gap-2 text-xs text-green-600">
@@ -139,9 +152,7 @@
           </div>
           {% endif %}
         </div>
-  {% if report.firma_digital %}
-    <p class="text-[12px] text-gray-500"><strong>Firma Digital</strong> (demo, sin validez legal): <code>{{ report.firma_digital }}</code></p>
-  {% endif %}
+  
       </footer>
     </div>
   </section>

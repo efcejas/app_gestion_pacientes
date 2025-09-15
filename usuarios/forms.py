@@ -3,6 +3,7 @@ from django.contrib.auth.forms import UserCreationForm, AuthenticationForm, Pass
 from .models import Usuario
 from django.contrib.auth.password_validation import password_validators_help_text_html
 from django.contrib.auth import get_user_model
+from .widgets import TailwindClearableFileInput
 
 # Formulario para el registro de usuarios
 
@@ -144,3 +145,66 @@ class RestablecerPasswordNuevaForm(SetPasswordForm):
             'placeholder': 'Confirme su nueva contraseña'
         })
     )
+
+class FirmaMedicoForm(forms.ModelForm):
+    class Meta:
+        model = get_user_model()
+        fields = ['signature_image']
+        widgets = {
+            'signature_image': forms.ClearableFileInput(attrs={
+                'accept': 'image/png,image/jpeg',
+            })
+        }
+    def clean_signature_image(self):
+        f = self.cleaned_data.get('signature_image')
+        if not f:
+            return f
+        if f.size > 2 * 1024 * 1024:
+            raise forms.ValidationError('La imagen no puede superar 2MB.')
+        import os
+        ext = os.path.splitext(f.name)[1].lower()
+        if ext not in ['.png', '.jpg', '.jpeg']:
+            raise forms.ValidationError('Formato no soportado. Usa PNG o JPG.')
+        return f
+
+class UsuarioPerfilForm(forms.ModelForm):
+    class Meta:
+        model = get_user_model()
+        fields = ["first_name", "last_name", "email", "signature_image"]
+        widgets = {
+            "first_name": forms.TextInput(attrs={
+                "placeholder": "Nombre",
+                "class": "w-full rounded border border-gray-300 text-gray-800 dark:text-gray-100 placeholder-gray-400 leading-relaxed tracking-wide focus:border-blue-500 focus:ring-blue-500 text-sm bg-white dark:bg-gray-900",
+            }),
+            "last_name": forms.TextInput(attrs={
+                "placeholder": "Apellido",
+                "class": "w-full rounded border border-gray-300 text-gray-800 dark:text-gray-100 placeholder-gray-400 leading-relaxed tracking-wide focus:border-blue-500 focus:ring-blue-500 text-sm bg-white dark:bg-gray-900",
+            }),
+            "email": forms.EmailInput(attrs={
+                "placeholder": "Correo",
+                "class": "w-full rounded border border-gray-300 text-gray-800 dark:text-gray-100 placeholder-gray-400 leading-relaxed tracking-wide focus:border-blue-500 focus:ring-blue-500 text-sm bg-white dark:bg-gray-900",
+            }),
+            "signature_image": TailwindClearableFileInput(attrs={
+                "id": "file_input",
+                "accept": "image/png,image/jpeg",
+            }),
+        }
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Etiquetas amigables
+        self.fields["first_name"].label = "Nombre"
+        self.fields["last_name"].label = "Apellido"
+        self.fields["email"].label = "Correo"
+        # Ayuda para el archivo acorde a validaciones
+        self.fields["signature_image"].help_text = "PNG o JPG (máx. 2 MB). Recomendado: fondo transparente."
+    def clean_signature_image(self):
+        f = self.cleaned_data.get('signature_image')
+        if not f:
+            return f
+        if f.size > 2 * 1024 * 1024:
+            raise forms.ValidationError('La imagen no puede superar 2MB.')
+        import os
+        ext = os.path.splitext(f.name)[1].lower()
+        if ext not in ['.png', '.jpg', '.jpeg']:
+            raise forms.ValidationError('Formato no soportado. Usa PNG o JPG.')
+        return f

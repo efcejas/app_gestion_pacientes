@@ -1,6 +1,11 @@
 {% extends "base_tailwind.html" %}
 {% load static %}
 
+    {% if request.user.is_authenticated and not request.user.signature_image %}
+    <div class="p-3 border border-yellow-300 bg-yellow-50 rounded text-sm text-yellow-800">
+        ¿Querés que tu firma manuscrita aparezca en los informes? <a href="{% url 'subir_firma' %}" class="underline">Subila aquí</a>.
+    </div>
+    {% endif %}
 {% block content %}
 <section class="py-8 px-4 mx-auto max-w-screen-xl lg:py-14 lg:px-6">
     <div class="mx-auto max-w-screen-sm text-center mb-8 lg:mb-16">

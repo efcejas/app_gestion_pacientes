@@ -16,8 +16,21 @@ try:  # bleach es obligatorio en runtime, pero fallback defensivo por si falta e
 except Exception:  # pragma: no cover - fallback raro
     bleach = None  # type: ignore
 
-ALLOWED_REPORT_TAGS = ['p','br','strong','em','ul','ol','li','h1','h2','h3','h4','blockquote','span','u','sub','sup']
-ALLOWED_REPORT_ATTRS = {'span': ['style']}
+ALLOWED_REPORT_TAGS = [
+    'p','br','strong','em','ul','ol','li','h1','h2','h3','h4','blockquote',
+    'span','u','sub','sup','a','code','s','del','mark','hr'
+]
+ALLOWED_REPORT_ATTRS = {
+    'span': ['style'],
+    'p': ['style'],
+    'h1': ['style'],
+    'h2': ['style'],
+    'h3': ['style'],
+    'h4': ['style'],
+    'blockquote': ['style'],
+    'mark': ['style'],
+    'a': ['href','title','target','rel'],
+}
 
 def sanitize_report_html(html: str) -> str:
     """Devuelve HTML sanitizado según whitelist.
@@ -29,7 +42,39 @@ def sanitize_report_html(html: str) -> str:
         return ''
     if bleach is None:
         return html
-    return bleach.clean(html, tags=ALLOWED_REPORT_TAGS, attributes=ALLOWED_REPORT_ATTRS, strip=True)
+    # Limitar estilos CSS permitidos a propiedades seguras que usamos en el editor
+    try:
+        from bleach.css_sanitizer import CSSSanitizer  # type: ignore
+        css = CSSSanitizer(allowed_css_properties=[
+            'font-size', 'color', 'background-color', 'text-align', 'font-weight', 'font-style', 'text-decoration', 'font-family'
+        ])
+    except Exception:
+        css = None  # type: ignore
+    cleaned = bleach.clean(
+        html,
+        tags=ALLOWED_REPORT_TAGS,
+        attributes=ALLOWED_REPORT_ATTRS,
+        protocols=['http','https','mailto'],
+        strip=True,
+        css_sanitizer=css,
+    )
+    # Fuerza rel="noopener noreferrer" en enlaces con target=_blank
+    if '<a' in cleaned:
+        from bs4 import BeautifulSoup  # type: ignore
+        try:
+            soup = BeautifulSoup(cleaned, 'html.parser')
+            for a in soup.find_all('a'):
+                if a.get('target') == '_blank':
+                    rel = (a.get('rel') or [])
+                    if isinstance(rel, str):
+                        rel = [rel]
+                    need = {'noopener','noreferrer'}
+                    rel_set = set(rel) | need
+                    a['rel'] = ' '.join(sorted(rel_set))
+            cleaned = str(soup)
+        except Exception:
+            pass
+    return cleaned
 
 
 def build_study_info_from_tags(tags: Dict[str, Any] | None) -> Dict[str, Any]:

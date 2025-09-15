@@ -13,6 +13,7 @@ class Usuario(AbstractUser):
     ]
 
     rol = models.CharField(max_length=20, choices=ROLES, default=ADMINISTRATIVO)
+    signature_image = models.ImageField(upload_to='firmas_medicos/', blank=True, null=True, help_text='PNG con fondo transparente recomendado')
 
     def __str__(self):
         return f"{self.username} - {self.get_rol_display()}"
