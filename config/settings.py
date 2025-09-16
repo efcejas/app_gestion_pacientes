@@ -158,6 +158,8 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # --- Feature flags simples (permiten desactivar secciones en prod) ---
 FEATURE_ESTUDIOS = config('FEATURE_ESTUDIOS', default=True, cast=bool)
 FEATURE_INFORMES = config('FEATURE_INFORMES', default=True, cast=bool)
+# Habilita/Deshabilita la edición de perfil desde variables de entorno. Por defecto: deshabilitado para evitar errores.
+FEATURE_PERFIL_EDICION = config('FEATURE_PERFIL_EDICION', default=False, cast=bool)
 
 # --- Integración Orthanc (variables de entorno) ---
 # Base URL del Orthanc (REST API). Ej: http://localhost:8042

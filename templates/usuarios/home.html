@@ -1,7 +1,7 @@
 {% extends "base_tailwind.html" %}
 {% load static %}
 
-    {% if request.user.is_authenticated and not request.user.signature_image %}
+    {% if request.user.is_authenticated and not request.user.signature_image and FEATURE_PERFIL_EDICION %}
     <div class="p-3 border border-yellow-300 bg-yellow-50 rounded text-sm text-yellow-800">
         ¿Querés que tu firma manuscrita aparezca en los informes? <a href="{% url 'perfil_editar' %}" class="underline">Subila aquí</a>.
     </div>
