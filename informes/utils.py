@@ -60,8 +60,8 @@ def sanitize_report_html(html: str) -> str:
     )
     # Fuerza rel="noopener noreferrer" en enlaces con target=_blank
     if '<a' in cleaned:
-        from bs4 import BeautifulSoup  # type: ignore
         try:
+            from bs4 import BeautifulSoup  # type: ignore
             soup = BeautifulSoup(cleaned, 'html.parser')
             for a in soup.find_all('a'):
                 if a.get('target') == '_blank':
@@ -73,6 +73,7 @@ def sanitize_report_html(html: str) -> str:
                     a['rel'] = ' '.join(sorted(rel_set))
             cleaned = str(soup)
         except Exception:
+            # Si bs4 no está disponible o algo falla al parsear, dejar limpio tal como quedó por bleach
             pass
     return cleaned
 

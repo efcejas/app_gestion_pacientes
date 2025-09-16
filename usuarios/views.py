@@ -35,24 +35,20 @@ class HomeView(LoginRequiredMixin, TemplateView):
         return context
 
 
-class SubirFirmaView(LoginRequiredMixin, TemplateView):
-    template_name = "usuarios/subir_firma.html"
-
-    def get(self, request, *args, **kwargs):
-        form = FirmaMedicoForm(instance=request.user)
-        return render(request, self.template_name, {"form": form})
-
-    def post(self, request, *args, **kwargs):
-        form = FirmaMedicoForm(request.POST, request.FILES, instance=request.user)
-        if form.is_valid():
-            form.save()
-            messages.success(request, "Firma actualizada correctamente.")
-            return redirect("perfil")
-        return render(request, self.template_name, {"form": form})
+"""Vista antigua SubirFirmaView eliminada; ahora la firma se gestiona en PerfilEditarView."""
 
 
-class PerfilView(LoginRequiredMixin, TemplateView):
+class PerfilDetalleView(LoginRequiredMixin, TemplateView):
     template_name = "usuarios/perfil.html"
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        ctx["usuario"] = self.request.user
+        return ctx
+
+
+class PerfilEditarView(LoginRequiredMixin, TemplateView):
+    template_name = "usuarios/perfil_form.html"
 
     def get(self, request, *args, **kwargs):
         form = UsuarioPerfilForm(instance=request.user)

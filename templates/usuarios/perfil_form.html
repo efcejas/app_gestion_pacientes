@@ -1,0 +1,16 @@
+{% extends 'base_tailwind.html' %}
+{% block content %}
+<div class="max-w-3xl mx-auto mt-6">
+  <div class="bg-white border border-gray-200 rounded-lg shadow-sm p-6">
+    <h1 class="text-lg font-semibold text-gray-800">Editar perfil</h1>
+    <form method="post" enctype="multipart/form-data" class="mt-4">
+      {% csrf_token %}
+      {{ form.as_p }}
+      <div class="mt-4 flex justify-end gap-2">
+        <a href="{% url 'perfil' %}" class="inline-flex items-center gap-1 rounded border border-gray-300 text-gray-700 hover:bg-gray-50 px-3 py-1.5 text-sm font-medium">Cancelar</a>
+        <button class="inline-flex items-center gap-1 rounded bg-blue-600 text-white px-3 py-1.5 text-sm font-medium hover:bg-blue-700" type="submit">Guardar</button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

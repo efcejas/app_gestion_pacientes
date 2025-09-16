@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import RegistroConfirmacionView, RegistroUsuarioView, HomeView, SubirFirmaView, PerfilView
+from .views import RegistroConfirmacionView, RegistroUsuarioView, HomeView, PerfilDetalleView, PerfilEditarView
 from django.contrib.auth import views as auth_views
 from .forms import LoginForm, CambioContrasenaForm, RestablecerContrasenaForm, RestablecerPasswordNuevaForm
 
@@ -22,11 +22,9 @@ urlpatterns = [
     ),
     path("logout/", auth_views.LogoutView.as_view(), name="logout"),
 
-    # Subida de firma del médico
-    path("perfil/firma/", SubirFirmaView.as_view(), name="subir_firma"),
-
-    # Perfil
-    path("perfil/", PerfilView.as_view(), name="perfil"),
+    # Perfil (lectura y edición)
+    path("perfil/", PerfilDetalleView.as_view(), name="perfil"),
+    path("perfil/editar/", PerfilEditarView.as_view(), name="perfil_editar"),
     
     # Rutas relacionadas con el cambio de contraseña
     path(
