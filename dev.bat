@@ -1,4 +1,9 @@
 @echo off
+setlocal
+
+REM Utilidad: ejecutar migraciones en Heroku
+if /I "%1"=="heroku-migrate" goto heroku_migrate
+
 echo 🎨 Iniciando modo desarrollo Tailwind + DaisyUI
 echo.
 echo 💡 Este script:
@@ -28,3 +33,16 @@ echo    - Cuando hagas cambios importantes, ejecuta: npm run collectstatic
 echo.
 echo 💡 Para cerrar todo: Ctrl+C en ambas ventanas
 pause
+
+goto :eof
+
+:heroku_migrate
+echo 🚀 Ejecutando migraciones en Heroku (gestion-servicio-alj)...
+heroku run -a gestion-servicio-alj -- python manage.py migrate
+if errorlevel 1 (
+	echo ❌ Error ejecutando migraciones en Heroku.
+	exit /b 1
+) else (
+	echo ✅ Migraciones aplicadas correctamente en Heroku.
+)
+goto :eof
