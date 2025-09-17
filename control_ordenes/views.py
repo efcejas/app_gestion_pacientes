@@ -1,5 +1,5 @@
 import json
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -205,7 +205,7 @@ class OrdenesDelMedicoListView(LoginRequiredMixin, UserPassesTestMixin, ListView
         # Usuarios en línea (médicos + administrativos con permisos) en últimos 5 minutos
         User = get_user_model()
         now = timezone.now()
-        online_cut = now - timezone.timedelta(minutes=5)
+        online_cut = now - timedelta(minutes=5)
         # Requiere last_login aproximado; como proxy simple usamos last_login >= corte
         online_users = User.objects.filter(
             last_login__isnull=False,
