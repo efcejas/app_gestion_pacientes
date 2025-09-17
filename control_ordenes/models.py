@@ -25,6 +25,27 @@ class OrdenMedica(models.Model):
         verbose_name="Válido por"
     )
     renovada = models.BooleanField(default=False, verbose_name="¿Renovada?")
+    # Auditoría simple / última actividad
+    last_action = models.CharField(
+        max_length=20,
+        blank=True,
+        default="",
+        choices=[
+            ("creada", "Creada"),
+            ("renovada", "Renovada"),
+            ("editada", "Editada"),
+        ],
+        verbose_name="Última acción",
+    )
+    last_action_at = models.DateTimeField(null=True, blank=True, verbose_name="Fecha última acción")
+    last_actor = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='ordenes_operadas',
+        verbose_name="Último operador",
+    )
 
     def fecha_vencimiento(self):
         return self.fecha_emision + timedelta(days=self.dias_validez)
