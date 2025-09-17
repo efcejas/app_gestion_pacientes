@@ -12,7 +12,7 @@ def clean_name(value):
 
 @register.filter
 def first_modality(value):
-    """Devuelve solo la primera modalidad (ej: MR de MR\SR)"""
+    r"""Devuelve solo la primera modalidad (ej: MR de MR\SR)"""
     if not value:
         return ""
     # asegurarse que sea string

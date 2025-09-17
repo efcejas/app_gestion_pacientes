@@ -41,15 +41,18 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'usuarios',
+    'usuarios.apps.UsuariosConfig',
     'control_ordenes',
     'estudios',
     'informes',
+    # Cloudinary storage (solo se usará si CLOUDINARY_URL está presente)
+    'cloudinary',
+    'cloudinary_storage',
 ]
 
 MIDDLEWARE = [
-    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -149,6 +152,19 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 # Archivos multimedia (para imágenes, documentos subidos por usuarios)
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
+
+# --- Cloudinary como almacenamiento de media en producción ---
+# Si existe CLOUDINARY_URL en el entorno, usar Cloudinary para MEDIA
+CLOUDINARY_URL = config('CLOUDINARY_URL', default=None)
+if CLOUDINARY_URL:
+    DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+    # Opcional: carpeta base en Cloudinary
+    CLOUDINARY_STORAGE = {
+        'CLOUD_NAME': None,  # se infiere desde CLOUDINARY_URL
+        'API_KEY': None,
+        'API_SECRET': None,
+        'SECURE': True,
+    }
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
